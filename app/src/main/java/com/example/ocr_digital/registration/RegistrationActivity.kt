@@ -1,15 +1,18 @@
-package com.example.ocr_digital
+package com.example.ocr_digital.registration
 
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import com.example.ocr_digital.helpers.ActivityStarterHelper
+import com.example.ocr_digital.helpers.ToastHelper
 import com.example.ocr_digital.home.HomeActivity
-import com.example.ocr_digital.login.LoginActivity
+import com.example.ocr_digital.ui.theme.OcrdigitalTheme
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
-class MainActivity : ComponentActivity() {
+class RegistrationActivity : ComponentActivity() {
 
     private lateinit var auth : FirebaseAuth
 
@@ -18,23 +21,26 @@ class MainActivity : ComponentActivity() {
 
         val currentUser = auth.currentUser
         if (currentUser != null) startHomeActivity()
-        else startLoginActivity()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         auth = Firebase.auth
+
+        val activityStarterHelper = ActivityStarterHelper(this)
+        val toastHelper = ToastHelper(this)
+        val registrationViewModel = RegistrationViewModel(activityStarterHelper, toastHelper)
+
+        setContent {
+            OcrdigitalTheme {
+                RegistrationScreen(registrationViewModel = registrationViewModel)
+            }
+        }
     }
 
     private fun startHomeActivity() {
         val intent = Intent(this, HomeActivity::class.java)
-        startActivity(intent)
-        finish()
-    }
-
-    private fun startLoginActivity() {
-        val intent = Intent(this, LoginActivity::class.java)
         startActivity(intent)
         finish()
     }

@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package com.example.ocr_digital.models
 
 data class UserInformation(
@@ -6,4 +8,6 @@ data class UserInformation(
     val lastName: String,
     val contactNumber: String,
     val firstTime: Boolean
-)
+) {
+    constructor() : this("", "", "", "", false)
+}

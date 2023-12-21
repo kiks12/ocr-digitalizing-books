@@ -8,5 +8,5 @@ enum class ResponseStatus {
 data class Response(
     val status: ResponseStatus,
     val message: String,
-    val data: HashMap<String, Any> = HashMap()
+    val data: Map<String, Any> = mapOf()
 )

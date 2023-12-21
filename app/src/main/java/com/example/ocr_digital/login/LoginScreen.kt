@@ -87,7 +87,7 @@ fun LoginScreen(loginViewModel: LoginViewModel) {
                             )
                         }
                         FilledTonalButton(
-                            onClick = loginViewModel::continueWithGoogle,
+                            onClick = loginViewModel::continueWithGoogleHelper,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(top = 10.dp)
@@ -128,7 +128,8 @@ private fun LoginScreenPreview() {
     LoginScreen(
         loginViewModel = LoginViewModel(
             activityStarterHelper = activityStarterHelper,
-            toastHelper = toastHelper
+            toastHelper = toastHelper,
+            continueWithGoogle = {  }
         )
     )
 }

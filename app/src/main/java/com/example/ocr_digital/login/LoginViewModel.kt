@@ -11,7 +11,8 @@ import com.google.firebase.ktx.Firebase
 
 class LoginViewModel(
     private val activityStarterHelper: ActivityStarterHelper,
-    private val toastHelper: ToastHelper
+    private val toastHelper: ToastHelper,
+    private val continueWithGoogle: () -> Unit
 ) : ViewModel() {
     private val auth = Firebase.auth
 
@@ -64,8 +65,8 @@ class LoginViewModel(
         return true
     }
 
-    fun continueWithGoogle() {
-        TODO("Login View Model - Login with Google")
+    fun continueWithGoogleHelper() {
+        continueWithGoogle()
     }
 
     private fun startHomeActivity() {

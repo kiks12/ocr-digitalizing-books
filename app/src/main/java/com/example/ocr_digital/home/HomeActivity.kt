@@ -4,12 +4,17 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
+import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
-import com.example.ocr_digital.MainActivity
+import com.example.ocr_digital.helpers.ActivityStarterHelper
 import com.example.ocr_digital.models.ResponseStatus
+import com.example.ocr_digital.navigation.NavigationScreen
 import com.example.ocr_digital.repositories.UsersRepository
+import com.example.ocr_digital.settings.SettingsScreen
+import com.example.ocr_digital.settings.SettingsViewModel
 import com.example.ocr_digital.startup.StartupActivity
 import com.example.ocr_digital.ui.theme.OcrdigitalTheme
 import com.google.firebase.auth.ktx.auth
@@ -43,24 +48,21 @@ class HomeActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val auth = Firebase.auth
+        val activityStarterHelper = ActivityStarterHelper(this)
+        val settingsViewModel = SettingsViewModel(activityStarterHelper)
+        val homeViewModel = HomeViewModel()
 
         setContent {
             OcrdigitalTheme {
-                Text("Home")
-                Button(onClick = {
-                    auth.signOut()
-                    startMainActivity()
-                }) {
-                    Text("Sign Out")
+                Scaffold { innerPadding ->
+                    Box(modifier = Modifier.padding(innerPadding)) {
+                        NavigationScreen(
+                            homeScreen = { HomeScreen(homeViewModel = homeViewModel) },
+                            settingsScreen = { SettingsScreen(settingsViewModel = settingsViewModel) }
+                        )
+                    }
                 }
             }
         }
-    }
-
-    private fun startMainActivity() {
-        val intent = Intent(this, MainActivity::class.java)
-        startActivity(intent)
-        finish()
     }
 }

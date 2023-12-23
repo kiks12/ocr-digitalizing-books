@@ -18,7 +18,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 
 @Composable
-fun File(filename: String) {
+fun File(
+    filename: String,
+    onDeleteClick: () -> Unit
+) {
     val extension = filename.split(".")[filename.split(".").size - 1]
     var menuExpanded by remember { mutableStateOf(false) }
 
@@ -63,8 +66,9 @@ fun File(filename: String) {
                     expanded = menuExpanded,
                     onDismissRequest = { menuExpanded = false },
                     onRenameClick = { /*TODO*/ },
-                    onDeleteClick = { /*TODO*/ }) {
-                }
+                    onDeleteClick = onDeleteClick,
+                    onMoveClick = {}
+                )
             }
         }
     )

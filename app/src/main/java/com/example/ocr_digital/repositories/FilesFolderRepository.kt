@@ -13,19 +13,87 @@ import kotlinx.coroutines.launch
 class FilesFolderRepository {
     private val storage = Firebase.storage("gs://ocr-digital-book.appspot.com")
 
-    suspend fun createUserFolder(uid: String) : Response{
+    private fun removeLastSegment(input: String): String {
+        val lastSlashIndex = input.lastIndexOf("/")
+        return if (lastSlashIndex != -1) {
+            input.substring(0, lastSlashIndex)
+        } else {
+            input
+        }
+    }
+
+    private fun getLastSegment(input: String): String {
+        val lastSlashIndex = input.lastIndexOf("/")
+        return if (lastSlashIndex != -1 && lastSlashIndex < input.length - 1) {
+            input.substring(lastSlashIndex + 1)
+        } else {
+            input
+        }
+    }
+
+    suspend fun createFolder(directory: String) : Response{
         val response = CompletableDeferred<Response>(null)
 
         coroutineScope {
             launch(Dispatchers.IO){
                 val reference = storage.reference
-                val directoryRef = reference.child(uid)
-                directoryRef.putBytes(byteArrayOf())
+                val parentDir = removeLastSegment(directory)
+                val newDirectory = getLastSegment(directory)
+                val parentDirectoryRef = reference.child(parentDir)
+                parentDirectoryRef.listAll()
+                    .addOnSuccessListener { result ->
+                        val prefixes = result.prefixes
+                        val directoryPrefix = prefixes.filter { prefix -> prefix.name == newDirectory }
+                        if (directoryPrefix.isEmpty()) {
+                            val directoryRef = reference.child("$directory/EMPTY")
+                            directoryRef.putBytes(byteArrayOf())
+                                .addOnSuccessListener {
+                                    response.complete(
+                                        Response(
+                                            status = ResponseStatus.SUCCESSFUL,
+                                            message = "Successfully created directory"
+                                        )
+                                    )
+                                }
+                                .addOnFailureListener { exception ->
+                                    exception.localizedMessage?.let {
+                                        Response(
+                                            status = ResponseStatus.FAILED,
+                                            message = it
+                                        )
+                                    }?.let {
+                                        response.complete(
+                                            it
+                                        )
+                                    }
+                                }
+                        } else {
+                            response.complete(
+                                Response(
+                                    status = ResponseStatus.FAILED,
+                                    message = "Folder already exists"
+                                )
+                            )
+                        }
+                }
+            }
+        }
+
+        return response.await()
+    }
+
+    suspend fun deleteFileOrFolder(directory: String) : Response {
+        val response = CompletableDeferred<Response>(null)
+
+        coroutineScope {
+            launch(Dispatchers.IO){
+                val reference = storage.reference
+                reference.child(directory).delete()
                     .addOnSuccessListener {
                         response.complete(
                             Response(
                                 status = ResponseStatus.SUCCESSFUL,
-                                message = "Successfully created user directory"
+                                message = "Folder successfully deleted"
                             )
                         )
                     }
@@ -57,16 +125,14 @@ class FilesFolderRepository {
                     .addOnSuccessListener { results ->
                         val items = results.items
                         val prefixes = results.prefixes
-
-                        val files = items.map { item -> item.name }
-                        val folders = prefixes.map { prefix -> prefix.name }
+                        val removedEmptyItems = items.filter { item -> item.name != "EMPTY" }
                         response.complete(
                             Response(
                                 status = ResponseStatus.SUCCESSFUL,
                                 message = "Successfully retrieved files and folders of $directory",
                                 data = mapOf(
-                                    "FILES" to files,
-                                    "FOLDERS" to folders
+                                    "FILES" to removedEmptyItems,
+                                    "FOLDERS" to prefixes
                                 )
                             )
                         )

@@ -22,7 +22,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun Folder(directoryName: String) {
+fun Folder(
+    directoryName: String,
+    onRenameClick: () -> Unit,
+    onDeleteClick: () -> Unit,
+    onMoveClick: () -> Unit,
+) {
     var menuExpanded by remember {
         mutableStateOf(false)
     }
@@ -48,9 +53,9 @@ fun Folder(directoryName: String) {
                 FileFolderMenu(
                     expanded = menuExpanded,
                     onDismissRequest = { menuExpanded = false },
-                    onRenameClick = {},
-                    onDeleteClick = {},
-                    onMoveClick = {}
+                    onRenameClick = onRenameClick,
+                    onDeleteClick = onDeleteClick,
+                    onMoveClick = onMoveClick
                 )
             }
         }
@@ -62,7 +67,12 @@ fun Folder(directoryName: String) {
 @Preview(backgroundColor = 1)
 @Composable
 fun FolderPreview() {
-    Folder(directoryName = "AEC")
+    Folder(
+        directoryName = "AEC",
+        onRenameClick = {},
+        onMoveClick = {},
+        onDeleteClick = {}
+    )
     FileFolderMenu(
         expanded = true,
         onDismissRequest = { /*TODO*/ },

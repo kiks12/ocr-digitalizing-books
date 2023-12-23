@@ -10,6 +10,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
 import com.example.ocr_digital.helpers.ActivityStarterHelper
+import com.example.ocr_digital.helpers.ToastHelper
 import com.example.ocr_digital.models.ResponseStatus
 import com.example.ocr_digital.navigation.NavigationScreen
 import com.example.ocr_digital.repositories.UsersRepository
@@ -48,9 +49,14 @@ class HomeActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        val toastHelper = ToastHelper(this)
         val activityStarterHelper = ActivityStarterHelper(this)
-        val settingsViewModel = SettingsViewModel(activityStarterHelper)
-        val homeViewModel = HomeViewModel()
+        val settingsViewModel = SettingsViewModel(
+            activityStarterHelper = activityStarterHelper
+        )
+        val homeViewModel = HomeViewModel(
+            toastHelper = toastHelper
+        )
 
         setContent {
             OcrdigitalTheme {

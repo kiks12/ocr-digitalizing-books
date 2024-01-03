@@ -1,8 +1,9 @@
-package com.example.ocr_digital.home
+package com.example.ocr_digital.folder
 
 import com.google.firebase.storage.StorageReference
 
-data class HomeState(
+data class FolderScreenState(
+    val name: String,
     val folders : List<StorageReference>,
     val files : List<StorageReference>,
     val folderName : String,

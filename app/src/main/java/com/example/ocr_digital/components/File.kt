@@ -1,7 +1,8 @@
 package com.example.ocr_digital.components
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Icon
@@ -16,11 +17,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 fun File(
     filename: String,
-    onDeleteClick: () -> Unit
+    onDeleteClick: () -> Unit,
+    onRenameClick: () -> Unit,
+    onMoveClick: () -> Unit
 ) {
     val extension = filename.split(".")[filename.split(".").size - 1]
     var menuExpanded by remember { mutableStateOf(false) }
@@ -32,7 +36,7 @@ fun File(
     )
 
     ListItem(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxWidth(),
         leadingContent = {
                 if (extension == "png") {
                     Text(
@@ -65,11 +69,24 @@ fun File(
                 FileFolderMenu(
                     expanded = menuExpanded,
                     onDismissRequest = { menuExpanded = false },
-                    onRenameClick = { /*TODO*/ },
+                    onRenameClick = onRenameClick,
                     onDeleteClick = onDeleteClick,
-                    onMoveClick = {}
+                    onMoveClick = onMoveClick
                 )
             }
         }
     )
+}
+
+@Preview
+@Composable
+fun FilePreview() {
+    Column {
+        File(
+            filename = "asdfsadf.docx",
+            onDeleteClick = {},
+            onRenameClick = {},
+            onMoveClick = {}
+        )
+    }
 }

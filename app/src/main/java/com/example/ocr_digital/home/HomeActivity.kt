@@ -55,7 +55,8 @@ class HomeActivity : ComponentActivity() {
             activityStarterHelper = activityStarterHelper
         )
         val homeViewModel = HomeViewModel(
-            toastHelper = toastHelper
+            toastHelper = toastHelper,
+            activityStarterHelper = activityStarterHelper
         )
 
         setContent {

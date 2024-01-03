@@ -9,6 +9,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 fun FileFolderMenu(
@@ -44,4 +45,16 @@ fun FileFolderMenu(
             trailingIcon = { Icon(Icons.Default.KeyboardArrowRight, "Move") }
         )
     }
+}
+
+@Preview
+@Composable
+fun FileFolderMenuPreview() {
+    FileFolderMenu(
+        expanded = true,
+        onDismissRequest = {},
+        onRenameClick = {},
+        onDeleteClick = {},
+        onMoveClick = {}
+    )
 }

@@ -1,27 +1,27 @@
-package com.example.ocr_digital.home
+package com.example.ocr_digital.folder
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.ocr_digital.folder.FolderActivity
 import com.example.ocr_digital.helpers.ActivityStarterHelper
 import com.example.ocr_digital.helpers.ToastHelper
-import com.example.ocr_digital.models.ResponseStatus
 import com.example.ocr_digital.path.PathUtilities
 import com.example.ocr_digital.repositories.FilesFolderRepository
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.StorageReference
 import kotlinx.coroutines.launch
 
-class HomeViewModel(
+class FolderViewModel(
+    private val folderPath: String,
     private val toastHelper: ToastHelper,
-    private val activityStarterHelper: ActivityStarterHelper
-) : ViewModel() {
+    private val activityStarterHelper: ActivityStarterHelper,
+    private val finishCallback: () -> Unit,
+): ViewModel() {
+
     private val filesFolderRepository = FilesFolderRepository()
-    private val auth = Firebase.auth
+
     private val _state = mutableStateOf(
-        HomeState(
+        FolderScreenState(
+            name = PathUtilities.removeFirstSegment(folderPath),
             folders = listOf(),
             files = listOf(),
             folderName = "",
@@ -36,18 +36,18 @@ class HomeViewModel(
         )
     )
 
-    val state : HomeState
+    val state: FolderScreenState
         get() = _state.value
 
     init {
         refresh()
     }
 
-    private fun refresh() {
+    fun refresh() {
         viewModelScope.launch {
-            val response = filesFolderRepository.getFilesAndFolders(auth.currentUser?.uid!!)
-            val files = response.data["FILES"] as List<StorageReference>
-            val folders = response.data["FOLDERS"] as List<StorageReference>
+            val response = filesFolderRepository.getFilesAndFolders(folderPath)
+            val files = (response.data["FILES"] as List<StorageReference>)
+            val folders = (response.data["FOLDERS"] as List<StorageReference>)
             _state.value = _state.value.copy(
                 files = files,
                 folders = folders,
@@ -116,62 +116,15 @@ class HomeViewModel(
         )
     }
 
-    fun createFolder() {
-        if (_state.value.folderName.isEmpty()) {
-            toastHelper.makeToast("Please input folder name")
-            return
-        }
-        viewModelScope.launch {
-            val uid = auth.currentUser?.uid!!
-            val response = filesFolderRepository.createFolder("$uid/${_state.value.folderName}")
-            if (response.status == ResponseStatus.SUCCESSFUL) {
-                hideBottomSheet()
-                hideCreateFolderDialog()
-                refresh()
-            } else {
-                toastHelper.makeToast(response.message)
-            }
-        }
+    fun getToastHelper() : ToastHelper {
+        return toastHelper
     }
 
-    fun deleteFileOrFolder() {
-        viewModelScope.launch {
-            val response = filesFolderRepository.deleteFileOrFolder(_state.value.fileOrFolderPath.substring(1))
-            if (response.status == ResponseStatus.SUCCESSFUL) {
-                hideDeleteFileOrFolderDialog()
-                refresh()
-                return@launch
-            }
-            toastHelper.makeToast(response.message)
-        }
+    fun finish() {
+        finishCallback()
     }
 
-    fun renameFileOrFolder() {
-        viewModelScope.launch {
-            val parentPath = PathUtilities.removeLastSegment(_state.value.renameCurrentPath)
-            val newPath = if (_state.value.renameForFile) {
-                parentPath + "/" + _state.value.renameNewPath + "." + PathUtilities.getFileExtension(_state.value.renameCurrentPath)
-            } else {
-                parentPath + "/" + _state.value.renameNewPath
-            }
-
-            if (_state.value.renameForFile) {
-                val response = filesFolderRepository.renameFile(_state.value.renameCurrentPath, newPath)
-                toastHelper.makeToast(response.message)
-                if (response.status == ResponseStatus.SUCCESSFUL) {
-                    hideRenameFileOrFolderDialog()
-                    refresh()
-                }
-            }
-
-        }
-    }
-
-    fun uploadImages() {
-        TODO("Home View Model - Implement Upload images")
-    }
-
-    fun useCamera() {
-        TODO("Home View Model - Implement Use Camera")
+    fun getFolderPath() : String {
+        return folderPath
     }
 }

@@ -79,7 +79,7 @@ fun FolderScreen(folderViewModel: FolderViewModel, folderUtilityViewModel: Folde
             items(state.files) {file ->
                 File(
                     filename = file.name,
-                    onDeleteClick = { folderViewModel.showDeleteFileOrFolderDialog(file.path) },
+                    onDeleteClick = { folderViewModel.showDeleteFileOrFolderDialog(file.path, forFile = true) },
                     onRenameClick = { folderViewModel.showRenameFileOrFolderDialog(file.path, forFile = true) },
                     onMoveClick = {}
                 )
@@ -117,14 +117,21 @@ fun FolderScreen(folderViewModel: FolderViewModel, folderUtilityViewModel: Folde
 
         if (state.showDeleteFileOrFolderDialog) {
             DeleteFileFolderDialog(
+                loading = state.dialogLoading,
                 onDismissRequest = folderViewModel::hideDeleteFileOrFolderDialog,
                 onDeleteClick = {
+                    folderViewModel.showDialogLoader()
                     folderUtilityViewModel.deleteFileOrFolder(
                         fileFolderPath = state.fileOrFolderPath,
+                        forFile = state.deleteForFile,
                         successCallback = {
+                            folderViewModel.hideDialogLoader()
                             folderViewModel.hideBottomSheet()
                             folderViewModel.hideDeleteFileOrFolderDialog()
                             folderViewModel.refresh()
+                        },
+                        failedCallback = {
+                            folderViewModel.hideDialogLoader()
                         }
                     )
                 }
@@ -134,18 +141,24 @@ fun FolderScreen(folderViewModel: FolderViewModel, folderUtilityViewModel: Folde
         if (state.showRenameFileOrFolderDialog) {
             RenameDialog(
                 forFile = state.renameForFile,
+                loading = state.dialogLoading,
                 onDismissRequest = folderViewModel::hideRenameFileOrFolderDialog,
                 value = state.renameNewPath,
                 onValueChange = folderViewModel::onRenameNewPathChange,
                 onRenameClick = {
+                    folderViewModel.showDialogLoader()
                     folderUtilityViewModel.renameFileOrFolder(
                         renameCurrentPath = state.renameCurrentPath,
                         renameNewPath = state.renameNewPath,
                         renameForFile = state.renameForFile,
                         successCallback = {
+                            folderViewModel.hideDialogLoader()
                             folderViewModel.hideBottomSheet()
                             folderViewModel.hideRenameFileOrFolderDialog()
                             folderViewModel.refresh()
+                        },
+                        failedCallback = {
+                            folderViewModel.hideDialogLoader()
                         }
                     )
                 }

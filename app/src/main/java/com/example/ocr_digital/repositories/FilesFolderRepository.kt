@@ -8,13 +8,20 @@ import com.example.ocr_digital.path.PathUtilities
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 import java.io.File
 
 class FilesFolderRepository {
     private val storage = Firebase.storage("gs://ocr-digital-book.appspot.com")
+    private val job = SupervisorJob()
+    private val scope = CoroutineScope(job + Dispatchers.IO)
 
     suspend fun createFolder(directory: String) : Response{
         val response = CompletableDeferred<Response>(null)
@@ -67,18 +74,75 @@ class FilesFolderRepository {
         return response.await()
     }
 
-    suspend fun deleteFileOrFolder(directory: String) : Response {
+    suspend fun deleteFile(path: String) : Response {
         val response = CompletableDeferred<Response>(null)
 
         coroutineScope {
             launch(Dispatchers.IO){
                 val reference = storage.reference
-                reference.child(directory).delete()
+                reference.child(path).delete()
                     .addOnSuccessListener {
                         response.complete(
                             Response(
                                 status = ResponseStatus.SUCCESSFUL,
-                                message = "Folder successfully deleted"
+                                message = "File successfully deleted"
+                            )
+                        )
+                    }
+                    .addOnFailureListener {
+                        it.localizedMessage?.let { it1 ->
+                            Response(
+                                status = ResponseStatus.FAILED,
+                                message = it1
+                            )
+                        }?.let { it2 ->
+                            response.complete(
+                                it2
+                            )
+                        }
+                    }
+            }
+        }
+
+        return response.await()
+    }
+
+    suspend fun deleteFolder(path: String) : Response {
+        val response = CompletableDeferred<Response>(null)
+
+        coroutineScope {
+            launch(Dispatchers.IO) {
+                val reference = storage.reference
+                reference.child(path).listAll()
+                    .addOnSuccessListener { result ->
+                        result.items.forEach { item ->
+                            item.delete()
+                                .addOnSuccessListener {
+                                    Log.w(
+                                        "DELETE FOLDER 1",
+                                        "DELETED"
+                                    )
+                                }
+                                .addOnFailureListener {
+                                    response.complete(
+                                        Response(
+                                            status = ResponseStatus.FAILED,
+                                            message = "There is an error, check if folder is deleted"
+                                        )
+                                    )
+                                }
+                        }
+
+                        result.prefixes.forEach { prefix ->
+                            scope.launch {
+                                deleteFolder(prefix.path)
+                            }
+                        }
+
+                        response.complete(
+                            Response(
+                                status = ResponseStatus.SUCCESSFUL,
+                                message = "Successfully deleted folder"
                             )
                         )
                     }
@@ -141,55 +205,83 @@ class FilesFolderRepository {
         return response.await()
     }
 
-//    private fun renameFolderRecursively(currentPath: String, newPath: String) {
-//        val reference = storage.reference
-//        val currentFolderRef = reference.child(currentPath)
-//        val newFolderRef = reference.child(newPath)
-//
-//        currentFolderRef.listAll()
-//            .addOnSuccessListener { result ->
-//                val items = result.items
-//                val prefix = result.prefixes
-//            }
-//    }
-
     suspend fun renameFolder(currentPath: String, newPath: String) : Response {
-        TODO("FilesFolderRepo - Implement rename folder")
-//        val response = CompletableDeferred<Response>(null)
-//
-//        coroutineScope {
-//            launch(Dispatchers.IO){
-//                val reference = storage.reference
-//                val currentFolderRef = reference.child(currentPath)
-//                val newFileRef = reference.child(newPath)
-//
-//                currentFolderRef.listAll()
-//                    .addOnSuccessListener { result ->
-//                        val items = result.items
-//                        val prefixes = result.prefixes
-//
-//                        items.forEach { item ->
-//                            val localFile = File.createTempFile("temp", null)
-//                            item.getFile(localFile)
-//                                .addOnSuccessListener {
-//                                    newFileRef.putFile(localFile.toUri())
-//                                        .addOnSuccessListener {
-//                                            Log.w("RENAME FOLDER", "Renamed")
-//                                        }
-//                                }
-//                                .addOnFailureListener {}
-//                        }
-//
-//                        prefixes.forEach {
-//
-//                        }
-//                    }
-//                    .addOnFailureListener {
-//                    }
-//            }
-//        }
-//
-//        return response.await()
+        val response = CompletableDeferred<Response>(null)
+
+        coroutineScope {
+            launch(Dispatchers.IO) {
+                val reference = storage.reference
+                val currentFolderRef = reference.child(currentPath)
+                val newFolderRef = reference.child(newPath)
+
+                newFolderRef.child("EMPTY").putBytes(byteArrayOf()).await()
+                currentFolderRef.listAll()
+                    .addOnSuccessListener { result ->
+                        scope.launch {
+                            async {
+                                result.items.forEach { item ->
+                                    val localFile = File.createTempFile("temp", null)
+                                    item.getFile(localFile)
+                                        .addOnSuccessListener {
+                                            newFolderRef.child(item.name).putFile(localFile.toUri())
+                                                .addOnSuccessListener {
+                                                    item.delete()
+                                                        .addOnSuccessListener {  }
+                                                        .addOnFailureListener {
+                                                            response.complete(
+                                                                Response(
+                                                                    status = ResponseStatus.FAILED,
+                                                                    message = "There is an error, please check if the folder is renamed"
+                                                                )
+                                                            )
+                                                        }
+                                                }
+                                                .addOnFailureListener {
+                                                    response.complete(
+                                                        Response(
+                                                            status = ResponseStatus.FAILED,
+                                                            message = "There is an error, please check if the folder is renamed"
+                                                        )
+                                                    )
+                                                }
+                                        }
+                                }
+                            }.await()
+
+                            async {
+                                result.prefixes.forEach { prefix ->
+                                    scope.launch {
+                                        renameFolder(prefix.path, "$newPath/${PathUtilities.getLastSegment(prefix.path)}")
+                                    }
+                                }
+                            }.await()
+
+                            async {
+                                response.complete(
+                                    Response(
+                                        status = ResponseStatus.SUCCESSFUL,
+                                        message = "Successfully renamed folder"
+                                    )
+                                )
+                            }.await()
+                        }
+                    }
+                    .addOnFailureListener {
+                        it.localizedMessage?.let { it1 ->
+                            Response(
+                                status = ResponseStatus.SUCCESSFUL,
+                                it1
+                            )
+                        }?.let { it2 ->
+                            response.complete(
+                                it2
+                            )
+                        }
+                    }
+            }
+        }
+
+        return response.await()
     }
 
     suspend fun renameFile(currentPath: String, newPath: String) : Response {
@@ -217,19 +309,34 @@ class FilesFolderRepository {
                             return@addOnSuccessListener
                         }
 
-                        val localFile = File.createTempFile("temp", null)
-                        currentFileRef.getFile(localFile)
-                            .addOnSuccessListener {
-                                newFileRef.putFile(localFile.toUri())
+                        scope.launch {
+                            withContext(Dispatchers.IO) {
+                                val localFile = File.createTempFile("temp", null)
+                                currentFileRef.getFile(localFile)
                                     .addOnSuccessListener {
-                                        currentFileRef.delete()
+                                        newFileRef.putFile(localFile.toUri())
                                             .addOnSuccessListener {
-                                                response.complete(
-                                                    Response(
-                                                        status = ResponseStatus.SUCCESSFUL,
-                                                        message = "Successfully renamed file"
-                                                    )
-                                                )
+                                                currentFileRef.delete()
+                                                    .addOnSuccessListener {
+                                                        response.complete(
+                                                            Response(
+                                                                status = ResponseStatus.SUCCESSFUL,
+                                                                message = "Successfully renamed file"
+                                                            )
+                                                        )
+                                                    }
+                                                    .addOnFailureListener {
+                                                        it.localizedMessage?.let { it1 ->
+                                                            Response(
+                                                                status = ResponseStatus.FAILED,
+                                                                message = it1
+                                                            )
+                                                        }?.let { it2 ->
+                                                            response.complete(
+                                                                it2
+                                                            )
+                                                        }
+                                                    }
                                             }
                                             .addOnFailureListener {
                                                 it.localizedMessage?.let { it1 ->
@@ -257,19 +364,8 @@ class FilesFolderRepository {
                                         }
                                     }
                             }
-                            .addOnFailureListener {
-                                it.localizedMessage?.let { it1 ->
-                                    Response(
-                                        status = ResponseStatus.FAILED,
-                                        message = it1
-                                    )
-                                }?.let { it2 ->
-                                    response.complete(
-                                        it2
-                                    )
-                                }
-                            }
                         }
+                    }
             }
         }
 

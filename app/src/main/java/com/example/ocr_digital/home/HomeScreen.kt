@@ -86,7 +86,7 @@ fun HomeScreen(homeViewModel: HomeViewModel, folderUtilityViewModel: FolderUtili
             items(state.files) {file ->
                 File(
                     filename = file.name,
-                    onDeleteClick = { homeViewModel.showDeleteFileOrFolderDialog(file.path) },
+                    onDeleteClick = { homeViewModel.showDeleteFileOrFolderDialog(file.path, forFile = true) },
                     onRenameClick = { homeViewModel.showRenameFileOrFolderDialog(file.path, forFile = true) },
                     onMoveClick = {}
                 )
@@ -124,14 +124,21 @@ fun HomeScreen(homeViewModel: HomeViewModel, folderUtilityViewModel: FolderUtili
 
         if (state.showDeleteFileOrFolderDialog) {
             DeleteFileFolderDialog(
+                loading = state.dialogLoading,
                 onDismissRequest = homeViewModel::hideDeleteFileOrFolderDialog,
                 onDeleteClick = {
+                    homeViewModel.showDialogLoader()
                     folderUtilityViewModel.deleteFileOrFolder(
                         fileFolderPath = state.fileOrFolderPath,
+                        forFile = state.deleteForFile,
                         successCallback = {
+                            homeViewModel.hideDialogLoader()
                             homeViewModel.refresh()
                             homeViewModel.hideBottomSheet()
                             homeViewModel.hideDeleteFileOrFolderDialog()
+                        },
+                        failedCallback = {
+                            homeViewModel.hideDialogLoader()
                         }
                     )
                 }
@@ -141,18 +148,24 @@ fun HomeScreen(homeViewModel: HomeViewModel, folderUtilityViewModel: FolderUtili
         if (state.showRenameFileOrFolderDialog) {
             RenameDialog(
                 forFile = state.renameForFile,
+                loading = state.dialogLoading,
                 onDismissRequest = homeViewModel::hideRenameFileOrFolderDialog,
                 value = state.renameNewPath,
                 onValueChange = homeViewModel::onRenameNewPathChange,
                 onRenameClick = {
+                    homeViewModel.showDialogLoader()
                     folderUtilityViewModel.renameFileOrFolder(
                         renameCurrentPath = state.renameCurrentPath,
                         renameNewPath = state.renameNewPath,
                         renameForFile = state.renameForFile,
                         successCallback = {
+                            homeViewModel.hideDialogLoader()
                             homeViewModel.refresh()
                             homeViewModel.hideBottomSheet()
                             homeViewModel.hideRenameFileOrFolderDialog()
+                        },
+                        failedCallback = {
+                            homeViewModel.hideDialogLoader()
                         }
                     )
                 }

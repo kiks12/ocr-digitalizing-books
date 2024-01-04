@@ -9,9 +9,11 @@ data class HomeState(
     val showBottomSheet : Boolean,
     val showCreateFolderDialog : Boolean,
     val showDeleteFileOrFolderDialog : Boolean,
+    val deleteForFile : Boolean,
     val showRenameFileOrFolderDialog : Boolean,
     val renameForFile : Boolean,
     val renameCurrentPath : String,
     val renameNewPath : String,
     val fileOrFolderPath : String,
+    val dialogLoading : Boolean
 )

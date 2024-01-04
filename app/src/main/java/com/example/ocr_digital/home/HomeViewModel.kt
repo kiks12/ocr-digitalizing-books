@@ -24,11 +24,13 @@ class HomeViewModel(
             showBottomSheet = false,
             showCreateFolderDialog = false,
             showDeleteFileOrFolderDialog = false,
+            deleteForFile = false,
             showRenameFileOrFolderDialog = false,
             fileOrFolderPath = "",
             renameCurrentPath = "",
             renameNewPath = "",
-            renameForFile = false
+            renameForFile = false,
+            dialogLoading = false,
         )
     )
 
@@ -67,10 +69,11 @@ class HomeViewModel(
         _state.value = _state.value.copy(showCreateFolderDialog = false)
     }
 
-    fun showDeleteFileOrFolderDialog(path: String) {
+    fun showDeleteFileOrFolderDialog(path: String, forFile: Boolean = false) {
         _state.value = _state.value.copy(
             showDeleteFileOrFolderDialog = true,
-            fileOrFolderPath = path
+            fileOrFolderPath = path,
+            deleteForFile = forFile
         )
     }
 
@@ -101,6 +104,14 @@ class HomeViewModel(
 
     fun onRenameNewPathChange(newString: String) {
         _state.value = _state.value.copy(renameNewPath = newString)
+    }
+
+    fun showDialogLoader() {
+        _state.value = _state.value.copy(dialogLoading = true)
+    }
+
+    fun hideDialogLoader() {
+        _state.value = _state.value.copy(dialogLoading = false)
     }
 
     fun openFolder(folderPath: String) {

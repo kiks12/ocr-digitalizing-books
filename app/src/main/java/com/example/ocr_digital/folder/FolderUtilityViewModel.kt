@@ -6,6 +6,7 @@ import com.example.ocr_digital.helpers.ToastHelper
 import com.example.ocr_digital.models.ResponseStatus
 import com.example.ocr_digital.path.PathUtilities
 import com.example.ocr_digital.repositories.FilesFolderRepository
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class FolderUtilityViewModel(
@@ -32,10 +33,24 @@ class FolderUtilityViewModel(
         }
     }
 
-    fun deleteFileOrFolder(fileFolderPath: String, successCallback: (newStr: String) -> Unit, failedCallback: (str: String) -> Unit = {}) {
+    fun deleteFileOrFolder(fileFolderPath: String, forFile: Boolean, successCallback: (newStr: String) -> Unit, failedCallback: (str: String) -> Unit = {}) {
         viewModelScope.launch {
-            val response = filesFolderRepository.deleteFileOrFolder(fileFolderPath.substring(1))
+            if (forFile) {
+                val response = filesFolderRepository.deleteFile(fileFolderPath.substring(1))
+                if (response.status == ResponseStatus.SUCCESSFUL) {
+                    toastHelper.makeToast(response.message)
+                    successCallback(response.message)
+                    return@launch
+                }
+
+                toastHelper.makeToast(response.message)
+                failedCallback(response.message)
+                return@launch
+            }
+
+            val response = filesFolderRepository.deleteFolder(fileFolderPath)
             if (response.status == ResponseStatus.SUCCESSFUL) {
+                delay(5000)
                 toastHelper.makeToast(response.message)
                 successCallback(response.message)
                 return@launch
@@ -58,6 +73,17 @@ class FolderUtilityViewModel(
             if (renameForFile) {
                 val response = filesFolderRepository.renameFile(renameCurrentPath, newPath)
                 if (response.status == ResponseStatus.SUCCESSFUL) {
+                    toastHelper.makeToast(response.message)
+                    successCallback(response.message)
+                    return@launch
+                }
+
+                toastHelper.makeToast(response.message)
+                failedCallback(response.message)
+            } else {
+                val response = filesFolderRepository.renameFolder(renameCurrentPath, newPath)
+                if (response.status == ResponseStatus.SUCCESSFUL) {
+                    delay(5000)
                     toastHelper.makeToast(response.message)
                     successCallback(response.message)
                     return@launch

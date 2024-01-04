@@ -4,7 +4,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.ocr_digital.helpers.ActivityStarterHelper
-import com.example.ocr_digital.helpers.ToastHelper
 import com.example.ocr_digital.path.PathUtilities
 import com.example.ocr_digital.repositories.FilesFolderRepository
 import com.google.firebase.storage.StorageReference
@@ -12,7 +11,6 @@ import kotlinx.coroutines.launch
 
 class FolderViewModel(
     private val folderPath: String,
-    private val toastHelper: ToastHelper,
     private val activityStarterHelper: ActivityStarterHelper,
     private val finishCallback: () -> Unit,
 ): ViewModel() {
@@ -114,10 +112,6 @@ class FolderViewModel(
                 "FOLDER_PATH_EXTRA" to folderPath
             )
         )
-    }
-
-    fun getToastHelper() : ToastHelper {
-        return toastHelper
     }
 
     fun finish() {

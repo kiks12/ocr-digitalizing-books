@@ -30,7 +30,6 @@ import androidx.compose.ui.unit.sp
 import com.example.ocr_digital.helpers.ActivityStarterHelper
 import com.example.ocr_digital.helpers.ToastHelper
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(loginViewModel: LoginViewModel) {
     val state = loginViewModel.state

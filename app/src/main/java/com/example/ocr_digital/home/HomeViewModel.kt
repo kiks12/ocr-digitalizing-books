@@ -5,9 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.ocr_digital.folder.FolderActivity
 import com.example.ocr_digital.helpers.ActivityStarterHelper
-import com.example.ocr_digital.helpers.ToastHelper
-import com.example.ocr_digital.models.ResponseStatus
-import com.example.ocr_digital.path.PathUtilities
 import com.example.ocr_digital.repositories.FilesFolderRepository
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -15,7 +12,6 @@ import com.google.firebase.storage.StorageReference
 import kotlinx.coroutines.launch
 
 class HomeViewModel(
-    private val toastHelper: ToastHelper,
     private val activityStarterHelper: ActivityStarterHelper
 ) : ViewModel() {
     private val filesFolderRepository = FilesFolderRepository()
@@ -43,7 +39,7 @@ class HomeViewModel(
         refresh()
     }
 
-    private fun refresh() {
+    fun refresh() {
         viewModelScope.launch {
             val response = filesFolderRepository.getFilesAndFolders(auth.currentUser?.uid!!)
             val files = response.data["FILES"] as List<StorageReference>
@@ -116,55 +112,8 @@ class HomeViewModel(
         )
     }
 
-    fun createFolder() {
-        if (_state.value.folderName.isEmpty()) {
-            toastHelper.makeToast("Please input folder name")
-            return
-        }
-        viewModelScope.launch {
-            val uid = auth.currentUser?.uid!!
-            val response = filesFolderRepository.createFolder("$uid/${_state.value.folderName}")
-            if (response.status == ResponseStatus.SUCCESSFUL) {
-                hideBottomSheet()
-                hideCreateFolderDialog()
-                refresh()
-            } else {
-                toastHelper.makeToast(response.message)
-            }
-        }
-    }
-
-    fun deleteFileOrFolder() {
-        viewModelScope.launch {
-            val response = filesFolderRepository.deleteFileOrFolder(_state.value.fileOrFolderPath.substring(1))
-            if (response.status == ResponseStatus.SUCCESSFUL) {
-                hideDeleteFileOrFolderDialog()
-                refresh()
-                return@launch
-            }
-            toastHelper.makeToast(response.message)
-        }
-    }
-
-    fun renameFileOrFolder() {
-        viewModelScope.launch {
-            val parentPath = PathUtilities.removeLastSegment(_state.value.renameCurrentPath)
-            val newPath = if (_state.value.renameForFile) {
-                parentPath + "/" + _state.value.renameNewPath + "." + PathUtilities.getFileExtension(_state.value.renameCurrentPath)
-            } else {
-                parentPath + "/" + _state.value.renameNewPath
-            }
-
-            if (_state.value.renameForFile) {
-                val response = filesFolderRepository.renameFile(_state.value.renameCurrentPath, newPath)
-                toastHelper.makeToast(response.message)
-                if (response.status == ResponseStatus.SUCCESSFUL) {
-                    hideRenameFileOrFolderDialog()
-                    refresh()
-                }
-            }
-
-        }
+    fun getUid() : String {
+        return auth.currentUser?.uid!!
     }
 
     fun uploadImages() {

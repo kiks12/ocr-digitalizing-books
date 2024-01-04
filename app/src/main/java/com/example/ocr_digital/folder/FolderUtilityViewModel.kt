@@ -14,30 +14,39 @@ class FolderUtilityViewModel(
 
     private val filesFolderRepository = FilesFolderRepository()
 
-    fun createFolder(folderName: String, folderPath: String, successCallback: (newStr: String) -> Unit, failedCallback: (newStr: String) -> Unit) {
+    fun createFolder(folderName: String, folderPath: String, successCallback: (str: String) -> Unit, failedCallback: (str: String) -> Unit = {}) {
         if (folderName.isEmpty()) {
             toastHelper.makeToast("Please input folder name")
             return
         }
         viewModelScope.launch {
             val response = filesFolderRepository.createFolder("$folderPath/$folderName")
-            if (response.status == ResponseStatus.SUCCESSFUL) successCallback(response.message)
-            else failedCallback(response.message)
-        }
-    }
-
-    fun deleteFileOrFolder(fileFolderPath: String, successCallback: (newStr: String) -> Unit) {
-        viewModelScope.launch {
-            val response = filesFolderRepository.deleteFileOrFolder(fileFolderPath.substring(1))
             if (response.status == ResponseStatus.SUCCESSFUL) {
+                toastHelper.makeToast(response.message)
                 successCallback(response.message)
                 return@launch
             }
+
             toastHelper.makeToast(response.message)
+            failedCallback(response.message)
         }
     }
 
-    fun renameFileOrFolder(renameCurrentPath: String, renameNewPath: String, renameForFile: Boolean, successCallback: (newStr: String) -> Unit) {
+    fun deleteFileOrFolder(fileFolderPath: String, successCallback: (newStr: String) -> Unit, failedCallback: (str: String) -> Unit = {}) {
+        viewModelScope.launch {
+            val response = filesFolderRepository.deleteFileOrFolder(fileFolderPath.substring(1))
+            if (response.status == ResponseStatus.SUCCESSFUL) {
+                toastHelper.makeToast(response.message)
+                successCallback(response.message)
+                return@launch
+            }
+
+            toastHelper.makeToast(response.message)
+            failedCallback(response.message)
+        }
+    }
+
+    fun renameFileOrFolder(renameCurrentPath: String, renameNewPath: String, renameForFile: Boolean, successCallback: (newStr: String) -> Unit, failedCallback: (str: String) -> Unit = {}) {
         viewModelScope.launch {
             val parentPath = PathUtilities.removeLastSegment(renameCurrentPath)
             val newPath = if (renameForFile) {
@@ -48,8 +57,14 @@ class FolderUtilityViewModel(
 
             if (renameForFile) {
                 val response = filesFolderRepository.renameFile(renameCurrentPath, newPath)
+                if (response.status == ResponseStatus.SUCCESSFUL) {
+                    toastHelper.makeToast(response.message)
+                    successCallback(response.message)
+                    return@launch
+                }
+
                 toastHelper.makeToast(response.message)
-                if (response.status == ResponseStatus.SUCCESSFUL) successCallback(response.message)
+                failedCallback(response.message)
             }
         }
     }

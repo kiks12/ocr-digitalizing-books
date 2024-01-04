@@ -109,11 +109,7 @@ fun FolderScreen(folderViewModel: FolderViewModel, folderUtilityViewModel: Folde
                             folderViewModel.hideBottomSheet()
                             folderViewModel.hideCreateFolderDialog()
                             folderViewModel.refresh()
-                            folderViewModel.getToastHelper().makeToast(it)
                         },
-                        failedCallback = {
-                            folderViewModel.getToastHelper().makeToast(it)
-                        }
                     )
                 }
             )
@@ -129,7 +125,6 @@ fun FolderScreen(folderViewModel: FolderViewModel, folderUtilityViewModel: Folde
                             folderViewModel.hideBottomSheet()
                             folderViewModel.hideDeleteFileOrFolderDialog()
                             folderViewModel.refresh()
-                            folderViewModel.getToastHelper().makeToast(it)
                         }
                     )
                 }
@@ -151,7 +146,6 @@ fun FolderScreen(folderViewModel: FolderViewModel, folderUtilityViewModel: Folde
                             folderViewModel.hideBottomSheet()
                             folderViewModel.hideRenameFileOrFolderDialog()
                             folderViewModel.refresh()
-                            folderViewModel.getToastHelper().makeToast(it)
                         }
                     )
                 }
@@ -168,7 +162,6 @@ fun FolderScreenPreview() {
     val activityStarterHelper = ActivityStarterHelper(LocalContext.current)
     val folderViewModel = FolderViewModel(
         "Try",
-        toastHelper = toastHelper,
         activityStarterHelper = activityStarterHelper
     ) {}
     val folderUtilityViewModel = FolderUtilityViewModel(toastHelper = toastHelper)

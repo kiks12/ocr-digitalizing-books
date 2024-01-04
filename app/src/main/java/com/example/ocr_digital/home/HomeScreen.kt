@@ -27,12 +27,13 @@ import com.example.ocr_digital.components.Folder
 import com.example.ocr_digital.components.dialogs.CreateFolderDialog
 import com.example.ocr_digital.components.dialogs.DeleteFileFolderDialog
 import com.example.ocr_digital.components.dialogs.RenameDialog
+import com.example.ocr_digital.folder.FolderUtilityViewModel
 import com.example.ocr_digital.helpers.ActivityStarterHelper
 import com.example.ocr_digital.helpers.ToastHelper
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(homeViewModel: HomeViewModel) {
+fun HomeScreen(homeViewModel: HomeViewModel, folderUtilityViewModel: FolderUtilityViewModel) {
     val sheetState = rememberModalBottomSheetState()
     val state = homeViewModel.state
 
@@ -107,14 +108,33 @@ fun HomeScreen(homeViewModel: HomeViewModel) {
                 folderName = state.folderName,
                 onFolderNameChange = homeViewModel::onFolderNameChange,
                 onDismissRequest = homeViewModel::hideCreateFolderDialog,
-                onCreateClick = homeViewModel::createFolder
+                onCreateClick = {
+                    folderUtilityViewModel.createFolder(
+                        folderName = state.folderName,
+                        folderPath = "/${homeViewModel.getUid()}",
+                        successCallback = {
+                            homeViewModel.refresh()
+                            homeViewModel.hideBottomSheet()
+                            homeViewModel.hideCreateFolderDialog()
+                        },
+                    )
+                }
             )
         }
 
         if (state.showDeleteFileOrFolderDialog) {
             DeleteFileFolderDialog(
                 onDismissRequest = homeViewModel::hideDeleteFileOrFolderDialog,
-                onDeleteClick = homeViewModel::deleteFileOrFolder
+                onDeleteClick = {
+                    folderUtilityViewModel.deleteFileOrFolder(
+                        fileFolderPath = state.fileOrFolderPath,
+                        successCallback = {
+                            homeViewModel.refresh()
+                            homeViewModel.hideBottomSheet()
+                            homeViewModel.hideDeleteFileOrFolderDialog()
+                        }
+                    )
+                }
             )
         }
 
@@ -124,7 +144,18 @@ fun HomeScreen(homeViewModel: HomeViewModel) {
                 onDismissRequest = homeViewModel::hideRenameFileOrFolderDialog,
                 value = state.renameNewPath,
                 onValueChange = homeViewModel::onRenameNewPathChange,
-                onRenameClick = homeViewModel::renameFileOrFolder
+                onRenameClick = {
+                    folderUtilityViewModel.renameFileOrFolder(
+                        renameCurrentPath = state.renameCurrentPath,
+                        renameNewPath = state.renameNewPath,
+                        renameForFile = state.renameForFile,
+                        successCallback = {
+                            homeViewModel.refresh()
+                            homeViewModel.hideBottomSheet()
+                            homeViewModel.hideRenameFileOrFolderDialog()
+                        }
+                    )
+                }
             )
         }
     }
@@ -136,5 +167,8 @@ fun HomeScreen(homeViewModel: HomeViewModel) {
 fun HomeScreenPreview() {
     val toastHelper = ToastHelper(LocalContext.current)
     val activityStarterHelper = ActivityStarterHelper(LocalContext.current)
-    HomeScreen(homeViewModel = HomeViewModel(toastHelper, activityStarterHelper))
+    HomeScreen(
+        homeViewModel = HomeViewModel(activityStarterHelper),
+        folderUtilityViewModel = FolderUtilityViewModel(toastHelper)
+    )
 }

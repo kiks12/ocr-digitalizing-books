@@ -14,16 +14,10 @@ class FolderActivity : ComponentActivity() {
         val folderPath = intent.getStringExtra("FOLDER_PATH_EXTRA") ?: ""
         val toastHelper = ToastHelper(this)
         val activityStarterHelper = ActivityStarterHelper(this)
-        val folderViewModel = FolderViewModel(
-            folderPath,
-            toastHelper = toastHelper,
-            activityStarterHelper = activityStarterHelper
-        ) {
+        val folderViewModel = FolderViewModel(folderPath = folderPath, activityStarterHelper = activityStarterHelper) {
             finish()
         }
-        val folderUtilityViewModel = FolderUtilityViewModel(
-            toastHelper = toastHelper
-        )
+        val folderUtilityViewModel = FolderUtilityViewModel(toastHelper = toastHelper)
 
         setContent {
             OcrdigitalTheme {

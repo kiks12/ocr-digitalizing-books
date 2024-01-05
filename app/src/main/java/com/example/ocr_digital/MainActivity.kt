@@ -3,13 +3,14 @@ package com.example.ocr_digital
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.appcompat.app.AppCompatActivity
 import com.example.ocr_digital.home.HomeActivity
 import com.example.ocr_digital.login.LoginActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
 
     private lateinit var auth : FirebaseAuth
 

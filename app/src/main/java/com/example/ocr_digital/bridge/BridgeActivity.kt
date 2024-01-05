@@ -1,24 +1,25 @@
-package com.example.ocr_digital.startup
+package com.example.ocr_digital.bridge
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import com.example.ocr_digital.helpers.ActivityStarterHelper
 import com.example.ocr_digital.helpers.ToastHelper
 import com.example.ocr_digital.ui.theme.OcrdigitalTheme
 
-class StartupActivity : AppCompatActivity() {
+class BridgeActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val activityStarterHelper = ActivityStarterHelper(this)
         val toastHelper = ToastHelper(this)
-        val startupViewModel = StartupViewModel(activityStarterHelper, toastHelper)
+        val activityStarterHelper = ActivityStarterHelper(this)
+        val bridgeViewModel = BridgeViewModel(toastHelper = toastHelper, activityStarterHelper = activityStarterHelper) {
+            finish()
+        }
 
         setContent {
             OcrdigitalTheme {
-                StartupScreen(startupViewModel = startupViewModel)
+                BridgeScreen(bridgeViewModel = bridgeViewModel)
             }
         }
     }

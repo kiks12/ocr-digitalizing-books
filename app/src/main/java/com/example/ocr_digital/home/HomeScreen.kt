@@ -97,8 +97,7 @@ fun HomeScreen(homeViewModel: HomeViewModel, folderUtilityViewModel: FolderUtili
             ActionsBottomSheet(
                 sheetState = sheetState,
                 onDismissRequest = homeViewModel::hideBottomSheet,
-                useCamera = homeViewModel::useCamera,
-                uploadImages = homeViewModel::uploadImages,
+                scanText = { folderUtilityViewModel.scanText() },
                 createFolder = homeViewModel::showCreateFolderDialog
             )
         }
@@ -182,6 +181,6 @@ fun HomeScreenPreview() {
     val activityStarterHelper = ActivityStarterHelper(LocalContext.current)
     HomeScreen(
         homeViewModel = HomeViewModel(activityStarterHelper),
-        folderUtilityViewModel = FolderUtilityViewModel(toastHelper)
+        folderUtilityViewModel = FolderUtilityViewModel(toastHelper, activityStarterHelper)
     )
 }

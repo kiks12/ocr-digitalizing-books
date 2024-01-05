@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -23,7 +24,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
 
-class HomeActivity : ComponentActivity() {
+class HomeActivity : AppCompatActivity() {
 
     private val usersRepository = UsersRepository()
     private val auth = Firebase.auth
@@ -54,7 +55,7 @@ class HomeActivity : ComponentActivity() {
         val activityStarterHelper = ActivityStarterHelper(this)
         val settingsViewModel = SettingsViewModel(activityStarterHelper = activityStarterHelper)
         val homeViewModel = HomeViewModel(activityStarterHelper = activityStarterHelper)
-        val folderUtilityViewModel = FolderUtilityViewModel(toastHelper = toastHelper)
+        val folderUtilityViewModel = FolderUtilityViewModel(toastHelper = toastHelper, activityStarterHelper = activityStarterHelper)
 
         setContent {
             OcrdigitalTheme {

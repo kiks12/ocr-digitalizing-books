@@ -7,6 +7,7 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import com.example.ocr_digital.R
 import com.example.ocr_digital.helpers.ActivityStarterHelper
 import com.example.ocr_digital.helpers.ToastHelper
@@ -21,7 +22,7 @@ import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
-class LoginActivity : ComponentActivity() {
+class LoginActivity : AppCompatActivity() {
 
     private val toastHelper = ToastHelper(this)
     private lateinit var auth : FirebaseAuth

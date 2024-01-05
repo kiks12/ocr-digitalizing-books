@@ -90,8 +90,7 @@ fun FolderScreen(folderViewModel: FolderViewModel, folderUtilityViewModel: Folde
             ActionsBottomSheet(
                 sheetState = sheetState,
                 onDismissRequest = folderViewModel::hideBottomSheet,
-                useCamera = {},
-                uploadImages = {},
+                scanText = { folderUtilityViewModel.scanText() },
                 createFolder = folderViewModel::showCreateFolderDialog
             )
         }
@@ -177,7 +176,7 @@ fun FolderScreenPreview() {
         "Try",
         activityStarterHelper = activityStarterHelper
     ) {}
-    val folderUtilityViewModel = FolderUtilityViewModel(toastHelper = toastHelper)
+    val folderUtilityViewModel = FolderUtilityViewModel(toastHelper = toastHelper, activityStarterHelper = activityStarterHelper)
 
     FolderScreen(folderViewModel, folderUtilityViewModel)
 }

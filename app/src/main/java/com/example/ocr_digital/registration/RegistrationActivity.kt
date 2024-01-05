@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.appcompat.app.AppCompatActivity
 import com.example.ocr_digital.helpers.ActivityStarterHelper
 import com.example.ocr_digital.helpers.ToastHelper
 import com.example.ocr_digital.home.HomeActivity
@@ -12,7 +13,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 
-class RegistrationActivity : ComponentActivity() {
+class RegistrationActivity : AppCompatActivity() {
 
     private lateinit var auth : FirebaseAuth
 

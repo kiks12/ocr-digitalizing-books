@@ -127,11 +127,4 @@ class HomeViewModel(
         return auth.currentUser?.uid!!
     }
 
-    fun uploadImages() {
-        TODO("Home View Model - Implement Upload images")
-    }
-
-    fun useCamera() {
-        TODO("Home View Model - Implement Use Camera")
-    }
 }

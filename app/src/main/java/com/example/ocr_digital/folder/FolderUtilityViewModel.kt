@@ -2,6 +2,8 @@ package com.example.ocr_digital.folder
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.ocr_digital.bridge.BridgeActivity
+import com.example.ocr_digital.helpers.ActivityStarterHelper
 import com.example.ocr_digital.helpers.ToastHelper
 import com.example.ocr_digital.models.ResponseStatus
 import com.example.ocr_digital.path.PathUtilities
@@ -10,7 +12,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class FolderUtilityViewModel(
-    private val toastHelper: ToastHelper
+    private val toastHelper: ToastHelper,
+    private val activityStarterHelper: ActivityStarterHelper
 ) : ViewModel() {
 
     private val filesFolderRepository = FilesFolderRepository()
@@ -93,5 +96,9 @@ class FolderUtilityViewModel(
                 failedCallback(response.message)
             }
         }
+    }
+
+    fun scanText() {
+        activityStarterHelper.startActivity(BridgeActivity::class.java)
     }
 }

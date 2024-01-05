@@ -3,11 +3,12 @@ package com.example.ocr_digital.folder
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.appcompat.app.AppCompatActivity
 import com.example.ocr_digital.helpers.ActivityStarterHelper
 import com.example.ocr_digital.helpers.ToastHelper
 import com.example.ocr_digital.ui.theme.OcrdigitalTheme
 
-class FolderActivity : ComponentActivity() {
+class FolderActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -17,7 +18,7 @@ class FolderActivity : ComponentActivity() {
         val folderViewModel = FolderViewModel(folderPath = folderPath, activityStarterHelper = activityStarterHelper) {
             finish()
         }
-        val folderUtilityViewModel = FolderUtilityViewModel(toastHelper = toastHelper)
+        val folderUtilityViewModel = FolderUtilityViewModel(toastHelper = toastHelper, activityStarterHelper = activityStarterHelper)
 
         setContent {
             OcrdigitalTheme {

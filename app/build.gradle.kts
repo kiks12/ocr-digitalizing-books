@@ -87,5 +87,19 @@ dependencies {
     implementation("com.google.accompanist:accompanist-permissions:0.33.2-alpha")
 
     implementation("com.vanniktech:android-image-cropper:4.5.0")
-    implementation("io.github.mr0xf00:easycrop:0.1.1")
+
+    // To recognize Latin script
+    implementation("com.google.mlkit:text-recognition:16.0.0")
+
+    // To recognize Chinese script
+    implementation("com.google.mlkit:text-recognition-chinese:16.0.0")
+
+    // To recognize Devanagari script
+    implementation("com.google.mlkit:text-recognition-devanagari:16.0.0")
+
+    // To recognize Japanese script
+    implementation("com.google.mlkit:text-recognition-japanese:16.0.0")
+
+    // To recognize Korean script
+    implementation("com.google.mlkit:text-recognition-korean:16.0.0")
 }

@@ -1,5 +1,8 @@
 package com.example.ocr_digital.bridge
 
+import android.content.Intent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -24,7 +27,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.ocr_digital.camera.CameraActivity
 import com.example.ocr_digital.components.plain_text.PlainTextEditor
+import com.example.ocr_digital.gallery.GalleryActivity
 import com.example.ocr_digital.helpers.ActivityStarterHelper
 import com.example.ocr_digital.helpers.ToastHelper
 
@@ -32,6 +37,25 @@ import com.example.ocr_digital.helpers.ToastHelper
 @Composable
 fun BridgeScreen(bridgeViewModel: BridgeViewModel) {
     val state = bridgeViewModel.state
+
+    val localContext = LocalContext.current
+    val cameraLauncher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        val text = result.data?.getStringExtra("ActivityResult") ?: ""
+        if (state.text == "") {
+            bridgeViewModel.onTextChange(state.text + text)
+        } else {
+            bridgeViewModel.onTextChange(state.text + "\n" + text)
+        }
+    }
+
+    val galleryLauncher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        val text = result.data?.getStringExtra("ActivityResult") ?: ""
+        if (state.text == "") {
+            bridgeViewModel.onTextChange(state.text + text)
+        } else {
+            bridgeViewModel.onTextChange(state.text + "\n" + text)
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -55,14 +79,14 @@ fun BridgeScreen(bridgeViewModel: BridgeViewModel) {
         floatingActionButton = {
             Column {
                 FloatingActionButton(
-                    onClick = bridgeViewModel::useCamera,
+                    onClick = { cameraLauncher.launch(Intent(localContext, CameraActivity::class.java)) },
                     shape = CircleShape
                 ) {
                     Icon(Icons.Default.Add, "Camera")
                 }
                 Spacer(modifier = Modifier.height(15.dp))
                 FloatingActionButton(
-                    onClick = bridgeViewModel::uploadImages,
+                    onClick = { galleryLauncher.launch(Intent(localContext, GalleryActivity::class.java)) },
                     shape = CircleShape
                 ) {
                     Icon(Icons.Default.AccountBox, "Upload")

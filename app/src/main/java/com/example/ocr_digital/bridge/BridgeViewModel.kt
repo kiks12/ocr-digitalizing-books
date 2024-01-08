@@ -1,5 +1,7 @@
 package com.example.ocr_digital.bridge
 
+import android.content.Intent
+import androidx.activity.result.ActivityResultLauncher
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
@@ -27,7 +29,6 @@ class BridgeViewModel(
     }
 
     fun useCamera() {
-        activityStarterHelper.startActivity(CameraActivity::class.java)
     }
 
     fun uploadImages() {

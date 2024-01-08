@@ -1,13 +1,14 @@
-package com.example.ocr_digital.camera
+package com.example.ocr_digital.gallery
 
 import android.content.Intent
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.compose.setContent
-import androidx.appcompat.app.AppCompatActivity
+import com.example.ocr_digital.camera.CameraViewModel
 import com.example.ocr_digital.helpers.ToastHelper
 import com.example.ocr_digital.ui.theme.OcrdigitalTheme
 
-class CameraActivity : AppCompatActivity() {
+class GalleryActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -18,7 +19,7 @@ class CameraActivity : AppCompatActivity() {
 
         setContent {
             OcrdigitalTheme {
-                CameraScreen(cameraViewModel = cameraViewModel)
+                GalleryScreen(cameraViewModel = cameraViewModel)
             }
         }
     }

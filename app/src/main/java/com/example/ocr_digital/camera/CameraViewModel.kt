@@ -15,6 +15,7 @@ class CameraViewModel(
 ) : ViewModel() {
      private val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
 
+
      fun process(context: Context, uri: Uri) {
           try {
                val image = InputImage.fromFilePath(context, uri)

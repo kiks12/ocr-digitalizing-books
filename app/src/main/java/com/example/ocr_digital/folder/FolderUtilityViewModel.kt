@@ -98,7 +98,12 @@ class FolderUtilityViewModel(
         }
     }
 
-    fun scanText() {
-        activityStarterHelper.startActivity(BridgeActivity::class.java)
+    fun scanText(path: String) {
+        activityStarterHelper.startActivity(
+            BridgeActivity::class.java,
+            stringExtras = mapOf(
+                "PATH" to path
+            )
+        )
     }
 }

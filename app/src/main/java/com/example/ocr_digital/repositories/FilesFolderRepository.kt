@@ -1,5 +1,6 @@
 package com.example.ocr_digital.repositories
 
+import android.net.Uri
 import android.util.Log
 import androidx.core.net.toUri
 import com.example.ocr_digital.models.Response
@@ -367,6 +368,38 @@ class FilesFolderRepository {
                         }
                     }
             }
+        }
+
+        return response.await()
+    }
+
+    suspend fun uploadFile(filePath: String, fileUri: Uri) : Response {
+        val response = CompletableDeferred<Response>(null)
+
+        coroutineScope {
+            val storageRef = storage.reference
+            val directoryRef = storageRef.child("$filePath/${fileUri.lastPathSegment}")
+            directoryRef.putFile(fileUri)
+                .addOnSuccessListener {
+                    response.complete(
+                        Response(
+                            status = ResponseStatus.SUCCESSFUL,
+                            message = "File uploaded successfully"
+                        )
+                    )
+                }
+                .addOnFailureListener {
+                    it.localizedMessage?.let { it1 ->
+                        Response(
+                            status = ResponseStatus.SUCCESSFUL,
+                            message = it1
+                        )
+                    }?.let { it2 ->
+                        response.complete(
+                            it2
+                        )
+                    }
+                }
         }
 
         return response.await()

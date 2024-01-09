@@ -90,7 +90,7 @@ fun FolderScreen(folderViewModel: FolderViewModel, folderUtilityViewModel: Folde
             ActionsBottomSheet(
                 sheetState = sheetState,
                 onDismissRequest = folderViewModel::hideBottomSheet,
-                scanText = { folderUtilityViewModel.scanText() },
+                scanText = { folderUtilityViewModel.scanText(folderViewModel.getFolderPath()) },
                 createFolder = folderViewModel::showCreateFolderDialog
             )
         }

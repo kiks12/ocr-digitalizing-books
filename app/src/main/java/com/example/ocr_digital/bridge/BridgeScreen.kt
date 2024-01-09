@@ -28,9 +28,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.ocr_digital.camera.CameraActivity
+import com.example.ocr_digital.components.dialogs.ResetFileDialog
+import com.example.ocr_digital.components.dialogs.SaveFileDialog
 import com.example.ocr_digital.components.plain_text.PlainTextEditor
 import com.example.ocr_digital.gallery.GalleryActivity
-import com.example.ocr_digital.helpers.ActivityStarterHelper
 import com.example.ocr_digital.helpers.ToastHelper
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -67,10 +68,10 @@ fun BridgeScreen(bridgeViewModel: BridgeViewModel) {
                 },
                 title = { Text(text = "Image Scanner") },
                 actions = {
-                    IconButton(onClick = { /*TODO*/ }) {
+                    IconButton(onClick = bridgeViewModel::showResetDialog) {
                         Icon(Icons.Default.Refresh, "Reset")
                     }
-                    IconButton(onClick = { /*TODO*/ }) {
+                    IconButton(onClick = bridgeViewModel::showSaveDialog) {
                         Icon(Icons.Default.Check, "Save")
                     }
                 }
@@ -104,6 +105,23 @@ fun BridgeScreen(bridgeViewModel: BridgeViewModel) {
                 PlainTextEditor(text = state.text, onTextChanged = bridgeViewModel::onTextChange)
             }
         }
+
+        if (state.showSaveDialog) {
+            SaveFileDialog(
+                filename = state.filename,
+                onFileNameChange = bridgeViewModel::onFileNameChange,
+                onFileTypeChange = bridgeViewModel::onFileTypeChange,
+                onDismissRequest = bridgeViewModel::hideSaveDialog,
+                onSave = { bridgeViewModel.saveFile(localContext, state.text, state.filename, state.filetype) }
+            )
+        }
+
+        if (state.showResetDialog) {
+            ResetFileDialog(
+                onDismissRequest = bridgeViewModel::hideResetDialog,
+                onClear = { bridgeViewModel.onTextChange("")}
+            )
+        }
     }
 }
 
@@ -111,7 +129,5 @@ fun BridgeScreen(bridgeViewModel: BridgeViewModel) {
 @Preview
 @Composable
 fun BridgeScreenPreview() {
-    val toastHelper = ToastHelper(LocalContext.current)
-    val activityStarterHelper = ActivityStarterHelper(LocalContext.current)
-    BridgeScreen(BridgeViewModel(toastHelper, activityStarterHelper) {})
+    BridgeScreen(BridgeViewModel(path = "", toastHelper = ToastHelper(LocalContext.current)) {})
 }

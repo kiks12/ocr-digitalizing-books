@@ -31,6 +31,7 @@ fun File(
 
     val colorMap = mapOf(
         "png" to Color(252, 161, 3),
+        "jpeg" to Color(252, 161, 3),
         "pdf" to Color.Red,
         "docx" to Color(33, 126, 255)
     )
@@ -41,6 +42,13 @@ fun File(
                 if (extension == "png") {
                     Text(
                         text = "PNG",
+                        color = colorMap[extension]!!,
+                        fontWeight = FontWeight.SemiBold,
+                    )
+                }
+                if (extension == "jpeg") {
+                    Text(
+                        text = "JPEG",
                         color = colorMap[extension]!!,
                         fontWeight = FontWeight.SemiBold,
                     )

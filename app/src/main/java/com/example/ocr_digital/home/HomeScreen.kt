@@ -97,7 +97,7 @@ fun HomeScreen(homeViewModel: HomeViewModel, folderUtilityViewModel: FolderUtili
             ActionsBottomSheet(
                 sheetState = sheetState,
                 onDismissRequest = homeViewModel::hideBottomSheet,
-                scanText = { folderUtilityViewModel.scanText() },
+                scanText = { folderUtilityViewModel.scanText("/${homeViewModel.getUid()}") },
                 createFolder = homeViewModel::showCreateFolderDialog
             )
         }

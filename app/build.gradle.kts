@@ -115,6 +115,6 @@ dependencies {
     // To recognize Korean script
     implementation("com.google.mlkit:text-recognition-korean:16.0.0")
 
-    implementation("org.apache.pdfbox:pdfbox:2.0.27")
+    implementation("com.itextpdf:itext7-core:7.1.15")
     implementation("org.apache.poi:poi-ooxml:5.2.5")
 }

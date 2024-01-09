@@ -37,7 +37,7 @@ fun SaveFileDialog(
     onFileTypeChange: (type: FileType) -> Unit,
     onSave: () -> Unit,
 ) {
-    var showFileNameCard by remember { mutableStateOf(true) }
+    var showFileNameCard by remember { mutableStateOf(false) }
     var filetype by remember { mutableStateOf(FileType.DOCX) }
 
     fun showFileNameCardAndFileType(type: FileType) {

@@ -2,14 +2,17 @@ package com.example.ocr_digital.file_saver
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
 import android.net.Uri
 import android.os.Environment
+import android.text.StaticLayout
+import android.text.TextPaint
 import androidx.core.content.FileProvider
-import org.apache.pdfbox.pdmodel.PDDocument
-import org.apache.pdfbox.pdmodel.PDPage
-import org.apache.pdfbox.pdmodel.PDPageContentStream
-import org.apache.pdfbox.pdmodel.font.PDFont
-import org.apache.pdfbox.pdmodel.font.PDType1Font
+import com.itextpdf.kernel.pdf.PdfDocument
+import com.itextpdf.layout.Document
+import com.itextpdf.kernel.pdf.PdfWriter
+import com.itextpdf.layout.element.Paragraph
 import org.apache.poi.xwpf.usermodel.XWPFDocument
 import java.io.File
 import java.io.FileOutputStream
@@ -42,29 +45,43 @@ class FileSaver {
 
     private fun saveTextToPng(context: Context, text: String, filename: String) : Uri? {
         try {
-            // Create a bitmap with desired dimensions
-            val bitmap = Bitmap.createBitmap(800, 600, Bitmap.Config.ARGB_8888)
+            // Define the short bond size in points (1 inch = 72 points)
+            val shortBondWidthPoints = 8.5 * 72
+
+            // Convert points to pixels based on device density
+            val displayMetrics = context.resources.displayMetrics
+            val shortBondWidthPixels = (shortBondWidthPoints * displayMetrics.density).toInt()
+
+            // Create a TextPaint object for styling
+            val textPaint = TextPaint().apply {
+                color = Color.BLACK
+                textSize = 24f
+            }
+
+            // Create a StaticLayout with the specified width
+            val staticLayout = StaticLayout.Builder.obtain(text, 0, text.length, textPaint, shortBondWidthPixels)
+                .build()
+
+            // Calculate the height of the canvas based on the total height of the text
+            val canvasHeight = staticLayout.height
+
+            // Create a bitmap with variable height
+            val bitmap = Bitmap.createBitmap(shortBondWidthPixels, canvasHeight, Bitmap.Config.ARGB_8888)
 
             // Create a canvas to draw on the bitmap
-            val canvas = android.graphics.Canvas(bitmap)
+            val canvas = Canvas(bitmap)
 
             // Set background color
-            canvas.drawColor(android.graphics.Color.WHITE)
+            canvas.drawColor(Color.WHITE)
 
-            // Set text color and size
-            val paint = android.graphics.Paint()
-            paint.color = android.graphics.Color.BLACK
-            paint.textSize = 24f
-
-            // Draw text on the canvas
-            canvas.drawText(text, 50f, 100f, paint)
+            // Draw the text on the canvas using the StaticLayout
+            staticLayout.draw(canvas)
 
             // Save the bitmap as a PNG file
             val outputPath = File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "$filename.png")
             val outputStream = FileOutputStream(outputPath)
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
 
-            // Close the stream
             outputStream.close()
 
             // Return the URI of the created file
@@ -78,29 +95,43 @@ class FileSaver {
 
     private fun saveTextToJpeg(context: Context, text: String, filename: String) : Uri? {
         try {
-            // Create a bitmap with desired dimensions
-            val bitmap = Bitmap.createBitmap(800, 600, Bitmap.Config.ARGB_8888)
+            // Define the short bond size in points (1 inch = 72 points)
+            val shortBondWidthPoints = 8.5 * 72
+
+            // Convert points to pixels based on device density
+            val displayMetrics = context.resources.displayMetrics
+            val shortBondWidthPixels = (shortBondWidthPoints * displayMetrics.density).toInt()
+
+            // Create a TextPaint object for styling
+            val textPaint = TextPaint().apply {
+                color = Color.BLACK
+                textSize = 24f
+            }
+
+            // Create a StaticLayout with the specified width
+            val staticLayout = StaticLayout.Builder.obtain(text, 0, text.length, textPaint, shortBondWidthPixels)
+                .build()
+
+            // Calculate the height of the canvas based on the total height of the text
+            val canvasHeight = staticLayout.height
+
+            // Create a bitmap with variable height
+            val bitmap = Bitmap.createBitmap(shortBondWidthPixels, canvasHeight, Bitmap.Config.ARGB_8888)
 
             // Create a canvas to draw on the bitmap
-            val canvas = android.graphics.Canvas(bitmap)
+            val canvas = Canvas(bitmap)
 
             // Set background color
-            canvas.drawColor(android.graphics.Color.WHITE)
+            canvas.drawColor(Color.WHITE)
 
-            // Set text color and size
-            val paint = android.graphics.Paint()
-            paint.color = android.graphics.Color.BLACK
-            paint.textSize = 24f
+            // Draw the text on the canvas using the StaticLayout
+            staticLayout.draw(canvas)
 
-            // Draw text on the canvas
-            canvas.drawText(text, 50f, 100f, paint)
-
-            // Save the bitmap as a JPEG file
+            // Save the bitmap as a PNG file
             val outputPath = File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "$filename.jpg")
             val outputStream = FileOutputStream(outputPath)
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
 
-            // Close the stream
             outputStream.close()
 
             // Return the URI of the created file
@@ -114,30 +145,22 @@ class FileSaver {
 
     private fun saveTextToPdf(context: Context, text: String, filename: String) : Uri? {
         try {
-            val document = PDDocument()
-            var remainingText = text
-
-            while (remainingText.isNotEmpty()) {
-                val page = PDPage()
-                document.addPage(page)
-
-                val contentStream = PDPageContentStream(document, page)
-                contentStream.setFont(PDType1Font.HELVETICA_BOLD, 12f)
-
-                val (currentPageText, remaining) = getFitTextOnPage(remainingText, contentStream, page, PDType1Font.HELVETICA_BOLD, 12f)
-                contentStream.beginText()
-                contentStream.newLineAtOffset(20f, page.mediaBox.upperRightY - 20f)
-                contentStream.showText(currentPageText)
-                contentStream.endText()
-                contentStream.close()
-
-                remainingText = remaining
-            }
-
+            // Create the output file
             val outputPath = File(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), "$filename.pdf")
             val outputStream = FileOutputStream(outputPath)
-            document.save(outputStream)
+
+            // Initialize PdfWriter and Document
+            val writer = PdfWriter(outputStream)
+            val pdf = PdfDocument(writer)
+            val document = Document(pdf)
+
+            // Add a paragraph with the text to the document
+            document.add(Paragraph(text))
+
+            // Close the document
             document.close()
+
+            // Close the stream
             outputStream.close()
 
             return FileProvider.getUriForFile(context, "${context.packageName}.provider", outputPath)
@@ -147,32 +170,6 @@ class FileSaver {
 
         return  null
     }
-
-    private fun getFitTextOnPage(text: String, contentStream: PDPageContentStream, page: PDPage, font: PDFont, fontSize: Float): Pair<String, String> {
-        val maxWidth = page.mediaBox.width - 40f // Adjust for margins
-        val fontWidth = font.getStringWidth(text) * fontSize / 1000
-
-        if (fontWidth <= maxWidth) {
-            // The entire text fits on the current page
-            return Pair(text, "")
-        }
-
-        // Find the substring that fits on the current page
-        var substring = text
-        var remaining = ""
-        while (font.getStringWidth(substring) * fontSize / 1000 > maxWidth) {
-            val lastIndex = substring.lastIndexOf(' ')
-            if (lastIndex == -1) {
-                // No space found, break the word
-                break
-            }
-            substring = substring.substring(0, lastIndex)
-            remaining = text.substring(lastIndex + 1)
-        }
-
-        return Pair(substring, remaining)
-    }
-
 
     fun saveTextToFile(context: Context, text: String, filename: String, type: FileType) : Uri? {
         return when (type) {

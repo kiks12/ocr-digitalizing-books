@@ -119,7 +119,7 @@ fun BridgeScreen(bridgeViewModel: BridgeViewModel) {
         if (state.showResetDialog) {
             ResetFileDialog(
                 onDismissRequest = bridgeViewModel::hideResetDialog,
-                onClear = { bridgeViewModel.onTextChange("")}
+                onClear = bridgeViewModel::resetText
             )
         }
     }

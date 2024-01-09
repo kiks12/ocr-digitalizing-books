@@ -40,7 +40,11 @@ class BridgeViewModel(
 
     fun hideResetDialog() { _state.value = _state.value.copy(showResetDialog = false) }
 
-    fun showResetDialog() { _state.value = _state.value.copy(showSaveDialog = true) }
+    fun showResetDialog() { _state.value = _state.value.copy(showResetDialog = true) }
+
+    fun resetText() {
+        _state.value = _state.value.copy(text = "", showResetDialog = false)
+    }
 
     fun onFileTypeChange(type: FileType) { _state.value = _state.value.copy(filetype = type) }
 
@@ -53,7 +57,6 @@ class BridgeViewModel(
                 val response = filesFolderRepository.uploadFile(path, uri)
                 if (response.status == ResponseStatus.SUCCESSFUL) {
                     hideSaveDialog()
-                    finishCallback()
                 }
 
                 toastHelper.makeToast(response.message)

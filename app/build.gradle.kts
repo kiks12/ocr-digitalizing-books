@@ -117,4 +117,10 @@ dependencies {
 
     implementation("com.itextpdf:itext7-core:7.1.15")
     implementation("org.apache.poi:poi-ooxml:5.2.5")
+//    implementation("org.apache.poi:poi:5.2.5")
+//    implementation("org.docx4j:docx4j:11.3.4")
+//    implementation("org.docx4j:docx4j-core:11.3.4")
+//    implementation("org.docx4j:docx4j-ImportXHTML:11.3.4")
+//    implementation("org.docx4j:docx4j-JAXB-Internal:11.3.4")
+//    implementation("org.docx4j:docx4j-HTML-Converter:11.3.4")
 }

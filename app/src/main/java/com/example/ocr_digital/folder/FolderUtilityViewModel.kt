@@ -1,5 +1,6 @@
 package com.example.ocr_digital.folder
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.ocr_digital.bridge.BridgeActivity
@@ -105,5 +106,20 @@ class FolderUtilityViewModel(
                 "PATH" to path
             )
         )
+    }
+
+    fun onFileClick(context: Context, path: String, mimetype: String) {
+        viewModelScope.launch {
+            if (mimetype.isEmpty()) {
+                toastHelper.makeToast("Invalid mimetype")
+                return@launch
+            }
+
+            if (path.isEmpty()) {
+                toastHelper.makeToast("Invalid file path")
+            }
+
+            filesFolderRepository.openFirebaseDocument(context, path, mimetype)
+        }
     }
 }

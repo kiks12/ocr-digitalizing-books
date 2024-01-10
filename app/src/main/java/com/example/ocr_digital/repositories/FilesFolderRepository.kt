@@ -1,11 +1,16 @@
 package com.example.ocr_digital.repositories
 
+import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.util.Log
+import androidx.core.content.FileProvider
 import androidx.core.net.toUri
 import com.example.ocr_digital.models.Response
 import com.example.ocr_digital.models.ResponseStatus
 import com.example.ocr_digital.path.PathUtilities
+import com.google.android.gms.tasks.Task
+import com.google.android.gms.tasks.Tasks
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import kotlinx.coroutines.CompletableDeferred
@@ -18,6 +23,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.util.concurrent.TimeUnit
 
 class FilesFolderRepository {
     private val storage = Firebase.storage("gs://ocr-digital-book.appspot.com")
@@ -404,4 +410,80 @@ class FilesFolderRepository {
 
         return response.await()
     }
+
+//    suspend fun getFile(path: String) : Response {
+//        val response = CompletableDeferred<Response>(null)
+//
+//        coroutineScope {
+//            val storageRef = storage.reference
+//            val externalDir = Environment.getExternalStorageDirectory()
+//            val uri = withContext(Dispatchers.IO) {
+//                File.createTempFile("temp", ".${PathUtilities.getFileExtension(path)}")
+//            }
+//            val destFile = File(externalDir, uri.name)
+//            storageRef.child(path).getFile(uri)
+//                .addOnSuccessListener {
+//                    uri.renameTo(destFile)
+//                    Log.w("GET FILE", uri.path)
+//                    response.complete(
+//                        Response(
+//                            status = ResponseStatus.SUCCESSFUL,
+//                            message = "Successfully fetched file",
+//                            data = mapOf(
+//                                "URI" to destFile.path
+//                            )
+//                        )
+//                    )
+//                }
+//                .addOnFailureListener {
+//                    it.localizedMessage?.let { it1 ->
+//                        Response(
+//                            status = ResponseStatus.FAILED,
+//                            message = it1
+//                        )
+//                    }?.let { it2 ->
+//                        response.complete(
+//                            it2
+//                        )
+//                    }
+//                }
+//        }
+//
+//        return response.await()
+//    }
+
+    suspend fun openFirebaseDocument(context: Context, path: String, mimeType: String) {
+        coroutineScope{
+            launch(Dispatchers.IO) {
+                val storageReference = storage.reference
+
+                if (PathUtilities.getFileExtension(path) != "docx") {
+                    val tempUrlTask: Task<Uri> = storageReference.child(path).downloadUrl
+                    Tasks.await(tempUrlTask, 10, TimeUnit.SECONDS)
+                    if (tempUrlTask.isSuccessful) {
+                        val downloadUrl = tempUrlTask.result as Uri
+
+                        val intent = Intent(Intent.ACTION_VIEW)
+                        intent.setDataAndType(downloadUrl, mimeType)
+                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                        context.startActivity(intent)
+                    }
+                } else {
+//                    val tempFile = File(context.cacheDir, PathUtilities.getLastSegment(path))
+//                    val downloadTask = storageReference.child(path).getFile(tempFile)
+//                    downloadTask.addOnSuccessListener {
+//                        val uri = FileProvider.getUriForFile(context, "${context.packageName}.provider", tempFile)
+//
+//                        val intent = Intent(Intent.ACTION_VIEW)
+//                        intent.setDataAndType(uri, mimeType)
+//                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+//                        context.startActivity(intent)
+//                    }.addOnFailureListener {
+//                        it.printStackTrace()
+//                    }
+                }
+            }
+        }
+    }
+
 }

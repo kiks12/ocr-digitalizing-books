@@ -1,5 +1,6 @@
 package com.example.ocr_digital.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -24,7 +25,8 @@ fun File(
     filename: String,
     onDeleteClick: () -> Unit,
     onRenameClick: () -> Unit,
-    onMoveClick: () -> Unit
+    onMoveClick: () -> Unit,
+    onClick: () -> Unit
 ) {
     val extension = filename.split(".")[filename.split(".").size - 1]
     var menuExpanded by remember { mutableStateOf(false) }
@@ -38,7 +40,7 @@ fun File(
     )
 
     ListItem(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().clickable { onClick() },
         leadingContent = {
                 if (extension == "png") {
                     Text(
@@ -95,7 +97,8 @@ fun FilePreview() {
             filename = "asdfsadf.docx",
             onDeleteClick = {},
             onRenameClick = {},
-            onMoveClick = {}
+            onMoveClick = {},
+            onClick = {}
         )
     }
 }

@@ -1,5 +1,6 @@
 package com.example.ocr_digital.folder
 
+import android.webkit.MimeTypeMap
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -30,12 +31,14 @@ import com.example.ocr_digital.components.dialogs.DeleteFileFolderDialog
 import com.example.ocr_digital.components.dialogs.RenameDialog
 import com.example.ocr_digital.helpers.ActivityStarterHelper
 import com.example.ocr_digital.helpers.ToastHelper
+import com.example.ocr_digital.path.PathUtilities
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FolderScreen(folderViewModel: FolderViewModel, folderUtilityViewModel: FolderUtilityViewModel) {
     val state = folderViewModel.state
     val sheetState = rememberModalBottomSheetState()
+    val localContext = LocalContext.current
 
     Scaffold(
         floatingActionButton = {
@@ -81,7 +84,11 @@ fun FolderScreen(folderViewModel: FolderViewModel, folderUtilityViewModel: Folde
                     filename = file.name,
                     onDeleteClick = { folderViewModel.showDeleteFileOrFolderDialog(file.path, forFile = true) },
                     onRenameClick = { folderViewModel.showRenameFileOrFolderDialog(file.path, forFile = true) },
-                    onMoveClick = {}
+                    onMoveClick = {},
+                    onClick = {
+                        val mimetype = MimeTypeMap.getSingleton().getMimeTypeFromExtension(PathUtilities.getFileExtension(file.path)) ?: ""
+                        folderUtilityViewModel.onFileClick(localContext, file.path, mimetype)
+                    }
                 )
             }
         }

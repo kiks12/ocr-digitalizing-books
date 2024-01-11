@@ -117,6 +117,7 @@ class FolderUtilityViewModel(
 
             if (path.isEmpty()) {
                 toastHelper.makeToast("Invalid file path")
+                return@launch
             }
 
             filesFolderRepository.openFirebaseDocument(context, path, mimetype)

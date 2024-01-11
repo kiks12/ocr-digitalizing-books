@@ -1,9 +1,11 @@
 package com.example.ocr_digital.repositories
 
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.util.Log
+import android.widget.Toast
 import androidx.core.content.FileProvider
 import androidx.core.net.toUri
 import com.example.ocr_digital.models.Response
@@ -469,18 +471,22 @@ class FilesFolderRepository {
                         context.startActivity(intent)
                     }
                 } else {
-//                    val tempFile = File(context.cacheDir, PathUtilities.getLastSegment(path))
-//                    val downloadTask = storageReference.child(path).getFile(tempFile)
-//                    downloadTask.addOnSuccessListener {
-//                        val uri = FileProvider.getUriForFile(context, "${context.packageName}.provider", tempFile)
-//
-//                        val intent = Intent(Intent.ACTION_VIEW)
-//                        intent.setDataAndType(uri, mimeType)
-//                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-//                        context.startActivity(intent)
-//                    }.addOnFailureListener {
-//                        it.printStackTrace()
-//                    }
+                    val tempFile = File(context.cacheDir, PathUtilities.getLastSegment(path))
+                    val downloadTask = storageReference.child(path).getFile(tempFile)
+                    downloadTask.addOnSuccessListener {
+                        val uri = FileProvider.getUriForFile(context, "${context.packageName}.provider", tempFile)
+
+                        try {
+                            val intent = Intent(Intent.ACTION_VIEW)
+                            intent.setDataAndType(uri, mimeType)
+                            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                            context.startActivity(intent)
+                        } catch (e: ActivityNotFoundException) {
+                            Toast.makeText(context, "No Activity found to open file, download the file and use other apps to view", Toast.LENGTH_LONG).show()
+                        }
+                    }.addOnFailureListener {
+                        it.printStackTrace()
+                    }
                 }
             }
         }

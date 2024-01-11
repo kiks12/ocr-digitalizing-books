@@ -3,13 +3,16 @@ package com.example.ocr_digital.camera
 import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,11 +21,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.content.FileProvider
 import com.canhub.cropper.CropImageContract
 import com.canhub.cropper.CropImageContractOptions
@@ -78,6 +85,8 @@ fun CameraScreen(cameraViewModel: CameraViewModel) {
         val permissionResult = cameraPermissionState.status
         if (!permissionResult.isGranted) {
             cameraPermissionState.launchPermissionRequest()
+        } else {
+            cameraLauncher.launch(uri)
         }
     }
 
@@ -86,15 +95,31 @@ fun CameraScreen(cameraViewModel: CameraViewModel) {
         Column(
             Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
-                .padding(10.dp)
+                .padding(innerPadding),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            Text(
+                text = "Take a Picture",
+                fontSize = 30.sp,
+                fontWeight = FontWeight.SemiBold,
+                textAlign = TextAlign.Center
+            )
+            Spacer(modifier = Modifier.height(15.dp))
+
             if (cameraPermissionState.status.isGranted) {
+                Button(onClick = { cameraLauncher.launch(uri) }) {
+                    Text("Open Camera")
+                }
                 cameraLauncher.launch(uri)
             } else {
                 Button(onClick = { cameraPermissionState.launchPermissionRequest() }) {
                     Text(text = "Allow Camera")
                 }
+            }
+
+            FilledTonalButton(onClick = cameraViewModel::finish) {
+                Text(text = "Go Back")
             }
         }
     }
@@ -104,12 +129,11 @@ fun CameraScreen(cameraViewModel: CameraViewModel) {
 @SuppressLint("SimpleDateFormat")
 fun Context.createImageFile(): File {
     // Create an image file name
-    val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+    val timeStamp = SimpleDateFormat("yyyyMMdd_HHmm-ss").format(Date())
     val imageFileName = "JPEG_" + timeStamp + "_"
-    val image = File.createTempFile(
+    return File.createTempFile(
         imageFileName, /* prefix */
         ".jpg", /* suffix */
         externalCacheDir      /* directory */
     )
-    return image
 }

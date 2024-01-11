@@ -13,9 +13,11 @@ class GalleryActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         val toastHelper = ToastHelper(this)
-        val cameraViewModel = CameraViewModel(toastHelper = toastHelper) {
-            returnData(it)
-        }
+        val cameraViewModel = CameraViewModel(
+            toastHelper = toastHelper,
+            finishCallback = { finish() },
+            returnData = { returnData(it) }
+        )
 
         setContent {
             OcrdigitalTheme {

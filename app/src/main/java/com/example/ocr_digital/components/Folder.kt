@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -17,6 +16,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import compose.icons.FeatherIcons
+import compose.icons.feathericons.Folder
 
 @Composable
 fun Folder(
@@ -31,20 +32,35 @@ fun Folder(
     }
 
     ListItem(
-        modifier = Modifier.fillMaxWidth().clickable { onFolderClick() },
-        leadingContent = {},
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onFolderClick() },
+        leadingContent = {
+            Icon(FeatherIcons.Folder, directoryName)
+        },
         headlineContent = { Text(text = directoryName) },
         trailingContent = {
             Box{
-                IconButton(onClick = { menuExpanded = true}) {
-                    Icon(Icons.Default.MoreVert, "More")
-                }
+                Icon(
+                    Icons.Default.MoreVert,
+                    "More",
+                    modifier = Modifier.clickable { menuExpanded = true }
+                )
                 FileFolderMenu(
                     expanded = menuExpanded,
                     onDismissRequest = { menuExpanded = false },
-                    onRenameClick = onRenameClick,
-                    onDeleteClick = onDeleteClick,
-                    onMoveClick = onMoveClick
+                    onRenameClick = {
+                        menuExpanded = false
+                        onRenameClick()
+                    },
+                    onDeleteClick = {
+                        menuExpanded = false
+                        onDeleteClick()
+                    },
+                    onMoveClick = {
+                        menuExpanded = false
+                        onMoveClick()
+                    }
                 )
             }
         }

@@ -33,6 +33,14 @@ import com.example.ocr_digital.components.dialogs.SaveFileDialog
 import com.example.ocr_digital.components.plain_text.PlainTextEditor
 import com.example.ocr_digital.gallery.GalleryActivity
 import com.example.ocr_digital.helpers.ToastHelper
+import compose.icons.FeatherIcons
+import compose.icons.FontAwesomeIcons
+import compose.icons.SimpleIcons
+import compose.icons.feathericons.Camera
+import compose.icons.feathericons.Image
+import compose.icons.fontawesomeicons.Regular
+import compose.icons.fontawesomeicons.regular.Image
+import compose.icons.simpleicons.Photobucket
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -83,14 +91,14 @@ fun BridgeScreen(bridgeViewModel: BridgeViewModel) {
                     onClick = { cameraLauncher.launch(Intent(localContext, CameraActivity::class.java)) },
                     shape = CircleShape
                 ) {
-                    Icon(Icons.Default.Add, "Camera")
+                    Icon(FeatherIcons.Camera, "Camera")
                 }
                 Spacer(modifier = Modifier.height(15.dp))
                 FloatingActionButton(
                     onClick = { galleryLauncher.launch(Intent(localContext, GalleryActivity::class.java)) },
                     shape = CircleShape
                 ) {
-                    Icon(Icons.Default.AccountBox, "Upload")
+                    Icon(FeatherIcons.Image, "Upload")
                 }
             }
         }

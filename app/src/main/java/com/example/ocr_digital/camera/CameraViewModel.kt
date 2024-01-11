@@ -11,6 +11,7 @@ import java.io.IOException
 
 class CameraViewModel(
      private val toastHelper: ToastHelper,
+     private val finishCallback: () -> Unit,
      private val returnData: (str: String) -> Unit
 ) : ViewModel() {
      private val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
@@ -48,5 +49,9 @@ class CameraViewModel(
                e.localizedMessage?.let { toastHelper.makeToast(it) }
                returnData("")
           }
+     }
+
+     fun finish() {
+          finishCallback()
      }
 }

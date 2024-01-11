@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -74,15 +73,28 @@ fun File(
         headlineContent = { Text(text = filename) },
         trailingContent = {
             Box{
-                IconButton(onClick = { menuExpanded = true}) {
-                    Icon(Icons.Default.MoreVert, "More")
-                }
+                Icon(
+                    Icons.Default.MoreVert,
+                    "More",
+                    modifier = Modifier.clickable {
+                        menuExpanded = true
+                    }
+                )
                 FileFolderMenu(
                     expanded = menuExpanded,
                     onDismissRequest = { menuExpanded = false },
-                    onRenameClick = onRenameClick,
-                    onDeleteClick = onDeleteClick,
-                    onMoveClick = onMoveClick
+                    onRenameClick = {
+                        menuExpanded = false
+                        onRenameClick()
+                    },
+                    onDeleteClick = {
+                        menuExpanded = false
+                        onDeleteClick()
+                    },
+                    onMoveClick = {
+                        menuExpanded = false
+                        onMoveClick()
+                    }
                 )
             }
         }

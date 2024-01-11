@@ -12,9 +12,11 @@ class CameraActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         val toastHelper = ToastHelper(this)
-        val cameraViewModel = CameraViewModel(toastHelper = toastHelper) {
-            returnData(it)
-        }
+        val cameraViewModel = CameraViewModel(
+            toastHelper = toastHelper,
+            returnData = { returnData(it) },
+            finishCallback = { finish() }
+        )
 
         setContent {
             OcrdigitalTheme {

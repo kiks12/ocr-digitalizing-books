@@ -1,12 +1,11 @@
 package com.example.ocr_digital.home
 
 import android.webkit.MimeTypeMap
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
@@ -42,7 +41,10 @@ fun HomeScreen(homeViewModel: HomeViewModel, folderUtilityViewModel: FolderUtili
 
     Scaffold(
         floatingActionButton = {
-            FloatingActionButton(onClick = homeViewModel::showBottomSheet) {
+            FloatingActionButton(
+                onClick = homeViewModel::showBottomSheet,
+                shape = CircleShape
+            ) {
                 Icon(Icons.Default.Add, contentDescription = "Add")
             }
         },
@@ -67,12 +69,8 @@ fun HomeScreen(homeViewModel: HomeViewModel, folderUtilityViewModel: FolderUtili
         LazyColumn(
             modifier = Modifier
                 .padding(innerPadding)
-                .padding(25.dp)
                 .fillMaxWidth()
         ) {
-            item {
-                Text(text = "Folders")
-            }
             items(state.folders) {folder ->
                 Folder(
                     directoryName = folder.name,
@@ -81,10 +79,6 @@ fun HomeScreen(homeViewModel: HomeViewModel, folderUtilityViewModel: FolderUtili
                     onMoveClick = {},
                     onFolderClick = { homeViewModel.openFolder(folder.path) }
                 )
-            }
-            item { Spacer(modifier = Modifier.height(20.dp)) }
-            item {
-                Text(text = "Files")
             }
             items(state.files) {file ->
                 File(

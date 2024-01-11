@@ -2,12 +2,16 @@ package com.example.ocr_digital.gallery
 
 import android.Manifest
 import android.net.Uri
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,6 +25,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.canhub.cropper.CropImageContract
 import com.canhub.cropper.CropImageContractOptions
 import com.canhub.cropper.CropImageOptions
@@ -42,15 +50,13 @@ fun GalleryScreen(cameraViewModel: CameraViewModel) {
 
     val cropImageLauncher = rememberLauncherForActivityResult(CropImageContract()) { cropResult ->
         if (cropResult.uriContent != null) {
-            Log.w("GALLERY SCREEN", "Process Image")
             cameraViewModel.process(context, cropResult.uriContent!!)
         }
     }
 
     val galleryLauncher = rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) {
-        capturedImageUri = it!!
-        Log.w("GALLERY SCREEN", it.path!!)
-        Log.w("GALLERY SCREEN", "LAUNCH IMAGE CROPPER")
+        if (it == null) return@rememberLauncherForActivityResult
+        capturedImageUri = it
         cropImageLauncher.launch(
             input = CropImageContractOptions(
                 uri = capturedImageUri,
@@ -74,12 +80,26 @@ fun GalleryScreen(cameraViewModel: CameraViewModel) {
     }
 
     Scaffold { innerPadding ->
-        Box(
-            modifier = Modifier.padding(innerPadding),
-            contentAlignment = Alignment.Center
+        Column(
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
+            Text(
+                text = "Select from Gallery",
+                fontSize = 30.sp,
+                fontWeight = FontWeight.SemiBold,
+                textAlign = TextAlign.Center
+            )
+            Spacer(modifier = Modifier.height(15.dp))
             Button(onClick = { galleryLauncher.launch("image/*") }) {
                 Text(text = "Select Image")
+            }
+
+            FilledTonalButton(onClick = cameraViewModel::finish) {
+                Text(text = "Go Back")
             }
         }
     }

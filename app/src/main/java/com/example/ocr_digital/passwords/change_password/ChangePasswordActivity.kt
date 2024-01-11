@@ -1,30 +1,26 @@
-package com.example.ocr_digital.bridge
+package com.example.ocr_digital.passwords.change_password
 
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.compose.setContent
-import androidx.appcompat.app.AppCompatActivity
 import com.example.ocr_digital.helpers.ToastHelper
 import com.example.ocr_digital.ui.theme.OcrdigitalTheme
 
-class BridgeActivity : AppCompatActivity() {
-
+class ChangePasswordActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val path = intent.getStringExtra("PATH") ?: ""
-
         val toastHelper = ToastHelper(this)
-        val bridgeViewModel = BridgeViewModel(path = path, toastHelper = toastHelper) {
+        val changePasswordViewModel = ChangePasswordViewModel(toastHelper) {
             finish()
         }
 
         setContent {
             OcrdigitalTheme {
-                BridgeScreen(bridgeViewModel = bridgeViewModel)
+                ChangePasswordScreen(changePasswordViewModel)
             }
         }
 
         supportActionBar?.hide()
     }
-
 }

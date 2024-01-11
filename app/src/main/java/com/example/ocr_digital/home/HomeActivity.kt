@@ -52,7 +52,7 @@ class HomeActivity : AppCompatActivity() {
 
         val toastHelper = ToastHelper(this)
         val activityStarterHelper = ActivityStarterHelper(this)
-        val settingsViewModel = SettingsViewModel(activityStarterHelper = activityStarterHelper)
+        val settingsViewModel = SettingsViewModel(toastHelper = toastHelper, activityStarterHelper = activityStarterHelper)
         val homeViewModel = HomeViewModel(activityStarterHelper = activityStarterHelper)
         val folderUtilityViewModel = FolderUtilityViewModel(toastHelper = toastHelper, activityStarterHelper = activityStarterHelper)
 
@@ -68,5 +68,7 @@ class HomeActivity : AppCompatActivity() {
                 }
             }
         }
+
+        supportActionBar?.hide()
     }
 }

@@ -80,6 +80,8 @@ class LoginActivity : AppCompatActivity() {
                 LoginScreen(loginViewModel = loginViewModel)
             }
         }
+
+        supportActionBar?.hide()
     }
 
     private fun continueWithGoogle() {

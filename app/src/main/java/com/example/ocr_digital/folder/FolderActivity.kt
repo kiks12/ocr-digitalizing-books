@@ -1,7 +1,6 @@
 package com.example.ocr_digital.folder
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import com.example.ocr_digital.helpers.ActivityStarterHelper
@@ -28,5 +27,7 @@ class FolderActivity : AppCompatActivity() {
                 )
             }
         }
+
+        supportActionBar?.hide()
     }
 }

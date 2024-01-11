@@ -111,7 +111,6 @@ fun CameraScreen(cameraViewModel: CameraViewModel) {
                 Button(onClick = { cameraLauncher.launch(uri) }) {
                     Text("Open Camera")
                 }
-                cameraLauncher.launch(uri)
             } else {
                 Button(onClick = { cameraPermissionState.launchPermissionRequest() }) {
                     Text(text = "Allow Camera")

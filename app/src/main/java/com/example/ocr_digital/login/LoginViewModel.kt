@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import com.example.ocr_digital.helpers.ActivityStarterHelper
 import com.example.ocr_digital.helpers.ToastHelper
 import com.example.ocr_digital.home.HomeActivity
+import com.example.ocr_digital.passwords.forgot_password.ForgotPasswordActivity
 import com.example.ocr_digital.registration.RegistrationActivity
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -75,5 +76,9 @@ class LoginViewModel(
 
     fun startRegistrationActivity() {
         activityStarterHelper.startActivity(RegistrationActivity::class.java)
+    }
+
+    fun startForgotPasswordActivity() {
+        activityStarterHelper.startActivity(ForgotPasswordActivity::class.java)
     }
 }

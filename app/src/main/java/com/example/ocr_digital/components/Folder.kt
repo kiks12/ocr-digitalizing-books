@@ -25,7 +25,7 @@ fun Folder(
     onRenameClick: () -> Unit,
     onDeleteClick: () -> Unit,
     onMoveClick: () -> Unit,
-    onFolderClick: () -> Unit
+    onFolderClick: () -> Unit,
 ) {
     var menuExpanded by remember {
         mutableStateOf(false)
@@ -60,7 +60,7 @@ fun Folder(
                     onMoveClick = {
                         menuExpanded = false
                         onMoveClick()
-                    }
+                    },
                 )
             }
         }
@@ -78,21 +78,21 @@ fun FolderPreview() {
             onRenameClick = {},
             onMoveClick = {},
             onDeleteClick = {},
-            onFolderClick = {}
+            onFolderClick = {},
         )
         Folder(
             directoryName = "TRY",
             onRenameClick = {},
             onMoveClick = {},
             onDeleteClick = {},
-            onFolderClick = {}
+            onFolderClick = {},
         )
         Folder(
             directoryName = "TRY 2",
             onRenameClick = {},
             onMoveClick = {},
             onDeleteClick = {},
-            onFolderClick = {}
+            onFolderClick = {},
         )
     }
 }

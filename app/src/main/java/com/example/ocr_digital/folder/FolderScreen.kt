@@ -1,6 +1,8 @@
 package com.example.ocr_digital.folder
 
 import android.webkit.MimeTypeMap
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -9,6 +11,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -18,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
@@ -63,26 +67,38 @@ fun FolderScreen(folderViewModel: FolderViewModel, folderUtilityViewModel: Folde
                 .padding(innerPadding)
                 .fillMaxWidth()
         ) {
-            items(state.folders) {folder ->
-                Folder(
-                    directoryName = folder.name,
-                    onDeleteClick = { folderViewModel.showDeleteFileOrFolderDialog(folder.path) },
-                    onRenameClick = { folderViewModel.showRenameFileOrFolderDialog(folder.path) },
-                    onMoveClick = {},
-                    onFolderClick = { folderViewModel.openFolder(folder.path) }
-                )
-            }
-            items(state.files) {file ->
-                File(
-                    filename = file.name,
-                    onDeleteClick = { folderViewModel.showDeleteFileOrFolderDialog(file.path, forFile = true) },
-                    onRenameClick = { folderViewModel.showRenameFileOrFolderDialog(file.path, forFile = true) },
-                    onMoveClick = {},
-                    onClick = {
-                        val mimetype = MimeTypeMap.getSingleton().getMimeTypeFromExtension(PathUtilities.getFileExtension(file.path)) ?: ""
-                        folderUtilityViewModel.onFileClick(localContext, file.path, mimetype)
+            if (state.loading) {
+                item {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator()
                     }
-                )
+                }
+            } else {
+                items(state.folders) {folder ->
+                    Folder(
+                        directoryName = folder.name,
+                        onDeleteClick = { folderViewModel.showDeleteFileOrFolderDialog(folder.path) },
+                        onRenameClick = { folderViewModel.showRenameFileOrFolderDialog(folder.path) },
+                        onMoveClick = {},
+                        onFolderClick = { folderViewModel.openFolder(folder.path) },
+                    )
+                }
+                items(state.files) {file ->
+                    File(
+                        filename = file.name,
+                        onDeleteClick = { folderViewModel.showDeleteFileOrFolderDialog(file.path, forFile = true) },
+                        onRenameClick = { folderViewModel.showRenameFileOrFolderDialog(file.path, forFile = true) },
+                        onMoveClick = {},
+                        onDownloadClick = { folderUtilityViewModel.downloadFile(localContext, file.path) },
+                        onClick = {
+                            val mimetype = MimeTypeMap.getSingleton().getMimeTypeFromExtension(PathUtilities.getFileExtension(file.path)) ?: ""
+                            folderUtilityViewModel.onFileClick(localContext, file.path, mimetype)
+                        }
+                    )
+                }
             }
         }
 

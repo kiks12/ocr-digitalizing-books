@@ -5,6 +5,7 @@ import com.google.firebase.storage.StorageReference
 data class FolderScreenState(
     val name: String,
     val folders : List<StorageReference>,
+    val loading : Boolean,
     val files : List<StorageReference>,
     val folderName : String,
     val showBottomSheet : Boolean,

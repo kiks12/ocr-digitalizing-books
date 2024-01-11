@@ -1,9 +1,11 @@
 package com.example.ocr_digital.repositories
 
+import android.app.DownloadManager
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Environment
 import android.util.Log
 import android.widget.Toast
 import androidx.core.content.FileProvider
@@ -413,47 +415,6 @@ class FilesFolderRepository {
         return response.await()
     }
 
-//    suspend fun getFile(path: String) : Response {
-//        val response = CompletableDeferred<Response>(null)
-//
-//        coroutineScope {
-//            val storageRef = storage.reference
-//            val externalDir = Environment.getExternalStorageDirectory()
-//            val uri = withContext(Dispatchers.IO) {
-//                File.createTempFile("temp", ".${PathUtilities.getFileExtension(path)}")
-//            }
-//            val destFile = File(externalDir, uri.name)
-//            storageRef.child(path).getFile(uri)
-//                .addOnSuccessListener {
-//                    uri.renameTo(destFile)
-//                    Log.w("GET FILE", uri.path)
-//                    response.complete(
-//                        Response(
-//                            status = ResponseStatus.SUCCESSFUL,
-//                            message = "Successfully fetched file",
-//                            data = mapOf(
-//                                "URI" to destFile.path
-//                            )
-//                        )
-//                    )
-//                }
-//                .addOnFailureListener {
-//                    it.localizedMessage?.let { it1 ->
-//                        Response(
-//                            status = ResponseStatus.FAILED,
-//                            message = it1
-//                        )
-//                    }?.let { it2 ->
-//                        response.complete(
-//                            it2
-//                        )
-//                    }
-//                }
-//        }
-//
-//        return response.await()
-//    }
-
     suspend fun openFirebaseDocument(context: Context, path: String, mimeType: String) {
         coroutineScope{
             launch(Dispatchers.IO) {
@@ -489,6 +450,27 @@ class FilesFolderRepository {
                     }
                 }
             }
+        }
+    }
+
+    suspend fun downloadFile(context: Context, path: String) {
+        coroutineScope {
+            val storageRef = storage.reference
+            val fileRef = storageRef.child(path).downloadUrl.await()
+            val filename = PathUtilities.getLastSegment(path)
+
+            val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+
+            val downloadFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+            val destinationUri = Uri.withAppendedPath(Uri.fromFile(downloadFolder), filename)
+
+            val request = DownloadManager.Request(Uri.parse(fileRef.toString()))
+                .setTitle(filename)
+                .setDestinationUri(destinationUri)
+
+            val downloadId = downloadManager.enqueue(request)
+
+            Toast.makeText(context, "File downloaded - DID($downloadId)", Toast.LENGTH_SHORT).show()
         }
     }
 

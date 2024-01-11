@@ -22,6 +22,7 @@ class FolderViewModel(
             name = PathUtilities.removeFirstSegment(folderPath),
             folders = listOf(),
             files = listOf(),
+            loading = true,
             folderName = "",
             showBottomSheet = false,
             showCreateFolderDialog = false,
@@ -43,8 +44,12 @@ class FolderViewModel(
         refresh()
     }
 
+    private fun showLoading() { _state.value = _state.value.copy(loading = true) }
+    private fun hideLoading() { _state.value = _state.value.copy(loading = false) }
+
     fun refresh() {
         viewModelScope.launch {
+            showLoading()
             val response = filesFolderRepository.getFilesAndFolders(folderPath)
             val files = (response.data["FILES"] as List<StorageReference>)
             val folders = (response.data["FOLDERS"] as List<StorageReference>)
@@ -52,6 +57,7 @@ class FolderViewModel(
                 files = files,
                 folders = folders,
             )
+            hideLoading()
         }
     }
 

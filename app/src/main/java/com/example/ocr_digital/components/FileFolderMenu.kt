@@ -10,6 +10,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
+import compose.icons.FeatherIcons
+import compose.icons.feathericons.Download
 
 @Composable
 fun FileFolderMenu(
@@ -18,6 +20,8 @@ fun FileFolderMenu(
     onRenameClick: () -> Unit,
     onDeleteClick: () -> Unit,
     onMoveClick: () -> Unit,
+    onDownloadClick: () -> Unit = {},
+    forFile: Boolean = false,
 ) {
     DropdownMenu(
         expanded = expanded,
@@ -37,13 +41,22 @@ fun FileFolderMenu(
             onClick = onDeleteClick,
             trailingIcon = { Icon(Icons.Default.Delete, "Delete") }
         )
-        DropdownMenuItem(
-            text = {
-                Text(text = "Move")
-            },
-            onClick = onMoveClick,
-            trailingIcon = { Icon(Icons.Default.KeyboardArrowRight, "Move") }
-        )
+//        DropdownMenuItem(
+//            text = {
+//                Text(text = "Move")
+//            },
+//            onClick = onMoveClick,
+//            trailingIcon = { Icon(Icons.Default.KeyboardArrowRight, "Move") }
+//        )
+        if (forFile) {
+            DropdownMenuItem(
+                text = {
+                    Text(text = "Download")
+                },
+                onClick = onDownloadClick,
+                trailingIcon = { Icon(FeatherIcons.Download, "Download") }
+            )
+        }
     }
 }
 
@@ -55,6 +68,8 @@ fun FileFolderMenuPreview() {
         onDismissRequest = {},
         onRenameClick = {},
         onDeleteClick = {},
-        onMoveClick = {}
+        onMoveClick = {},
+        forFile = true,
+        onDownloadClick = {}
     )
 }

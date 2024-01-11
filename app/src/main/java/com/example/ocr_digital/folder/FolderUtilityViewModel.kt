@@ -123,4 +123,15 @@ class FolderUtilityViewModel(
             filesFolderRepository.openFirebaseDocument(context, path, mimetype)
         }
     }
+
+    fun downloadFile(context: Context, path: String) {
+        viewModelScope.launch {
+            if (path.isEmpty()) {
+                toastHelper.makeToast("Invalid file path")
+                return@launch
+            }
+
+            filesFolderRepository.downloadFile(context, path)
+        }
+    }
 }

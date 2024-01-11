@@ -3,7 +3,6 @@ package com.example.ocr_digital.components
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -12,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.Download
+import compose.icons.feathericons.Printer
 
 @Composable
 fun FileFolderMenu(
@@ -21,6 +21,7 @@ fun FileFolderMenu(
     onDeleteClick: () -> Unit,
     onMoveClick: () -> Unit,
     onDownloadClick: () -> Unit = {},
+    onPrintClick: () -> Unit = {},
     forFile: Boolean = false,
 ) {
     DropdownMenu(
@@ -50,11 +51,14 @@ fun FileFolderMenu(
 //        )
         if (forFile) {
             DropdownMenuItem(
-                text = {
-                    Text(text = "Download")
-                },
+                text = { Text(text = "Download") },
                 onClick = onDownloadClick,
                 trailingIcon = { Icon(FeatherIcons.Download, "Download") }
+            )
+            DropdownMenuItem(
+                text = { Text("Print") },
+                onClick = onPrintClick,
+                trailingIcon = { Icon(FeatherIcons.Printer, "Print") }
             )
         }
     }

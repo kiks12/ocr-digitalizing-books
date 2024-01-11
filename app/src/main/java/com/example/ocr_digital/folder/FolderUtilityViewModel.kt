@@ -134,4 +134,10 @@ class FolderUtilityViewModel(
             filesFolderRepository.downloadFile(context, path)
         }
     }
+
+    fun printFile(context: Context, path: String) {
+        viewModelScope.launch {
+            filesFolderRepository.printFile(context, path)
+        }
+    }
 }

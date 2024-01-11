@@ -26,6 +26,7 @@ fun File(
     onRenameClick: () -> Unit,
     onMoveClick: () -> Unit,
     onDownloadClick: () -> Unit,
+    onPrintClick: () -> Unit,
     onClick: () -> Unit
 ) {
     val extension = filename.split(".")[filename.split(".").size - 1]
@@ -100,6 +101,10 @@ fun File(
                         menuExpanded = false
                         onDownloadClick()
                     },
+                    onPrintClick = {
+                        menuExpanded = false
+                        onPrintClick()
+                    },
                     forFile = true
                 )
             }
@@ -117,6 +122,7 @@ fun FilePreview() {
             onRenameClick = {},
             onMoveClick = {},
             onDownloadClick = {},
+            onPrintClick = {},
             onClick = {}
         )
     }

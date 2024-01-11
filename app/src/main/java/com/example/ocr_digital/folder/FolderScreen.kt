@@ -93,6 +93,7 @@ fun FolderScreen(folderViewModel: FolderViewModel, folderUtilityViewModel: Folde
                         onRenameClick = { folderViewModel.showRenameFileOrFolderDialog(file.path, forFile = true) },
                         onMoveClick = {},
                         onDownloadClick = { folderUtilityViewModel.downloadFile(localContext, file.path) },
+                        onPrintClick = { folderUtilityViewModel.printFile(localContext, file.path) },
                         onClick = {
                             val mimetype = MimeTypeMap.getSingleton().getMimeTypeFromExtension(PathUtilities.getFileExtension(file.path)) ?: ""
                             folderUtilityViewModel.onFileClick(localContext, file.path, mimetype)

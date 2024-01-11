@@ -117,6 +117,7 @@ dependencies {
 
     implementation("com.itextpdf:itext7-core:7.1.15")
     implementation("org.apache.poi:poi-ooxml:5.2.5")
+
     implementation("br.com.devsrsouza.compose.icons:font-awesome:1.1.0")
     implementation("br.com.devsrsouza.compose.icons:simple-icons:1.1.0")
     implementation("br.com.devsrsouza.compose.icons:feather:1.1.0")

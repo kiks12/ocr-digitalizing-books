@@ -5,7 +5,15 @@ import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Bundle
+import android.os.CancellationSignal
 import android.os.Environment
+import android.os.ParcelFileDescriptor
+import android.print.PageRange
+import android.print.PrintAttributes
+import android.print.PrintDocumentAdapter
+import android.print.PrintDocumentInfo
+import android.print.PrintManager
 import android.util.Log
 import android.widget.Toast
 import androidx.core.content.FileProvider
@@ -27,6 +35,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
+import java.lang.RuntimeException
 import java.util.concurrent.TimeUnit
 
 class FilesFolderRepository {
@@ -471,6 +482,79 @@ class FilesFolderRepository {
             val downloadId = downloadManager.enqueue(request)
 
             Toast.makeText(context, "File downloaded - DID($downloadId)", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    suspend fun printFile(context: Context, path: String) {
+        coroutineScope {
+            val storageRef = storage.reference
+            val tempFile = File(context.cacheDir, PathUtilities.getLastSegment(path))
+            val downloadTask = storageRef.child(path).getFile(tempFile)
+            downloadTask
+                .addOnSuccessListener {
+                    try {
+                        val printManager = context.getSystemService(Context.PRINT_SERVICE) as PrintManager
+                        val uri = FileProvider.getUriForFile(
+                            context,
+                            context.packageName + ".provider",
+                            tempFile
+                        )
+
+                        val printAdapter = object : PrintDocumentAdapter() {
+                            override fun onLayout(
+                                oldAttributes: PrintAttributes?,
+                                newAttributes: PrintAttributes?,
+                                cancellationSignal: CancellationSignal?,
+                                callback: LayoutResultCallback?,
+                                extras: Bundle?
+                            ) {
+                                if (cancellationSignal?.isCanceled == true) {
+                                    callback?.onLayoutCancelled()
+                                    return
+                                }
+
+                                val info = PrintDocumentInfo.Builder(tempFile.name)
+                                    .setContentType(PrintDocumentInfo.CONTENT_TYPE_DOCUMENT)
+                                    .build()
+
+                                callback?.onLayoutFinished(info, true)
+                            }
+
+                            override fun onWrite(
+                                pages: Array<out PageRange>?,
+                                destination: ParcelFileDescriptor?,
+                                cancellationSignal: CancellationSignal?,
+                                callback: WriteResultCallback?
+                            ) {
+                                val input = context.contentResolver.openInputStream(uri)
+                                val output = FileOutputStream(destination?.fileDescriptor)
+
+                                input?.use { inputStream ->
+                                    output.use { outputStream ->
+                                        inputStream.copyTo(outputStream)
+                                    }
+                                }
+
+                                callback?.onWriteFinished(arrayOf(PageRange.ALL_PAGES))
+                            }
+                        }
+
+                        val jobName = "${context.packageName} - ${tempFile.name}"
+
+                        printManager.print(
+                            jobName,
+                            printAdapter,
+                            PrintAttributes.Builder().build()
+                        )
+                    } catch (e: IOException) {
+                        Toast.makeText(context, e.localizedMessage, Toast.LENGTH_SHORT).show()
+                    } catch (e: RuntimeException) {
+                        Toast.makeText(context, e.localizedMessage, Toast.LENGTH_SHORT).show()
+                    }
+                }
+                .addOnFailureListener {
+                    Toast.makeText(context, it.localizedMessage, Toast.LENGTH_SHORT).show()
+                }
         }
     }
 

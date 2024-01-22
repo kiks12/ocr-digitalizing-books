@@ -1,7 +1,6 @@
 package com.example.ocr_digital.startup
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import com.example.ocr_digital.helpers.ActivityStarterHelper
@@ -21,5 +20,7 @@ class StartupActivity : AppCompatActivity() {
                 StartupScreen(startupViewModel = startupViewModel)
             }
         }
+
+        supportActionBar?.hide()
     }
 }

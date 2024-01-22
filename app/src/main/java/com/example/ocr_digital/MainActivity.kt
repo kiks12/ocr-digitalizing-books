@@ -2,7 +2,6 @@ package com.example.ocr_digital
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.appcompat.app.AppCompatActivity
 import com.example.ocr_digital.home.HomeActivity
 import com.example.ocr_digital.login.LoginActivity

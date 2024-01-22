@@ -81,7 +81,8 @@ class RegistrationViewModel(
                                 firstName = _state.value.firstName,
                                 lastName = _state.value.lastName,
                                 contactNumber = _state.value.contactNumber,
-                                firstTime = true
+                                onboarding = true,
+                                walkthrough = true
                             )
                         )
                         toastHelper.makeToast(response.message)

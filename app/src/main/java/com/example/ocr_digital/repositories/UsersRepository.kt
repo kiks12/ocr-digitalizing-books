@@ -76,6 +76,25 @@ class UsersRepository {
         return response.await()
     }
 
+    suspend fun getUid(authUid: String) : String? {
+        val response = CompletableDeferred<String?>(null)
+
+        coroutineScope {
+            launch(Dispatchers.IO) {
+                val ref = db.collection("profiles").whereEqualTo("profileId", authUid).limit(1).get()
+                ref.addOnSuccessListener {
+                        response.complete(it.documents[0].id)
+                    }
+                    .addOnFailureListener {
+                        response.complete(null)
+                    }
+
+            }
+        }
+
+        return response.await()
+    }
+
     suspend fun changePassword(currentPassword: String, newPassword: String) : Response {
         val response = CompletableDeferred<Response>(null)
 
@@ -154,6 +173,74 @@ class UsersRepository {
                             )
                         }
                     }
+            }
+        }
+
+        return response.await()
+    }
+
+    suspend fun onboardUser(uid: String) : Response {
+        val response = CompletableDeferred<Response>(null)
+
+        coroutineScope {
+            launch(Dispatchers.IO) {
+                val ref = db.collection("profiles").document(uid)
+                ref.update("onboarding", false)
+                    .addOnSuccessListener {
+                        response.complete(
+                            Response(
+                                status = ResponseStatus.SUCCESSFUL,
+                                message = "Successfully onboard user"
+                            )
+                        )
+                    }
+                    .addOnFailureListener {
+                        it.localizedMessage?.let { it1 ->
+                            Response(
+                                status = ResponseStatus.FAILED,
+                                message = it1
+                            )
+                        }?.let { it2 ->
+                            response.complete(
+                                it2
+                            )
+                        }
+                    }
+
+            }
+        }
+
+        return response.await()
+    }
+
+    suspend fun finishUserWalkthrough(uid: String) : Response {
+        val response = CompletableDeferred<Response>(null)
+
+        coroutineScope {
+            launch(Dispatchers.IO) {
+                val ref = db.collection("profiles").document(uid)
+                ref.update("walkthrough", false)
+                    .addOnSuccessListener {
+                        response.complete(
+                            Response(
+                                status = ResponseStatus.SUCCESSFUL,
+                                message = "Finished user walkthrough"
+                            )
+                        )
+                    }
+                    .addOnFailureListener {
+                        it.localizedMessage?.let { it1 ->
+                            Response(
+                                status = ResponseStatus.FAILED,
+                                message = it1
+                            )
+                        }?.let { it2 ->
+                            response.complete(
+                                it2
+                            )
+                        }
+                    }
+
             }
         }
 

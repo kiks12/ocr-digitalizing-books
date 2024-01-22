@@ -13,7 +13,9 @@ import com.example.ocr_digital.folder.FolderUtilityViewModel
 import com.example.ocr_digital.helpers.ActivityStarterHelper
 import com.example.ocr_digital.helpers.ToastHelper
 import com.example.ocr_digital.models.ResponseStatus
+import com.example.ocr_digital.models.UserInformation
 import com.example.ocr_digital.navigation.NavigationScreen
+import com.example.ocr_digital.onboarding.OnBoardingActivity
 import com.example.ocr_digital.repositories.UsersRepository
 import com.example.ocr_digital.settings.SettingsScreen
 import com.example.ocr_digital.settings.SettingsViewModel
@@ -35,8 +37,11 @@ class HomeActivity : AppCompatActivity() {
         lifecycleScope.launch {
             val response = usersRepository.getUser(currentUser.uid)
             if (response.status == ResponseStatus.SUCCESSFUL) {
-                val user = response.data["user"] as List<*>
-                if (user.isEmpty()) startStartupActivity()
+                val userData = response.data["user"] as List<*>
+                if (userData.isEmpty()) startStartupActivity()
+                val user = userData[0] as UserInformation
+                if (user.onboarding) startOnBoardingActivity()
+                if (user.walkthrough) startWalkthroughActivity()
             }
         }
     }
@@ -45,6 +50,16 @@ class HomeActivity : AppCompatActivity() {
         val intent = Intent(this, StartupActivity::class.java)
         startActivity(intent)
         finish()
+    }
+
+    private fun startOnBoardingActivity() {
+        val intent = Intent(this, OnBoardingActivity::class.java)
+        startActivity(intent)
+        finish()
+    }
+
+    private fun startWalkthroughActivity() {
+
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

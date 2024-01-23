@@ -19,7 +19,9 @@ class HomeViewModel(
     private val _state = mutableStateOf(
         HomeState(
             folders = listOf(),
+            backupFolders = listOf(),
             files = listOf(),
+            backupFiles = listOf(),
             loading = true,
             folderName = "",
             showBottomSheet = false,
@@ -32,6 +34,7 @@ class HomeViewModel(
             renameNewPath = "",
             renameForFile = false,
             dialogLoading = false,
+            query = ""
         )
     )
 
@@ -53,7 +56,9 @@ class HomeViewModel(
             val folders = response.data["FOLDERS"] as List<StorageReference>
             _state.value = _state.value.copy(
                 files = files,
+                backupFiles = files,
                 folders = folders,
+                backupFolders = folders
             )
             hideLoading()
         }
@@ -126,6 +131,21 @@ class HomeViewModel(
             stringExtras = mapOf(
                 "FOLDER_PATH_EXTRA" to folderPath
             )
+        )
+    }
+
+    fun onQueryChange(newString: String) {
+        _state.value = _state.value.copy(query = newString)
+    }
+
+    fun searchFile() {
+        _state.value = _state.value.copy(
+            files = _state.value.backupFiles.filter {
+                it.name.contains(_state.value.query)
+            },
+            folders = _state.value.backupFolders.filter {
+                it.name.contains(_state.value.query)
+            },
         )
     }
 

@@ -20,6 +20,9 @@ import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -35,6 +38,9 @@ import com.example.ocr_digital.folder.FolderUtilityViewModel
 import com.example.ocr_digital.helpers.ActivityStarterHelper
 import com.example.ocr_digital.helpers.ToastHelper
 import com.example.ocr_digital.path.PathUtilities
+import eu.bambooapps.material3.pullrefresh.PullRefreshIndicator
+import eu.bambooapps.material3.pullrefresh.pullRefresh
+import eu.bambooapps.material3.pullrefresh.rememberPullRefreshState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -42,6 +48,8 @@ fun HomeScreen(homeViewModel: HomeViewModel, folderUtilityViewModel: FolderUtili
     val sheetState = rememberModalBottomSheetState()
     val state = homeViewModel.state
     val localContext = LocalContext.current
+    val refreshing by remember { mutableStateOf(false) }
+    val refreshState = rememberPullRefreshState(refreshing = refreshing, onRefresh = homeViewModel::refresh)
 
     Scaffold(
         floatingActionButton = {
@@ -54,9 +62,9 @@ fun HomeScreen(homeViewModel: HomeViewModel, folderUtilityViewModel: FolderUtili
         },
         topBar = {
             SearchBar(
-                query = "",
-                onQueryChange = {},
-                onSearch = {},
+                query = state.query,
+                onQueryChange = homeViewModel::onQueryChange,
+                onSearch = { homeViewModel.searchFile() },
                 active = false,
                 onActiveChange = {},
                 modifier = Modifier
@@ -90,6 +98,7 @@ fun HomeScreen(homeViewModel: HomeViewModel, folderUtilityViewModel: FolderUtili
                     modifier = Modifier
                         .padding(innerPadding)
                         .fillMaxWidth()
+                        .pullRefresh(refreshState)
                 ) {
                     items(state.folders) {folder ->
                         Folder(
@@ -115,6 +124,13 @@ fun HomeScreen(homeViewModel: HomeViewModel, folderUtilityViewModel: FolderUtili
                             }
                         )
                     }
+                }
+
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
+                    PullRefreshIndicator(
+                        refreshing = refreshing,
+                        state = refreshState,
+                    )
                 }
             }
         }

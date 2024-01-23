@@ -4,7 +4,9 @@ import com.google.firebase.storage.StorageReference
 
 data class HomeState(
     val folders : List<StorageReference>,
+    val backupFolders : List<StorageReference>,
     val files : List<StorageReference>,
+    val backupFiles : List<StorageReference>,
     val loading : Boolean,
     val folderName : String,
     val showBottomSheet : Boolean,
@@ -16,5 +18,6 @@ data class HomeState(
     val renameCurrentPath : String,
     val renameNewPath : String,
     val fileOrFolderPath : String,
-    val dialogLoading : Boolean
+    val dialogLoading : Boolean,
+    val query : String,
 )

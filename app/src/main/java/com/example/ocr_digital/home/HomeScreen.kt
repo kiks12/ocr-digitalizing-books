@@ -70,44 +70,51 @@ fun HomeScreen(homeViewModel: HomeViewModel, folderUtilityViewModel: FolderUtili
             }
         }
     ){ innerPadding ->
-        LazyColumn(
-            modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxWidth()
-        ) {
-            if (state.loading) {
-               item {
-                   Box(
-                       modifier = Modifier.fillMaxSize(),
-                       contentAlignment = Alignment.Center
-                   ) {
-                       CircularProgressIndicator()
-                   }
-               }
-            } else {
-                items(state.folders) {folder ->
-                    Folder(
-                        directoryName = folder.name,
-                        onDeleteClick = { homeViewModel.showDeleteFileOrFolderDialog(folder.path) },
-                        onRenameClick = { homeViewModel.showRenameFileOrFolderDialog(folder.path) },
-                        onMoveClick = {},
-                        onFolderClick = { homeViewModel.openFolder(folder.path) },
-                    )
+        if (state.loading) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        } else {
+            if (state.folders.isEmpty() && state.files.isEmpty()) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(text = "No folder and files saved")
                 }
-                items(state.files) {file ->
-                    File(
-                        filename = file.name,
-                        onDeleteClick = { homeViewModel.showDeleteFileOrFolderDialog(file.path, forFile = true) },
-                        onRenameClick = { homeViewModel.showRenameFileOrFolderDialog(file.path, forFile = true) },
-                        onMoveClick = {},
-                        onDownloadClick = { folderUtilityViewModel.downloadFile(localContext, file.path) },
-                        onPrintClick = { folderUtilityViewModel.printFile(localContext, file.path) },
-                        onClick = {
-                            val mimetype = MimeTypeMap.getSingleton().getMimeTypeFromExtension(
-                                PathUtilities.getFileExtension(file.path)) ?: ""
-                            folderUtilityViewModel.onFileClick(localContext, file.path, mimetype)
-                        }
-                    )
+            } else {
+                LazyColumn(
+                    modifier = Modifier
+                        .padding(innerPadding)
+                        .fillMaxWidth()
+                ) {
+                    items(state.folders) {folder ->
+                        Folder(
+                            directoryName = folder.name,
+                            onDeleteClick = { homeViewModel.showDeleteFileOrFolderDialog(folder.path) },
+                            onRenameClick = { homeViewModel.showRenameFileOrFolderDialog(folder.path) },
+                            onMoveClick = {},
+                            onFolderClick = { homeViewModel.openFolder(folder.path) },
+                        )
+                    }
+                    items(state.files) {file ->
+                        File(
+                            filename = file.name,
+                            onDeleteClick = { homeViewModel.showDeleteFileOrFolderDialog(file.path, forFile = true) },
+                            onRenameClick = { homeViewModel.showRenameFileOrFolderDialog(file.path, forFile = true) },
+                            onMoveClick = {},
+                            onDownloadClick = { folderUtilityViewModel.downloadFile(localContext, file.path) },
+                            onPrintClick = { folderUtilityViewModel.printFile(localContext, file.path) },
+                            onClick = {
+                                val mimetype = MimeTypeMap.getSingleton().getMimeTypeFromExtension(
+                                    PathUtilities.getFileExtension(file.path)) ?: ""
+                                folderUtilityViewModel.onFileClick(localContext, file.path, mimetype)
+                            }
+                        )
+                    }
                 }
             }
         }

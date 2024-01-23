@@ -24,6 +24,15 @@
         android:theme="@style/Theme.AppCompat"
         tools:targetApi="31">
         <activity
+            android:name=".onboarding.walkthrough.extract_text.ExtractTextWalkthroughActivity"
+            android:exported="false" />
+        <activity
+            android:name=".onboarding.walkthrough.create_folder.CreateFolderWalkthroughActivity"
+            android:exported="false" />
+        <activity
+            android:name=".onboarding.walkthrough.WalkthroughActivity"
+            android:exported="false" />
+        <activity
             android:name=".onboarding.OnBoardingActivity"
             android:exported="false" />
         <activity

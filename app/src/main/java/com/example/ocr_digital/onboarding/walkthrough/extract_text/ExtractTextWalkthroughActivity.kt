@@ -1,23 +1,19 @@
-package com.example.ocr_digital.passwords.change_password
+package com.example.ocr_digital.onboarding.walkthrough.extract_text
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.compose.setContent
-import com.example.ocr_digital.helpers.ToastHelper
 import com.example.ocr_digital.ui.theme.OcrDigitalTheme
 
-class ChangePasswordActivity : AppCompatActivity() {
+class ExtractTextWalkthroughActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val toastHelper = ToastHelper(this)
-        val changePasswordViewModel = ChangePasswordViewModel(toastHelper) {
-            finish()
-        }
-
         setContent {
             OcrDigitalTheme {
-                ChangePasswordScreen(changePasswordViewModel)
+                ExtractTextWalkthroughScreen {
+                    finish()
+                }
             }
         }
 

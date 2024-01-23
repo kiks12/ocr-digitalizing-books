@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.sp
 import com.example.ocr_digital.helpers.ActivityStarterHelper
 import com.example.ocr_digital.helpers.ToastHelper
 import compose.icons.FeatherIcons
+import compose.icons.feathericons.Info
 import compose.icons.feathericons.Lock
 import compose.icons.feathericons.LogOut
 
@@ -32,6 +33,13 @@ fun SettingsScreen(settingsViewModel: SettingsViewModel) {
                         fontSize = 24.sp,
                         fontWeight = FontWeight.SemiBold,
                         modifier = Modifier.padding(start = 15.dp, bottom = 10.dp)
+                    )
+                }
+                item {
+                    ListItem(
+                        modifier = Modifier.clickable { settingsViewModel.openWalkthroughActivity() },
+                        headlineContent = { Text(text = "How to use?") },
+                        trailingContent = { Icon(FeatherIcons.Info, "How to use") }
                     )
                 }
                 item {

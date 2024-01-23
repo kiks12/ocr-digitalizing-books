@@ -11,7 +11,7 @@ import com.example.ocr_digital.R
 import com.example.ocr_digital.helpers.ActivityStarterHelper
 import com.example.ocr_digital.helpers.ToastHelper
 import com.example.ocr_digital.home.HomeActivity
-import com.example.ocr_digital.ui.theme.OcrdigitalTheme
+import com.example.ocr_digital.ui.theme.OcrDigitalTheme
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -75,7 +75,7 @@ class LoginActivity : AppCompatActivity() {
         )
 
         setContent {
-            OcrdigitalTheme {
+            OcrDigitalTheme {
                 LoginScreen(loginViewModel = loginViewModel)
             }
         }

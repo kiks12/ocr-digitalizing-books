@@ -16,11 +16,12 @@ import com.example.ocr_digital.models.ResponseStatus
 import com.example.ocr_digital.models.UserInformation
 import com.example.ocr_digital.navigation.NavigationScreen
 import com.example.ocr_digital.onboarding.OnBoardingActivity
+import com.example.ocr_digital.onboarding.walkthrough.WalkthroughActivity
 import com.example.ocr_digital.repositories.UsersRepository
 import com.example.ocr_digital.settings.SettingsScreen
 import com.example.ocr_digital.settings.SettingsViewModel
 import com.example.ocr_digital.startup.StartupActivity
-import com.example.ocr_digital.ui.theme.OcrdigitalTheme
+import com.example.ocr_digital.ui.theme.OcrDigitalTheme
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
@@ -40,8 +41,8 @@ class HomeActivity : AppCompatActivity() {
                 val userData = response.data["user"] as List<*>
                 if (userData.isEmpty()) startStartupActivity()
                 val user = userData[0] as UserInformation
-                if (user.onboarding) startOnBoardingActivity()
-                if (user.walkthrough) startWalkthroughActivity()
+                if (user.onboarding) return@launch startOnBoardingActivity()
+                if (user.walkthrough) return@launch startWalkthroughActivity()
             }
         }
     }
@@ -59,7 +60,10 @@ class HomeActivity : AppCompatActivity() {
     }
 
     private fun startWalkthroughActivity() {
-
+        val intent = Intent(this, WalkthroughActivity::class.java)
+        intent.putExtra("AUTOMATIC", true)
+        startActivity(intent)
+        finish()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -72,7 +76,7 @@ class HomeActivity : AppCompatActivity() {
         val folderUtilityViewModel = FolderUtilityViewModel(toastHelper = toastHelper, activityStarterHelper = activityStarterHelper)
 
         setContent {
-            OcrdigitalTheme {
+            OcrDigitalTheme {
                 Scaffold { innerPadding ->
                     Box(modifier = Modifier.padding(innerPadding)) {
                         NavigationScreen(

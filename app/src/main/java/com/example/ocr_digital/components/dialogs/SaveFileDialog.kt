@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -70,25 +69,25 @@ fun SaveFileDialog(
                 ){
                     Text(text = "Save as")
                     Spacer(modifier = Modifier.height(15.dp))
-                    FilledTonalButton(
+                    TextButton(
                         onClick = { showFileNameCardAndFileType(FileType.DOCX) },
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(text = "Save as DOCX")
                     }
-                    FilledTonalButton(
+                    TextButton(
                         onClick = { showFileNameCardAndFileType(FileType.PDF) },
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(text = "Save as PDF")
                     }
-                    FilledTonalButton(
+                    TextButton(
                         onClick = { showFileNameCardAndFileType(FileType.PNG) },
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(text = "Save as PNG")
                     }
-                    FilledTonalButton(
+                    TextButton(
                         onClick = { showFileNameCardAndFileType(FileType.JPEG) },
                         modifier = Modifier.fillMaxWidth()
                     ) {
@@ -109,7 +108,7 @@ fun SaveFileDialog(
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(220.dp)
+                    .height(240.dp)
                     .padding(16.dp),
                 shape = RoundedCornerShape(16.dp),
             ){
@@ -130,12 +129,13 @@ fun SaveFileDialog(
                             fontWeight = FontWeight.SemiBold
                         )
                     }
+                    Spacer(modifier = Modifier.height(15.dp))
                     OutlinedTextField(
                         value = filename,
                         onValueChange = onFileNameChange,
                         label = { Text("Filename") }
                     )
-                    Spacer(modifier = Modifier.height(15.dp))
+                    Spacer(modifier = Modifier.height(25.dp))
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.End

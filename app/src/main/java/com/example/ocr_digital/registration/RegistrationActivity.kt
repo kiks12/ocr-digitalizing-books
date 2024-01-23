@@ -7,7 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.ocr_digital.helpers.ActivityStarterHelper
 import com.example.ocr_digital.helpers.ToastHelper
 import com.example.ocr_digital.home.HomeActivity
-import com.example.ocr_digital.ui.theme.OcrdigitalTheme
+import com.example.ocr_digital.ui.theme.OcrDigitalTheme
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -33,7 +33,7 @@ class RegistrationActivity : AppCompatActivity() {
         val registrationViewModel = RegistrationViewModel(activityStarterHelper, toastHelper)
 
         setContent {
-            OcrdigitalTheme {
+            OcrDigitalTheme {
                 RegistrationScreen(registrationViewModel = registrationViewModel)
             }
         }

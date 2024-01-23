@@ -26,7 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.ocr_digital.ui.theme.OcrdigitalTheme
+import com.example.ocr_digital.ui.theme.OcrDigitalTheme
 import com.tbuonomo.viewpagerdotsindicator.compose.DotsIndicator
 import com.tbuonomo.viewpagerdotsindicator.compose.model.DotGraphic
 import com.tbuonomo.viewpagerdotsindicator.compose.type.ShiftIndicatorType
@@ -121,7 +121,7 @@ fun OnBoardingScreen(startHomeActivity: () -> Unit) {
 @Preview
 @Composable
 fun OnBoardingScreenPreview() {
-    OcrdigitalTheme {
+    OcrDigitalTheme {
         OnBoardingScreen{}
     }
 }

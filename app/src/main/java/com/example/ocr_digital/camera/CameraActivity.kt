@@ -5,7 +5,7 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import com.example.ocr_digital.helpers.ToastHelper
-import com.example.ocr_digital.ui.theme.OcrdigitalTheme
+import com.example.ocr_digital.ui.theme.OcrDigitalTheme
 
 class CameraActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,7 +19,7 @@ class CameraActivity : AppCompatActivity() {
         )
 
         setContent {
-            OcrdigitalTheme {
+            OcrDigitalTheme {
                 CameraScreen(cameraViewModel = cameraViewModel)
             }
         }

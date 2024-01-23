@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import com.example.ocr_digital.MainActivity
 import com.example.ocr_digital.helpers.ActivityStarterHelper
 import com.example.ocr_digital.helpers.ToastHelper
+import com.example.ocr_digital.onboarding.walkthrough.WalkthroughActivity
 import com.example.ocr_digital.passwords.change_password.ChangePasswordActivity
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -33,5 +34,9 @@ class SettingsViewModel(
         }
 
         activityStarterHelper.startActivity(ChangePasswordActivity::class.java)
+    }
+
+    fun openWalkthroughActivity() {
+        activityStarterHelper.startActivity(WalkthroughActivity::class.java)
     }
 }

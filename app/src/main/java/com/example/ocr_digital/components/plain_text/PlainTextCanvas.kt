@@ -8,7 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.ocr_digital.ui.theme.OcrdigitalTheme
+import com.example.ocr_digital.ui.theme.OcrDigitalTheme
 
 @Composable
 fun PlainTextCanvas(
@@ -35,7 +35,7 @@ fun PlainTextCanvas(
 @Preview
 @Composable
 fun PlainTextCanvasPreview() {
-    OcrdigitalTheme {
+    OcrDigitalTheme {
         PlainTextCanvas(
             text = "Hello, this is a preview",
             onTextChanged = {}

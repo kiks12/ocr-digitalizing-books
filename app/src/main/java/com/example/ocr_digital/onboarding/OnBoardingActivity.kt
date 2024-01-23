@@ -8,7 +8,7 @@ import androidx.lifecycle.lifecycleScope
 import com.example.ocr_digital.home.HomeActivity
 import com.example.ocr_digital.onboarding.screens.OnBoardingScreen
 import com.example.ocr_digital.repositories.UsersRepository
-import com.example.ocr_digital.ui.theme.OcrdigitalTheme
+import com.example.ocr_digital.ui.theme.OcrDigitalTheme
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.delay
@@ -23,7 +23,7 @@ class OnBoardingActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            OcrdigitalTheme {
+            OcrDigitalTheme {
                 OnBoardingScreen(
                     startHomeActivity = { lifecycleScope.launch { startHomeActivity() } }
                 )
@@ -42,6 +42,5 @@ class OnBoardingActivity : AppCompatActivity() {
         delay(3000)
         val intent = Intent(this, HomeActivity::class.java)
         startActivity(intent)
-        finish()
     }
 }

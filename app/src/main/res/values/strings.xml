@@ -1,4 +1,27 @@
 <resources>
     <string name="app_name">ocr-digital</string>
     <string name="web_client_d">79123834482-honkqn9ok5te9t1o9sda0dcc4vo8rlr3.apps.googleusercontent.com</string>
+
+    <string name="create_folder_one">one</string>
+    <string name="create_folder_two">two</string>
+    <string name="create_folder_three">three</string>
+    <string name="create_folder_four">four</string>
+    <string name="create_folder_five">five</string>
+    <string name="create_folder_six">six</string>
+
+    <string name="extract_text_one">one</string>
+    <string name="extract_text_two">two</string>
+    <string name="extract_text_three">three</string>
+    <string name="extract_text_four">four</string>
+    <string name="extract_text_five">five</string>
+    <string name="extract_text_six">six</string>
+    <string name="extract_text_seven">seven</string>
+    <string name="extract_text_eight">eight</string>
+    <string name="extract_text_nine">nine</string>
+    <string name="extract_text_ten">ten</string>
+    <string name="extract_text_eleven">eleven</string>
+    <string name="extract_text_twelve">twelve</string>
+    <string name="extract_text_thirteen">thirteen</string>
+    <string name="extract_text_fourteen">fourteen</string>
+    <string name="extract_text_fifteen">fifteen</string>
 </resources>

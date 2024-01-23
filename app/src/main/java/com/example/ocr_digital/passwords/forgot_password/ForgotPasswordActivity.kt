@@ -4,7 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import com.example.ocr_digital.helpers.ToastHelper
-import com.example.ocr_digital.ui.theme.OcrdigitalTheme
+import com.example.ocr_digital.ui.theme.OcrDigitalTheme
 
 class ForgotPasswordActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -16,7 +16,7 @@ class ForgotPasswordActivity : AppCompatActivity() {
         }
 
         setContent {
-            OcrdigitalTheme {
+            OcrDigitalTheme {
                 ForgotPasswordScreen(forgotPasswordViewModel = forgotPasswordViewModel)
             }
         }

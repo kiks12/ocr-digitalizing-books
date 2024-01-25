@@ -98,42 +98,48 @@ fun CreateFolderWalkthroughScreen(finish: () -> Unit) {
                     HorizontalPagerWalkthroughPage(
                         painter = painterResource(R.drawable.create1),
                         contentDescription = stringResource(R.string.create_folder_one),
-                        text = stringResource(R.string.create_folder_one)
+                        text = stringResource(R.string.create_folder_one),
+                        step = 1
                     )
                 }
                 1 -> {
                     HorizontalPagerWalkthroughPage(
                         painter = painterResource(R.drawable.create2),
                         contentDescription = stringResource(R.string.create_folder_two),
-                        text = stringResource(R.string.create_folder_two)
+                        text = stringResource(R.string.create_folder_two),
+                        step = 2
                     )
                 }
                 2 -> {
                     HorizontalPagerWalkthroughPage(
                         painter = painterResource(R.drawable.create3),
                         contentDescription = stringResource(R.string.create_folder_three),
-                        text = stringResource(R.string.create_folder_three)
+                        text = stringResource(R.string.create_folder_three),
+                        step = 3
                     )
                 }
                 3 -> {
                     HorizontalPagerWalkthroughPage(
                         painter = painterResource(R.drawable.create4),
                         contentDescription = stringResource(R.string.create_folder_four),
-                        text = stringResource(R.string.create_folder_four)
+                        text = stringResource(R.string.create_folder_four),
+                        step = 4
                     )
                 }
                 4 -> {
                     HorizontalPagerWalkthroughPage(
                         painter = painterResource(R.drawable.create5),
                         contentDescription = stringResource(R.string.create_folder_five),
-                        text = stringResource(R.string.create_folder_five)
+                        text = stringResource(R.string.create_folder_five),
+                        step = 5
                     )
                 }
                 5 -> {
                     HorizontalPagerWalkthroughPage(
                         painter = painterResource(R.drawable.create6),
                         contentDescription = stringResource(R.string.create_folder_six),
-                        text = stringResource(R.string.create_folder_six)
+                        text = stringResource(R.string.create_folder_six),
+                        step = 6
                     )
                 }
             }

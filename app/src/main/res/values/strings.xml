@@ -2,26 +2,26 @@
     <string name="app_name">ocr-digital</string>
     <string name="web_client_d">79123834482-honkqn9ok5te9t1o9sda0dcc4vo8rlr3.apps.googleusercontent.com</string>
 
-    <string name="create_folder_one">one</string>
-    <string name="create_folder_two">two</string>
-    <string name="create_folder_three">three</string>
-    <string name="create_folder_four">four</string>
-    <string name="create_folder_five">five</string>
-    <string name="create_folder_six">six</string>
+    <string name="create_folder_one">Starting from the home screen</string>
+    <string name="create_folder_two">Click the floating action button "+"</string>
+    <string name="create_folder_three">A bottom sheet will appear, click the folder button</string>
+    <string name="create_folder_four">A dialog box will appear, enter the folder name</string>
+    <string name="create_folder_five">Click the create button</string>
+    <string name="create_folder_six">The created folder will appear in the home page. Folders can also be created inside folders by repeating the steps from inside a folder</string>
 
-    <string name="extract_text_one">one</string>
-    <string name="extract_text_two">two</string>
-    <string name="extract_text_three">three</string>
-    <string name="extract_text_four">four</string>
-    <string name="extract_text_five">five</string>
-    <string name="extract_text_six">six</string>
-    <string name="extract_text_seven">seven</string>
-    <string name="extract_text_eight">eight</string>
-    <string name="extract_text_nine">nine</string>
-    <string name="extract_text_ten">ten</string>
-    <string name="extract_text_eleven">eleven</string>
-    <string name="extract_text_twelve">twelve</string>
-    <string name="extract_text_thirteen">thirteen</string>
-    <string name="extract_text_fourteen">fourteen</string>
-    <string name="extract_text_fifteen">fifteen</string>
+    <string name="extract_text_one">Starting from the home screen</string>
+    <string name="extract_text_two">Click the floating action button "+"</string>
+    <string name="extract_text_three">A bottom sheet will appear, click the "Scan Text" button</string>
+    <string name="extract_text_four">You will be redirected to the image scanner screen. You can use the camera by clicking the camera button</string>
+    <string name="extract_text_five">But you can also select image from the gallery by clicking the upload button</string>
+    <string name="extract_text_six">The camera will open up when you choose to click the camera button</string>
+    <string name="extract_text_seven">After shooting a picture, crop the image to fit the text inside the image</string>
+    <string name="extract_text_eight">Wait for the OCR feature to extract the text from the image and redirect you back to the image scanner screen, but now with the extracted text included to the editor</string>
+    <string name="extract_text_nine">You can hit the "reset" button to clear the text</string>
+    <string name="extract_text_ten">You can save the text by hitting the "check" button</string>
+    <string name="extract_text_eleven">Upon hitting the "check" button, a menu will pop up to choose which file type to save the text</string>
+    <string name="extract_text_twelve">After choosing the desired file type, enter the filename</string>
+    <string name="extract_text_thirteen">Click the save button and wait for a "File uploaded successfully" message</string>
+    <string name="extract_text_fourteen">You can now go back to the home screen and refresh by pulling down on the screen</string>
+    <string name="extract_text_fifteen">To view the file, simply click the file</string>
 </resources>

@@ -96,105 +96,120 @@ fun ExtractTextWalkthroughScreen(finish: () -> Unit) {
                     HorizontalPagerWalkthroughPage(
                         painter = painterResource(R.drawable.extract1),
                         contentDescription = stringResource(R.string.extract_text_one),
-                        text = stringResource(R.string.extract_text_one)
+                        text = stringResource(R.string.extract_text_one),
+                        step = 1
                     )
                 }
                 1 -> {
                     HorizontalPagerWalkthroughPage(
                         painter = painterResource(R.drawable.extract2),
                         contentDescription = stringResource(R.string.extract_text_two),
-                        text = stringResource(R.string.extract_text_two)
+                        text = stringResource(R.string.extract_text_two),
+                        step = 2
                     )
                 }
                 2 -> {
                     HorizontalPagerWalkthroughPage(
                         painter = painterResource(R.drawable.extract3),
                         contentDescription = stringResource(R.string.extract_text_three),
-                        text = stringResource(R.string.extract_text_three)
+                        text = stringResource(R.string.extract_text_three),
+                        step = 3
                     )
                 }
                 3 -> {
                     HorizontalPagerWalkthroughPage(
                         painter = painterResource(R.drawable.extract4),
                         contentDescription = stringResource(R.string.extract_text_four),
-                        text = stringResource(R.string.extract_text_four)
+                        text = stringResource(R.string.extract_text_four),
+                        step = 4
                     )
                 }
                 4 -> {
                     HorizontalPagerWalkthroughPage(
                         painter = painterResource(R.drawable.extract5),
                         contentDescription = stringResource(R.string.extract_text_five),
-                        text = stringResource(R.string.extract_text_five)
+                        text = stringResource(R.string.extract_text_five),
+                        step = 5
                     )
                 }
                 5 -> {
                     HorizontalPagerWalkthroughPage(
                         painter = painterResource(R.drawable.extract6),
                         contentDescription = stringResource(R.string.extract_text_six),
-                        text = stringResource(R.string.extract_text_six)
+                        text = stringResource(R.string.extract_text_six),
+                        step = 6
                     )
                 }
                 6 -> {
                     HorizontalPagerWalkthroughPage(
                         painter = painterResource(R.drawable.extract7),
                         contentDescription = stringResource(R.string.extract_text_seven),
-                        text = stringResource(R.string.extract_text_seven)
+                        text = stringResource(R.string.extract_text_seven),
+                        step = 7
                     )
                 }
                 7 -> {
                     HorizontalPagerWalkthroughPage(
                         painter = painterResource(R.drawable.extract8),
                         contentDescription = stringResource(R.string.extract_text_eight),
-                        text = stringResource(R.string.extract_text_eight)
+                        text = stringResource(R.string.extract_text_eight),
+                        step = 8
                     )
                 }
                 8 -> {
                     HorizontalPagerWalkthroughPage(
                         painter = painterResource(R.drawable.extract9),
                         contentDescription = stringResource(R.string.extract_text_nine),
-                        text = stringResource(R.string.extract_text_nine)
+                        text = stringResource(R.string.extract_text_nine),
+                        step = 9
                     )
                 }
                 9 -> {
                     HorizontalPagerWalkthroughPage(
                         painter = painterResource(R.drawable.extract10),
                         contentDescription = stringResource(R.string.extract_text_ten),
-                        text = stringResource(R.string.extract_text_ten)
+                        text = stringResource(R.string.extract_text_ten),
+                        step = 10
                     )
                 }
                 10 -> {
                     HorizontalPagerWalkthroughPage(
                         painter = painterResource(R.drawable.extract11),
                         contentDescription = stringResource(R.string.extract_text_eleven),
-                        text = stringResource(R.string.extract_text_eleven)
+                        text = stringResource(R.string.extract_text_eleven),
+                        step = 11
                     )
                 }
                 11 -> {
                     HorizontalPagerWalkthroughPage(
                         painter = painterResource(R.drawable.extract12),
                         contentDescription = stringResource(R.string.extract_text_twelve),
-                        text = stringResource(R.string.extract_text_twelve)
+                        text = stringResource(R.string.extract_text_twelve),
+                        step = 12
                     )
                 }
                 12 -> {
                     HorizontalPagerWalkthroughPage(
                         painter = painterResource(R.drawable.extract13),
                         contentDescription = stringResource(R.string.extract_text_thirteen),
-                        text = stringResource(R.string.extract_text_thirteen)
+                        text = stringResource(R.string.extract_text_thirteen),
+                        step = 13
                     )
                 }
                 13 -> {
                     HorizontalPagerWalkthroughPage(
                         painter = painterResource(R.drawable.extract14),
                         contentDescription = stringResource(R.string.extract_text_fourteen),
-                        text = stringResource(R.string.extract_text_fourteen)
+                        text = stringResource(R.string.extract_text_fourteen),
+                        step = 14
                     )
                 }
                 14 -> {
                     HorizontalPagerWalkthroughPage(
                         painter = painterResource(R.drawable.extract15),
                         contentDescription = stringResource(R.string.extract_text_fifteen),
-                        text = stringResource(R.string.extract_text_fifteen)
+                        text = stringResource(R.string.extract_text_fifteen),
+                        step = 15
                     )
                 }
             }

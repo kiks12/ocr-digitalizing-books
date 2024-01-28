@@ -31,6 +31,8 @@ class HomeActivity : AppCompatActivity() {
     private val usersRepository = UsersRepository()
     private val auth = Firebase.auth
 
+    private lateinit var homeViewModel: HomeViewModel
+
     override fun onStart() {
         super.onStart()
         val currentUser = auth.currentUser ?: return
@@ -45,6 +47,11 @@ class HomeActivity : AppCompatActivity() {
                 if (user.walkthrough) return@launch startWalkthroughActivity()
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        homeViewModel.refresh()
     }
 
     private fun startStartupActivity() {
@@ -72,7 +79,7 @@ class HomeActivity : AppCompatActivity() {
         val toastHelper = ToastHelper(this)
         val activityStarterHelper = ActivityStarterHelper(this)
         val settingsViewModel = SettingsViewModel(toastHelper = toastHelper, activityStarterHelper = activityStarterHelper)
-        val homeViewModel = HomeViewModel(activityStarterHelper = activityStarterHelper)
+        homeViewModel = HomeViewModel(activityStarterHelper = activityStarterHelper)
         val folderUtilityViewModel = FolderUtilityViewModel(toastHelper = toastHelper, activityStarterHelper = activityStarterHelper)
 
         setContent {

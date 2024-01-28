@@ -21,6 +21,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -34,6 +37,8 @@ import com.example.ocr_digital.components.dialogs.RenameDialog
 import com.example.ocr_digital.helpers.ActivityStarterHelper
 import com.example.ocr_digital.helpers.ToastHelper
 import com.example.ocr_digital.path.PathUtilities
+import eu.bambooapps.material3.pullrefresh.pullRefresh
+import eu.bambooapps.material3.pullrefresh.rememberPullRefreshState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -41,6 +46,8 @@ fun FolderScreen(folderViewModel: FolderViewModel, folderUtilityViewModel: Folde
     val state = folderViewModel.state
     val sheetState = rememberModalBottomSheetState()
     val localContext = LocalContext.current
+    val refreshing by remember { mutableStateOf(false) }
+    val refreshState = rememberPullRefreshState(refreshing = refreshing, onRefresh = folderViewModel::refresh)
 
     Scaffold(
         floatingActionButton = {
@@ -62,43 +69,49 @@ fun FolderScreen(folderViewModel: FolderViewModel, folderUtilityViewModel: Folde
             )
         }
     ){ innerPadding ->
-        LazyColumn(
-            modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxWidth()
-        ) {
-            if (state.loading) {
-                item {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator()
-                    }
+        if (state.loading) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+            }
+        }
+        else {
+            if (state.folders.isEmpty() && state.files.isEmpty()) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(text = "No folder and files saved")
                 }
             } else {
-                items(state.folders) {folder ->
-                    Folder(
-                        directoryName = folder.name,
-                        onDeleteClick = { folderViewModel.showDeleteFileOrFolderDialog(folder.path) },
-                        onRenameClick = { folderViewModel.showRenameFileOrFolderDialog(folder.path) },
-                        onMoveClick = {},
-                        onFolderClick = { folderViewModel.openFolder(folder.path) },
-                    )
-                }
-                items(state.files) {file ->
-                    File(
-                        filename = file.name,
-                        onDeleteClick = { folderViewModel.showDeleteFileOrFolderDialog(file.path, forFile = true) },
-                        onRenameClick = { folderViewModel.showRenameFileOrFolderDialog(file.path, forFile = true) },
-                        onMoveClick = {},
-                        onDownloadClick = { folderUtilityViewModel.downloadFile(localContext, file.path) },
-                        onPrintClick = { folderUtilityViewModel.printFile(localContext, file.path) },
-                        onClick = {
-                            val mimetype = MimeTypeMap.getSingleton().getMimeTypeFromExtension(PathUtilities.getFileExtension(file.path)) ?: ""
-                            folderUtilityViewModel.onFileClick(localContext, file.path, mimetype)
-                        }
-                    )
+                LazyColumn(
+                    modifier = Modifier
+                        .padding(innerPadding)
+                        .fillMaxWidth()
+                        .pullRefresh(refreshState)
+                ) {
+                    items(state.folders) {folder ->
+                        Folder(
+                            directoryName = folder.name,
+                            onDeleteClick = { folderViewModel.showDeleteFileOrFolderDialog(folder.path) },
+                            onRenameClick = { folderViewModel.showRenameFileOrFolderDialog(folder.path) },
+                            onMoveClick = {},
+                            onFolderClick = { folderViewModel.openFolder(folder.path) },
+                        )
+                    }
+                    items(state.files) {file ->
+                        File(
+                            filename = file.name,
+                            onDeleteClick = { folderViewModel.showDeleteFileOrFolderDialog(file.path, forFile = true) },
+                            onRenameClick = { folderViewModel.showRenameFileOrFolderDialog(file.path, forFile = true) },
+                            onMoveClick = {},
+                            onDownloadClick = { folderUtilityViewModel.downloadFile(localContext, file.path) },
+                            onPrintClick = { folderUtilityViewModel.printFile(localContext, file.path) },
+                            onClick = {
+                                val mimetype = MimeTypeMap.getSingleton().getMimeTypeFromExtension(PathUtilities.getFileExtension(file.path)) ?: ""
+                                folderUtilityViewModel.onFileClick(localContext, file.path, mimetype)
+                            }
+                        )
+                    }
                 }
             }
         }

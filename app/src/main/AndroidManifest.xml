@@ -45,7 +45,7 @@
             android:name=".gallery.GalleryActivity"
             android:exported="false" />
         <activity
-            android:name=".bridge.BridgeActivity"
+            android:name=".image_scanner.ImageScannerActivity"
             android:exported="false" />
         <activity
             android:name=".camera.CameraActivity"

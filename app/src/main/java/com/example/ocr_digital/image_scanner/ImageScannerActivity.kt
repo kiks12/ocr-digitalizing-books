@@ -1,4 +1,4 @@
-package com.example.ocr_digital.bridge
+package com.example.ocr_digital.image_scanner
 
 import android.os.Bundle
 import androidx.activity.compose.setContent
@@ -6,7 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.ocr_digital.helpers.ToastHelper
 import com.example.ocr_digital.ui.theme.OcrDigitalTheme
 
-class BridgeActivity : AppCompatActivity() {
+class ImageScannerActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -14,13 +14,13 @@ class BridgeActivity : AppCompatActivity() {
         val path = intent.getStringExtra("PATH") ?: ""
 
         val toastHelper = ToastHelper(this)
-        val bridgeViewModel = BridgeViewModel(path = path, toastHelper = toastHelper) {
+        val imageScannerViewModel = ImageScannerViewModel(path = path, toastHelper = toastHelper) {
             finish()
         }
 
         setContent {
             OcrDigitalTheme {
-                BridgeScreen(bridgeViewModel = bridgeViewModel)
+                ImageScannerScreen(imageScannerViewModel = imageScannerViewModel)
             }
         }
 

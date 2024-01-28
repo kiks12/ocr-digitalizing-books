@@ -3,7 +3,7 @@ package com.example.ocr_digital.folder
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.ocr_digital.bridge.BridgeActivity
+import com.example.ocr_digital.image_scanner.ImageScannerActivity
 import com.example.ocr_digital.helpers.ActivityStarterHelper
 import com.example.ocr_digital.helpers.ToastHelper
 import com.example.ocr_digital.models.ResponseStatus
@@ -101,7 +101,7 @@ class FolderUtilityViewModel(
 
     fun scanText(path: String) {
         activityStarterHelper.startActivity(
-            BridgeActivity::class.java,
+            ImageScannerActivity::class.java,
             stringExtras = mapOf(
                 "PATH" to path
             )
@@ -136,6 +136,11 @@ class FolderUtilityViewModel(
     }
 
     fun printFile(context: Context, path: String) {
+        val extension = PathUtilities.getFileExtension(path)
+        if (extension.contains("png") || extension.contains("jpg") || extension.contains("docx")) {
+            toastHelper.makeToast("File type cannot be printed, download the file and use third pary app")
+            return
+        }
         viewModelScope.launch {
             filesFolderRepository.printFile(context, path)
         }

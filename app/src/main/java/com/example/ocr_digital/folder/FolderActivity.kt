@@ -8,13 +8,21 @@ import com.example.ocr_digital.helpers.ToastHelper
 import com.example.ocr_digital.ui.theme.OcrDigitalTheme
 
 class FolderActivity : AppCompatActivity() {
+
+    private lateinit var folderViewModel: FolderViewModel
+
+    override fun onResume() {
+        super.onResume()
+        folderViewModel.refresh()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         val folderPath = intent.getStringExtra("FOLDER_PATH_EXTRA") ?: ""
         val toastHelper = ToastHelper(this)
         val activityStarterHelper = ActivityStarterHelper(this)
-        val folderViewModel = FolderViewModel(folderPath = folderPath, activityStarterHelper = activityStarterHelper) {
+        folderViewModel = FolderViewModel(folderPath = folderPath, activityStarterHelper = activityStarterHelper) {
             finish()
         }
         val folderUtilityViewModel = FolderUtilityViewModel(toastHelper = toastHelper, activityStarterHelper = activityStarterHelper)

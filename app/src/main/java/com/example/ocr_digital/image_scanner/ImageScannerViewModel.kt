@@ -1,4 +1,4 @@
-package com.example.ocr_digital.bridge
+package com.example.ocr_digital.image_scanner
 
 import android.content.Context
 import androidx.compose.runtime.mutableStateOf
@@ -9,9 +9,10 @@ import com.example.ocr_digital.file_saver.FileType
 import com.example.ocr_digital.helpers.ToastHelper
 import com.example.ocr_digital.models.ResponseStatus
 import com.example.ocr_digital.repositories.FilesFolderRepository
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
-class BridgeViewModel(
+class ImageScannerViewModel(
     private val path: String,
     private val toastHelper: ToastHelper,
     private val finishCallback: () -> Unit
@@ -19,15 +20,16 @@ class BridgeViewModel(
     private val filesFolderRepository = FilesFolderRepository()
     private val fileSaver = FileSaver()
     private val _state = mutableStateOf(
-        BridgeState(
+        ImageScannerState(
             text = "",
             showSaveDialog = false,
             filename = "",
             filetype = FileType.DOCX,
-            showResetDialog = false
+            showResetDialog = false,
+            loading = false
         )
     )
-    val state : BridgeState
+    val state : ImageScannerState
         get() = _state.value
 
     fun onTextChange(str: String) {
@@ -42,6 +44,10 @@ class BridgeViewModel(
 
     fun showResetDialog() { _state.value = _state.value.copy(showResetDialog = true) }
 
+    private fun showLoading() { _state.value = _state.value.copy(loading = true) }
+
+    private fun hideLoading() { _state.value = _state.value.copy(loading = false) }
+
     fun resetText() {
         _state.value = _state.value.copy(text = "", showResetDialog = false)
     }
@@ -54,12 +60,21 @@ class BridgeViewModel(
         val uri = fileSaver.saveTextToFile(context, text, filename, type)
         if (uri != null) {
             viewModelScope.launch {
-                val response = filesFolderRepository.uploadFile(path, uri)
-                if (response.status == ResponseStatus.SUCCESSFUL) {
+                var responseMessage : String? = null
+                async {
+                    hideResetDialog()
                     hideSaveDialog()
-                }
-
-                toastHelper.makeToast(response.message)
+                    showLoading()
+                    val response = filesFolderRepository.uploadFile(path, uri)
+                    if (response.status == ResponseStatus.SUCCESSFUL) {
+                        hideSaveDialog()
+                        responseMessage = response.message
+                    }
+                }.await()
+                async {
+                    hideLoading()
+                    if (responseMessage != null) toastHelper.makeToast(responseMessage!!)
+                }.await()
             }
         }
     }

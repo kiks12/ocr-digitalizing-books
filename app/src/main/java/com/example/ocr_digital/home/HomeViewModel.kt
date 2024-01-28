@@ -1,5 +1,6 @@
 package com.example.ocr_digital.home
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -139,14 +140,21 @@ class HomeViewModel(
     }
 
     fun searchFile() {
-        _state.value = _state.value.copy(
-            files = _state.value.backupFiles.filter {
-                it.name.contains(_state.value.query)
-            },
-            folders = _state.value.backupFolders.filter {
-                it.name.contains(_state.value.query)
-            },
-        )
+        viewModelScope.launch {
+            showLoading()
+            val files = filesFolderRepository.searchFiles(query = _state.value.query, directory = auth.currentUser?.uid!!)
+            Log.w("SEARCH FILES", files.toString())
+            _state.value = _state.value.copy(files = files, folders = listOf())
+            hideLoading()
+        }
+//        _state.value = _state.value.copy(
+//            files = _state.value.backupFiles.filter {
+//                it.name.contains(_state.value.query)
+//            },
+//            folders = _state.value.backupFolders.filter {
+//                it.name.contains(_state.value.query)
+//            },
+//        )
     }
 
     fun getUid() : String {

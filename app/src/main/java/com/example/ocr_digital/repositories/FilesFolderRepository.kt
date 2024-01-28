@@ -24,6 +24,7 @@ import com.example.ocr_digital.path.PathUtilities
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
@@ -556,6 +557,40 @@ class FilesFolderRepository {
                     Toast.makeText(context, it.localizedMessage, Toast.LENGTH_SHORT).show()
                 }
         }
+    }
+
+    suspend fun searchFiles(query: String, directory: String) : List<StorageReference> {
+        val filesAndFolders = CompletableDeferred<List<StorageReference>>(null)
+
+        coroutineScope {
+            val storageRef = storage.reference
+            storageRef.child(directory).listAll()
+                .addOnSuccessListener { result ->
+                    val temp = ArrayList<StorageReference>()
+                    result.items.forEach { item ->
+                        if (item.name.lowercase().contains(query.lowercase())) {
+                            temp.add(item)
+                        }
+                    }
+
+                    result.prefixes.forEach { prefix ->
+                        prefix.listAll().addOnSuccessListener { result ->
+                            result.items.forEach { item ->
+                                if (item.name.lowercase().contains(query.lowercase())) {
+                                    temp.add(item)
+                                }
+                            }
+                        }
+                    }
+
+                    filesAndFolders.complete(temp)
+                }
+                .addOnFailureListener {
+                    return@addOnFailureListener
+                }
+        }
+
+        return filesAndFolders.await()
     }
 
 }

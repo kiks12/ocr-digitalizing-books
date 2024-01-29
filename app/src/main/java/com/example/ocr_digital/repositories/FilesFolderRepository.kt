@@ -20,6 +20,7 @@ import androidx.core.content.FileProvider
 import androidx.core.net.toUri
 import com.example.ocr_digital.models.Response
 import com.example.ocr_digital.models.ResponseStatus
+import com.example.ocr_digital.models.SearchFilesFoldersResult
 import com.example.ocr_digital.path.PathUtilities
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
@@ -559,35 +560,41 @@ class FilesFolderRepository {
         }
     }
 
-    suspend fun searchFiles(query: String, directory: String) : List<StorageReference> {
-        val filesAndFolders = CompletableDeferred<List<StorageReference>>(null)
+    suspend fun searchFilesFolders(query: String, directory: String) : SearchFilesFoldersResult {
+        val filesAndFolders = CompletableDeferred<SearchFilesFoldersResult>(null)
+        val queryLowercase = query.lowercase()
 
         coroutineScope {
             val storageRef = storage.reference
-            storageRef.child(directory).listAll()
-                .addOnSuccessListener { result ->
-                    val temp = ArrayList<StorageReference>()
-                    result.items.forEach { item ->
-                        if (item.name.lowercase().contains(query.lowercase())) {
-                            temp.add(item)
-                        }
-                    }
+            val tempFiles = ArrayList<StorageReference>()
+            val tempFolders = ArrayList<StorageReference>()
+            val firstList = storageRef.child(directory).listAll().await()
 
-                    result.prefixes.forEach { prefix ->
-                        prefix.listAll().addOnSuccessListener { result ->
-                            result.items.forEach { item ->
-                                if (item.name.lowercase().contains(query.lowercase())) {
-                                    temp.add(item)
-                                }
-                            }
-                        }
-                    }
+            firstList.items.forEach { item ->
+                if (item.name.lowercase().contains(queryLowercase) && item.name != "EMPTY") tempFiles.add(item)
+            }
 
-                    filesAndFolders.complete(temp)
+            firstList.prefixes.forEach { prefix ->
+                if (prefix.name.lowercase().contains(queryLowercase)) tempFolders.add(prefix)
+                val prefixList = prefix.listAll().await()
+                prefixList.items.forEach { item ->
+                    if (item.name.lowercase().contains(queryLowercase) && item.name != "EMPTY") tempFiles.add(item)
                 }
-                .addOnFailureListener {
-                    return@addOnFailureListener
+
+                prefixList.prefixes.forEach { prefixTwo ->
+                    if (prefixTwo.name.lowercase().contains(queryLowercase)) tempFolders.add(prefixTwo)
+                    val prefixTwoList = prefixTwo.listAll().await()
+
+                    prefixTwoList.items.forEach { item ->
+                        if (item.name.lowercase().contains(queryLowercase) && item.name != "EMPTY") tempFiles.add(item)
+                    }
+                    prefixTwoList.prefixes.forEach { prefixThree ->
+                        if (prefixThree.name.lowercase().contains(queryLowercase)) tempFolders.add(prefixThree)
+                    }
                 }
+            }
+
+            filesAndFolders.complete(SearchFilesFoldersResult(files = tempFiles, folders = tempFolders))
         }
 
         return filesAndFolders.await()

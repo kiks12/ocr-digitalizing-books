@@ -4,9 +4,9 @@ import com.google.firebase.storage.StorageReference
 
 data class HomeState(
     val folders : List<StorageReference>,
-    val backupFolders : List<StorageReference>,
+//    val backupFolders : List<StorageReference>,
     val files : List<StorageReference>,
-    val backupFiles : List<StorageReference>,
+//    val backupFiles : List<StorageReference>,
     val loading : Boolean,
     val folderName : String,
     val showBottomSheet : Boolean,

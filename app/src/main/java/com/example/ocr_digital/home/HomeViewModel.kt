@@ -1,6 +1,5 @@
 package com.example.ocr_digital.home
 
-import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -20,9 +19,9 @@ class HomeViewModel(
     private val _state = mutableStateOf(
         HomeState(
             folders = listOf(),
-            backupFolders = listOf(),
+//            backupFolders = listOf(),
             files = listOf(),
-            backupFiles = listOf(),
+//            backupFiles = listOf(),
             loading = true,
             folderName = "",
             showBottomSheet = false,
@@ -57,9 +56,9 @@ class HomeViewModel(
             val folders = response.data["FOLDERS"] as List<StorageReference>
             _state.value = _state.value.copy(
                 files = files,
-                backupFiles = files,
+//                backupFiles = files,
                 folders = folders,
-                backupFolders = folders
+//                backupFolders = folders
             )
             hideLoading()
         }
@@ -142,19 +141,10 @@ class HomeViewModel(
     fun searchFile() {
         viewModelScope.launch {
             showLoading()
-            val files = filesFolderRepository.searchFiles(query = _state.value.query, directory = auth.currentUser?.uid!!)
-            Log.w("SEARCH FILES", files.toString())
-            _state.value = _state.value.copy(files = files, folders = listOf())
+            val result = filesFolderRepository.searchFilesFolders(query = _state.value.query, directory = auth.currentUser?.uid!!)
+            _state.value = _state.value.copy(files = result.files, folders = result.folders)
             hideLoading()
         }
-//        _state.value = _state.value.copy(
-//            files = _state.value.backupFiles.filter {
-//                it.name.contains(_state.value.query)
-//            },
-//            folders = _state.value.backupFolders.filter {
-//                it.name.contains(_state.value.query)
-//            },
-//        )
     }
 
     fun getUid() : String {

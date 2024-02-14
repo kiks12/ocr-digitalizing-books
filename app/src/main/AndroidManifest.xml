@@ -24,6 +24,9 @@
         android:theme="@style/Theme.AppCompat"
         tools:targetApi="31">
         <activity
+            android:name=".translator.TranslatorActivity"
+            android:exported="false" />
+        <activity
             android:name=".onboarding.walkthrough.extract_text.ExtractTextWalkthroughActivity"
             android:exported="false" />
         <activity

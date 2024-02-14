@@ -106,6 +106,7 @@ fun FolderScreen(folderViewModel: FolderViewModel, folderUtilityViewModel: Folde
                             onMoveClick = {},
                             onDownloadClick = { folderUtilityViewModel.downloadFile(localContext, file.path) },
                             onPrintClick = { folderUtilityViewModel.printFile(localContext, file.path) },
+                            onTranslateClick = { folderUtilityViewModel.translateFile(localContext, file.path) },
                             onClick = {
                                 val mimetype = MimeTypeMap.getSingleton().getMimeTypeFromExtension(PathUtilities.getFileExtension(file.path)) ?: ""
                                 folderUtilityViewModel.onFileClick(localContext, file.path, mimetype)

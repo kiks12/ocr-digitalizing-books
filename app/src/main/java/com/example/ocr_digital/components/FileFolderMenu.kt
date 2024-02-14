@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.Download
+import compose.icons.feathericons.FileText
 import compose.icons.feathericons.Printer
 
 @Composable
@@ -20,6 +21,7 @@ fun FileFolderMenu(
     onRenameClick: () -> Unit,
     onDeleteClick: () -> Unit,
     onMoveClick: () -> Unit,
+    onTranslateClick: () -> Unit = {},
     onDownloadClick: () -> Unit = {},
     onPrintClick: () -> Unit = {},
     forFile: Boolean = false,
@@ -50,6 +52,11 @@ fun FileFolderMenu(
 //            trailingIcon = { Icon(Icons.Default.KeyboardArrowRight, "Move") }
 //        )
         if (forFile) {
+            DropdownMenuItem(
+                text = { Text(text = "Translate") },
+                onClick = onTranslateClick,
+                trailingIcon = { Icon(FeatherIcons.FileText, "Translate") }
+            )
             DropdownMenuItem(
                 text = { Text(text = "Download") },
                 onClick = onDownloadClick,

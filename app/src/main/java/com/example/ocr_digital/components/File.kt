@@ -25,6 +25,7 @@ fun File(
     onDeleteClick: () -> Unit,
     onRenameClick: () -> Unit,
     onMoveClick: () -> Unit,
+    onTranslateClick: () -> Unit,
     onDownloadClick: () -> Unit,
     onPrintClick: () -> Unit,
     onClick: () -> Unit
@@ -97,6 +98,10 @@ fun File(
                         menuExpanded = false
                         onMoveClick()
                     },
+                    onTranslateClick = {
+                        menuExpanded = false
+                        onTranslateClick()
+                    },
                     onDownloadClick = {
                         menuExpanded = false
                         onDownloadClick()
@@ -123,7 +128,8 @@ fun FilePreview() {
             onMoveClick = {},
             onDownloadClick = {},
             onPrintClick = {},
-            onClick = {}
+            onClick = {},
+            onTranslateClick = {}
         )
     }
 }

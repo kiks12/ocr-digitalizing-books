@@ -9,6 +9,7 @@ import com.example.ocr_digital.helpers.ToastHelper
 import com.example.ocr_digital.models.ResponseStatus
 import com.example.ocr_digital.path.PathUtilities
 import com.example.ocr_digital.repositories.FilesFolderRepository
+import com.example.ocr_digital.translator.TranslatorActivity
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -144,5 +145,9 @@ class FolderUtilityViewModel(
         viewModelScope.launch {
             filesFolderRepository.printFile(context, path)
         }
+    }
+
+    fun translateFile(context: Context, path: String) {
+        activityStarterHelper.startActivity(TranslatorActivity::class.java)
     }
 }

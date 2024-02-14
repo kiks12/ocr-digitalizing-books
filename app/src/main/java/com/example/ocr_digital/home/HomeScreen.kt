@@ -117,6 +117,7 @@ fun HomeScreen(homeViewModel: HomeViewModel, folderUtilityViewModel: FolderUtili
                             onMoveClick = {},
                             onDownloadClick = { folderUtilityViewModel.downloadFile(localContext, file.path) },
                             onPrintClick = { folderUtilityViewModel.printFile(localContext, file.path) },
+                            onTranslateClick = { folderUtilityViewModel.translateFile(localContext, file.path) },
                             onClick = {
                                 val mimetype = MimeTypeMap.getSingleton().getMimeTypeFromExtension(
                                     PathUtilities.getFileExtension(file.path)) ?: ""

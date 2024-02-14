@@ -123,4 +123,6 @@ dependencies {
     implementation("br.com.devsrsouza.compose.icons:feather:1.1.0")
 
     implementation("com.tbuonomo:dotsindicator:5.0")
+
+    implementation("com.google.mlkit:language-id:17.0.4")
 }

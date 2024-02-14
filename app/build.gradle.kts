@@ -125,4 +125,5 @@ dependencies {
     implementation("com.tbuonomo:dotsindicator:5.0")
 
     implementation("com.google.mlkit:language-id:17.0.4")
+    implementation("com.google.mlkit:translate:17.0.2")
 }

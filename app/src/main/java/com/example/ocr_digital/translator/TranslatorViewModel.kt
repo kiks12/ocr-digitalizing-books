@@ -1,5 +1,6 @@
 package com.example.ocr_digital.translator
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.example.ocr_digital.helpers.ToastHelper
@@ -33,8 +34,14 @@ class TranslatorViewModel(
                     "und" -> {
                         toastHelper.makeToast("Cannot identify source language")
                     }
-                    "fil" -> onSourceDropDownSelectedTextChange("Filipino")
-                    "en" -> onSourceDropDownSelectedTextChange("English")
+                    "fil" -> {
+                        onSourceDropDownSelectedTextChange("Filipino")
+                        onTargetDropDownSelectedTextChange("English")
+                    }
+                    "en" -> {
+                        onSourceDropDownSelectedTextChange("English")
+                        onTargetDropDownSelectedTextChange("Filipino")
+                    }
                 }
             }
     }
@@ -55,15 +62,24 @@ class TranslatorViewModel(
             .requireWifi()
             .build()
 
+        Log.w("TRANSLATOR VIEW MODEL", "BEGINNING...")
         translator.downloadModelIfNeeded(conditions)
             .addOnSuccessListener {
+                Log.w("TRANSLATOR VIEW MODEL", "MODEL DOWNLOADED")
                 translator.translate(_state.value.text)
                     .addOnSuccessListener { text ->
+                        Log.w("TRANSLATOR VIEW MODEL", "TEXT TRANSLATED")
+                        Log.w("TRANSLATOR VIEW MODEL", text)
                         onTextChange(text)
                     }
-                    .addOnFailureListener {  }
+                    .addOnFailureListener {
+                        Log.w("TRANSLATOR VIEW MODEL",it.localizedMessage)
+                    }
             }
-            .addOnFailureListener {  }
+            .addOnFailureListener {
+                Log.w("TRANSLATOR VIEW MODEL",it.localizedMessage)
+            }
+
     }
 
 }

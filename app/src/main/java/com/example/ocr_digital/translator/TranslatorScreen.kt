@@ -1,17 +1,20 @@
 package com.example.ocr_digital.translator
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -43,65 +46,69 @@ fun TranslatorScreen(translatorViewModel: TranslatorViewModel, finishCallback: (
             )
         },
         bottomBar = {
-            Column(
-                modifier = Modifier.padding(10.dp)
-            ){
-                Column {
-                    Text(text = "Source Language")
-                    ExposedDropdownMenuBox(
-                        expanded = state.sourceDropDownExpanded,
-                        onExpandedChange = translatorViewModel::onSourceDropDownExpandedChange
-                    ) {
+            Column(modifier = Modifier.padding(10.dp)) {
+                Row {
+                    Box(modifier = Modifier.fillMaxWidth(0.48f)) {
                         OutlinedTextField(
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier.clickable { translatorViewModel.onSourceDropDownExpandedChange(true) },
                             value = state.sourceDropDownSelectedText,
                             onValueChange = {},
-                            readOnly = true
+                            readOnly = true,
+                            label = { Text("Source Language")}
                         )
-
-                        ExposedDropdownMenu(expanded = state.sourceDropDownExpanded, onDismissRequest = {
-                            translatorViewModel.onSourceDropDownExpandedChange(false)
-                        }) {
+                        DropdownMenu(expanded = state.sourceDropDownExpanded, onDismissRequest = { translatorViewModel.onSourceDropDownExpandedChange(false) }) {
                             DropdownMenuItem(
                                 text = { Text(text = "Tagalog") },
-                                onClick = { translatorViewModel.onSourceDropDownSelectedTextChange("Filipino") }
+                                onClick = {
+                                    translatorViewModel.onSourceDropDownSelectedTextChange(
+                                        "Filipino"
+                                    )
+                                }
                             )
                             DropdownMenuItem(
                                 text = { Text(text = "English") },
-                                onClick = { translatorViewModel.onSourceDropDownSelectedTextChange("English") }
+                                onClick = {
+                                    translatorViewModel.onSourceDropDownSelectedTextChange(
+                                        "English"
+                                    )
+                                }
                             )
                         }
                     }
-                }
-                Spacer(Modifier.height(15.dp))
-                Column {
-                    Text(text = "Target Language")
-                    ExposedDropdownMenuBox(
-                        expanded = state.targetDropDownExpanded,
-                        onExpandedChange = translatorViewModel::onTargetDropDownExpandedChange
-                    ) {
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Box(modifier = Modifier.fillMaxWidth()) {
                         OutlinedTextField(
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier.clickable { translatorViewModel.onSourceDropDownExpandedChange(true) },
                             value = state.targetDropDownSelectedText,
                             onValueChange = {},
+                            label = { Text(text = "Target Language") },
                             readOnly = true
                         )
 
-                        ExposedDropdownMenu(expanded = state.targetDropDownExpanded, onDismissRequest = {
-                            translatorViewModel.onTargetDropDownExpandedChange(false)
-                        }) {
+                        DropdownMenu(expanded = state.targetDropDownExpanded, onDismissRequest = { translatorViewModel.onTargetDropDownExpandedChange(false) }) {
                             DropdownMenuItem(
                                 text = { Text(text = "Tagalog") },
-                                onClick = { translatorViewModel.onTargetDropDownSelectedTextChange("Filipino") }
+                                onClick = {
+                                    translatorViewModel.onTargetDropDownSelectedTextChange(
+                                        "Filipino"
+                                    )
+                                }
                             )
                             DropdownMenuItem(
                                 text = { Text(text = "English") },
-                                onClick = { translatorViewModel.onTargetDropDownSelectedTextChange("English") }
+                                onClick = {
+                                    translatorViewModel.onTargetDropDownSelectedTextChange(
+                                        "English"
+                                    )
+                                }
                             )
                         }
                     }
                 }
-                Button(onClick = translatorViewModel::translate) {
+                Button(
+                    onClick = translatorViewModel::translate,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
                     Text(text = "Translate")
                 }
             }

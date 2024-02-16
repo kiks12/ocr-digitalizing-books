@@ -6,4 +6,5 @@ data class TranslatorState(
     val targetDropDownExpanded: Boolean,
     val targetDropDownSelectedText: String,
     val text: String,
+    val loading: Boolean,
 )

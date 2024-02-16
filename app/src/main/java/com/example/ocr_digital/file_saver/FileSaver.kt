@@ -9,6 +9,7 @@ import android.os.Environment
 import android.text.StaticLayout
 import android.text.TextPaint
 import androidx.core.content.FileProvider
+import androidx.core.net.toUri
 import com.itextpdf.kernel.pdf.PdfDocument
 import com.itextpdf.layout.Document
 import com.itextpdf.kernel.pdf.PdfWriter
@@ -16,6 +17,7 @@ import com.itextpdf.layout.element.Paragraph
 import org.apache.poi.xwpf.usermodel.XWPFDocument
 import java.io.File
 import java.io.FileOutputStream
+import java.io.FileWriter
 import java.io.IOException
 
 class FileSaver {
@@ -141,12 +143,29 @@ class FileSaver {
         return  null
     }
 
+    private fun saveTextToTxt(context: Context, text: String, filename: String) : Uri? {
+        try {
+            val outputPath = File(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), "$filename.txt")
+
+            FileWriter(outputPath).use { writer ->
+                writer.write(text)
+            }
+
+            return outputPath.toUri()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+
+        return null
+    }
+
     fun saveTextToFile(context: Context, text: String, filename: String, type: FileType) : Uri? {
         return when (type) {
             FileType.DOCX -> saveTextToDocx(context, text, filename)
             FileType.PDF -> saveTextToPdf(context, text, filename)
             FileType.JPEG -> saveTextToJpeg(context, text, filename)
             FileType.PNG -> saveTextToPng(context, text, filename)
+            FileType.TXT -> saveTextToTxt(context, text, filename)
         }
     }
 }

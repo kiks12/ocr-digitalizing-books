@@ -1,19 +1,37 @@
 package com.example.ocr_digital.translator
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.ocr_digital.file_saver.FileSaver
+import com.example.ocr_digital.file_saver.FileType
 import com.example.ocr_digital.helpers.ToastHelper
+import com.example.ocr_digital.path.PathUtilities
+import com.example.ocr_digital.repositories.FilesFolderRepository
 import com.google.mlkit.common.model.DownloadConditions
 import com.google.mlkit.nl.languageid.LanguageIdentification
 import com.google.mlkit.nl.translate.TranslateLanguage
 import com.google.mlkit.nl.translate.Translation
 import com.google.mlkit.nl.translate.TranslatorOptions
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 class TranslatorViewModel(
     val text: String,
+    private val filePath: String,
+    private val folderPath: String,
     private val toastHelper: ToastHelper,
+    private val finishCallback: () -> Unit,
 ) : ViewModel() {
+    private val filesFolderRepository = FilesFolderRepository()
+    private val fileSaver = FileSaver()
+    private val job = SupervisorJob()
+    private val scope = CoroutineScope(Dispatchers.IO + job)
     private val languageIdentifier = LanguageIdentification.getClient()
     private val _state = mutableStateOf(
         TranslatorState(
@@ -21,7 +39,8 @@ class TranslatorViewModel(
             sourceDropDownSelectedText = "",
             targetDropDownExpanded = false,
             targetDropDownSelectedText = "",
-            text = text
+            text = text,
+            loading = false
         )
     )
     val state : TranslatorState
@@ -62,24 +81,60 @@ class TranslatorViewModel(
             .requireWifi()
             .build()
 
-        Log.w("TRANSLATOR VIEW MODEL", "BEGINNING...")
         translator.downloadModelIfNeeded(conditions)
             .addOnSuccessListener {
-                Log.w("TRANSLATOR VIEW MODEL", "MODEL DOWNLOADED")
-                translator.translate(_state.value.text)
-                    .addOnSuccessListener { text ->
-                        Log.w("TRANSLATOR VIEW MODEL", "TEXT TRANSLATED")
-                        Log.w("TRANSLATOR VIEW MODEL", text)
-                        onTextChange(text)
+                val texts = _state.value.text.split("\n")
+                _state.value = _state.value.copy(text = "")
+                _state.value = _state.value.copy(loading = true)
+                texts.forEach { text ->
+                    scope.launch {
+                        val translated = translator.translate(text).await()
+                        if (_state.value.text == "") {
+                            onTextChange(translated)
+                        } else {
+                            onTextChange(_state.value.text + "\n\n" + translated)
+                        }
                     }
-                    .addOnFailureListener {
-                        Log.w("TRANSLATOR VIEW MODEL",it.localizedMessage)
-                    }
+                }
+                _state.value = _state.value.copy(loading = false)
             }
             .addOnFailureListener {
-                Log.w("TRANSLATOR VIEW MODEL",it.localizedMessage)
+                it.localizedMessage?.let { it1 -> Log.w("TRANSLATOR VIEW MODEL", it1) }
             }
 
     }
 
+    fun finish() {
+        finishCallback()
+    }
+
+    fun save(context: Context) {
+        viewModelScope.launch {
+            _state.value = _state.value.copy(loading = true)
+            val extension = PathUtilities.getFileExtension(filePath)
+            val type = when(extension) {
+                "png" -> FileType.PNG
+                "pdf" -> FileType.PDF
+                "jpg" -> FileType.JPEG
+                "docx" -> FileType.DOCX
+                else -> FileType.TXT
+            }
+            val fileName = (PathUtilities.getLastSegment(filePath)).substringBeforeLast(".$extension") + "-${_state.value.targetDropDownSelectedText}"
+            val uri = fileSaver.saveTextToFile(
+                context = context,
+                text = _state.value.text,
+                filename = fileName,
+                type = type
+            )
+            if (uri != null) {
+                val response = filesFolderRepository.uploadFile(
+                    filePath = folderPath,
+                    fileUri = uri,
+                )
+
+                _state.value = _state.value.copy(loading = false)
+                toastHelper.makeToast(response.message)
+            }
+        }
+    }
 }

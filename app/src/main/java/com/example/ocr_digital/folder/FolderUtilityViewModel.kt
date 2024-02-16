@@ -147,7 +147,19 @@ class FolderUtilityViewModel(
         }
     }
 
-    fun translateFile(context: Context, path: String) {
-        activityStarterHelper.startActivity(TranslatorActivity::class.java)
+    suspend fun translateFile(filePath: String, folderPath: String) {
+        val removedExtFilePath  = filePath.substringBeforeLast(".")
+        val textFile = "$removedExtFilePath.txt"
+        viewModelScope.launch {
+            val fileContent = filesFolderRepository.readTextFromTxtFile(textFile)
+            activityStarterHelper.startActivity(
+                TranslatorActivity::class.java,
+                stringExtras = mapOf(
+                    "FILE_CONTENT" to fileContent,
+                    "FILE_PATH" to filePath,
+                    "FOLDER_PATH" to folderPath
+                )
+            )
+        }
     }
 }

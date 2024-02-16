@@ -198,7 +198,7 @@ class FilesFolderRepository {
                     .addOnSuccessListener { results ->
                         val items = results.items
                         val prefixes = results.prefixes
-                        val removedEmptyItems = items.filter { item -> item.name != "EMPTY" }
+                        val removedEmptyItems = items.filter { item -> item.name != "EMPTY" && item.name.endsWith(".txt").not() }
                         response.complete(
                             Response(
                                 status = ResponseStatus.SUCCESSFUL,
@@ -598,6 +598,28 @@ class FilesFolderRepository {
         }
 
         return filesAndFolders.await()
+    }
+
+    suspend fun readTextFromTxtFile(path: String) : String {
+        val completable = CompletableDeferred<String>(null)
+
+        coroutineScope {
+            launch(Dispatchers.IO){
+                try {
+                    val storageRef = storage.reference
+                    val fileRef = storageRef.child(path)
+
+                    val bytes = fileRef.getBytes(Long.MAX_VALUE).await()
+                    val content = String(bytes, Charsets.UTF_8)
+                    completable.complete(content)
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                    completable.complete("")
+                }
+            }
+        }
+
+        return completable.await()
     }
 
 }

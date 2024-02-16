@@ -58,7 +58,8 @@ class ImageScannerViewModel(
 
     fun saveFile(context: Context, text: String, filename: String, type: FileType) {
         val uri = fileSaver.saveTextToFile(context, text, filename, type)
-        if (uri != null) {
+        val uriText = fileSaver.saveTextToFile(context, text, filename, FileType.TXT)
+        if (uri != null && uriText != null) {
             viewModelScope.launch {
                 var responseMessage : String? = null
                 async {
@@ -66,10 +67,13 @@ class ImageScannerViewModel(
                     hideSaveDialog()
                     showLoading()
                     val response = filesFolderRepository.uploadFile(path, uri)
-                    if (response.status == ResponseStatus.SUCCESSFUL) {
-                        hideSaveDialog()
+                    val responseTwo = filesFolderRepository.uploadFile(path, uriText)
+                    if (response.status == ResponseStatus.SUCCESSFUL && responseTwo.status == ResponseStatus.SUCCESSFUL) {
                         responseMessage = response.message
                     }
+                    if (response.status == ResponseStatus.FAILED) responseMessage = response.message
+                    if (responseTwo.status == ResponseStatus.FAILED) responseMessage = responseTwo.message
+                    hideSaveDialog()
                 }.await()
                 async {
                     hideLoading()

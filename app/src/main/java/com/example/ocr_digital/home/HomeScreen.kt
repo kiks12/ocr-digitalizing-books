@@ -23,6 +23,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -41,11 +42,13 @@ import com.example.ocr_digital.path.PathUtilities
 import eu.bambooapps.material3.pullrefresh.PullRefreshIndicator
 import eu.bambooapps.material3.pullrefresh.pullRefresh
 import eu.bambooapps.material3.pullrefresh.rememberPullRefreshState
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(homeViewModel: HomeViewModel, folderUtilityViewModel: FolderUtilityViewModel) {
     val sheetState = rememberModalBottomSheetState()
+    val scope = rememberCoroutineScope()
     val state = homeViewModel.state
     val localContext = LocalContext.current
     val refreshing by remember { mutableStateOf(false) }
@@ -117,7 +120,11 @@ fun HomeScreen(homeViewModel: HomeViewModel, folderUtilityViewModel: FolderUtili
                             onMoveClick = {},
                             onDownloadClick = { folderUtilityViewModel.downloadFile(localContext, file.path) },
                             onPrintClick = { folderUtilityViewModel.printFile(localContext, file.path) },
-                            onTranslateClick = { folderUtilityViewModel.translateFile(localContext, file.path) },
+                            onTranslateClick = {
+                                scope.launch {
+                                    folderUtilityViewModel.translateFile(file.path, "/${homeViewModel.getUid()}")
+                                }
+                            },
                             onClick = {
                                 val mimetype = MimeTypeMap.getSingleton().getMimeTypeFromExtension(
                                     PathUtilities.getFileExtension(file.path)) ?: ""

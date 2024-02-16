@@ -4,5 +4,6 @@ enum class FileType {
     PDF,
     DOCX,
     JPEG,
-    PNG
+    PNG,
+    TXT
 }

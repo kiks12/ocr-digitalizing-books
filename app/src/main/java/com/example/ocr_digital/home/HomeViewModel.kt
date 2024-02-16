@@ -19,9 +19,7 @@ class HomeViewModel(
     private val _state = mutableStateOf(
         HomeState(
             folders = listOf(),
-//            backupFolders = listOf(),
             files = listOf(),
-//            backupFiles = listOf(),
             loading = true,
             folderName = "",
             showBottomSheet = false,

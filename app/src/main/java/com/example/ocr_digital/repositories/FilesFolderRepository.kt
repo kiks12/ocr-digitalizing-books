@@ -398,30 +398,46 @@ class FilesFolderRepository {
     suspend fun uploadFile(filePath: String, fileUri: Uri) : Response {
         val response = CompletableDeferred<Response>(null)
 
-        coroutineScope {
-            val storageRef = storage.reference
-            val directoryRef = storageRef.child("$filePath/${fileUri.lastPathSegment}")
-            directoryRef.putFile(fileUri)
-                .addOnSuccessListener {
-                    response.complete(
-                        Response(
-                            status = ResponseStatus.SUCCESSFUL,
-                            message = "File uploaded successfully"
-                        )
-                    )
-                }
-                .addOnFailureListener {
-                    it.localizedMessage?.let { it1 ->
-                        Response(
-                            status = ResponseStatus.SUCCESSFUL,
-                            message = it1
-                        )
-                    }?.let { it2 ->
+        try {
+            coroutineScope {
+                launch(Dispatchers.IO) {
+                    val filenameAvailable = getFilenameAvailability("$filePath/${fileUri.lastPathSegment}")
+
+                    if (filenameAvailable) {
+                        val storageRef = storage.reference
+                        val directoryRef = storageRef.child("$filePath/${fileUri.lastPathSegment}")
+                        directoryRef.putFile(fileUri).await()
+
                         response.complete(
-                            it2
+                            Response(
+                                status = ResponseStatus.SUCCESSFUL,
+                                message = "File uploaded successfully"
+                            )
+                        )
+                    } else {
+                        response.complete(
+                            Response(
+                                status = ResponseStatus.FAILED,
+                                message = "File name already in use"
+                            )
                         )
                     }
                 }
+            }
+        } catch (e: Exception) {
+            response.complete(
+                Response(
+                    status = ResponseStatus.SUCCESSFUL,
+                    message = e.localizedMessage!!
+                )
+            )
+        } catch (e: IOException) {
+            response.complete(
+                Response(
+                    status = ResponseStatus.SUCCESSFUL,
+                    message = e.localizedMessage!!
+                )
+            )
         }
 
         return response.await()

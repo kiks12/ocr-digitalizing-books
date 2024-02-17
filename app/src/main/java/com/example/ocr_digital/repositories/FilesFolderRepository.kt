@@ -35,7 +35,6 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -311,89 +310,86 @@ class FilesFolderRepository {
         return response.await()
     }
 
+    private suspend fun getFilenameAvailability(filePath: String) : Boolean{
+        val response = CompletableDeferred<Boolean>(null)
+        val parentDir = PathUtilities.removeLastSegment(filePath)
+        val filename = PathUtilities.getLastSegment(filePath)
+
+        try {
+            val reference = storage.reference
+            val parentDirList = reference.child(parentDir).listAll().await()
+
+            parentDirList.items.forEach { item ->
+                if (item.name == filename) {
+                    response.complete(false)
+                }
+            }
+
+            response.complete(true)
+        } catch (e: Exception) {
+            response.complete(false)
+        }
+
+        return response.await()
+    }
+
     suspend fun renameFile(currentPath: String, newPath: String) : Response {
         val response = CompletableDeferred<Response>(null)
 
-        coroutineScope {
-            launch(Dispatchers.IO) {
-                val reference = storage.reference
-                val currentFileRef = reference.child(currentPath)
-                val parentDir = PathUtilities.removeLastSegment(currentPath)
-                val newFileRef = reference.child(newPath)
+        try {
+            coroutineScope {
+                launch(Dispatchers.IO) {
+                    val reference = storage.reference
+                    val currentFileRef = reference.child(currentPath)
+                    val newFileRef = reference.child(newPath)
+                    val currentTextFilePath = getAssociatedTextFilePath(currentPath)
+                    val newTextFilePath = getAssociatedTextFilePath(newPath)
+                    val currentTextFileRef = reference.child(currentTextFilePath)
+                    val newTextFileRef = reference.child(newTextFilePath)
 
-                reference.child(parentDir).listAll()
-                    .addOnSuccessListener { result ->
-                        val items = result.items
-                        val filteredItem = items.filter { item -> item.name == PathUtilities.getLastSegment(newPath) }
+                    val filenameAvailable = getFilenameAvailability(newPath)
 
-                        if (filteredItem.isNotEmpty()) {
-                            response.complete(
-                                Response(
-                                    status = ResponseStatus.FAILED,
-                                    message = "File name already used"
-                                )
+                    if (!filenameAvailable) {
+                        response.complete(
+                            Response(
+                                status = ResponseStatus.FAILED,
+                                message = "File name already in use"
                             )
-                            return@addOnSuccessListener
-                        }
+                        )
+                    } else {
+                        val localFile = File.createTempFile("temp", null)
+                        currentFileRef.getFile(localFile).await()
+                        newFileRef.putFile(localFile.toUri()).await()
+                        currentFileRef.delete().await()
 
-                        scope.launch {
-                            withContext(Dispatchers.IO) {
-                                val localFile = File.createTempFile("temp", null)
-                                currentFileRef.getFile(localFile)
-                                    .addOnSuccessListener {
-                                        newFileRef.putFile(localFile.toUri())
-                                            .addOnSuccessListener {
-                                                currentFileRef.delete()
-                                                    .addOnSuccessListener {
-                                                        response.complete(
-                                                            Response(
-                                                                status = ResponseStatus.SUCCESSFUL,
-                                                                message = "Successfully renamed file"
-                                                            )
-                                                        )
-                                                    }
-                                                    .addOnFailureListener {
-                                                        it.localizedMessage?.let { it1 ->
-                                                            Response(
-                                                                status = ResponseStatus.FAILED,
-                                                                message = it1
-                                                            )
-                                                        }?.let { it2 ->
-                                                            response.complete(
-                                                                it2
-                                                            )
-                                                        }
-                                                    }
-                                            }
-                                            .addOnFailureListener {
-                                                it.localizedMessage?.let { it1 ->
-                                                    Response(
-                                                        status = ResponseStatus.FAILED,
-                                                        message = it1
-                                                    )
-                                                }?.let { it2 ->
-                                                    response.complete(
-                                                        it2
-                                                    )
-                                                }
-                                            }
-                                    }
-                                    .addOnFailureListener {
-                                        it.localizedMessage?.let { it1 ->
-                                            Response(
-                                                status = ResponseStatus.FAILED,
-                                                message = it1
-                                            )
-                                        }?.let { it2 ->
-                                            response.complete(
-                                                it2
-                                            )
-                                        }
-                                    }
-                            }
-                        }
+                        val localTextFile = File.createTempFile("textTemp", null)
+                        currentTextFileRef.getFile(localFile).await()
+                        newTextFileRef.putFile(localTextFile.toUri()).await()
+                        currentTextFileRef.delete().await()
+
+                        response.complete(
+                            Response(
+                                status = ResponseStatus.SUCCESSFUL,
+                                message = "Successfully renamed file"
+                            )
+                        )
                     }
+                }
             }
+        } catch (e: Exception) {
+            response.complete(
+                Response(
+                    status = ResponseStatus.FAILED,
+                    message = e.localizedMessage!!
+                )
+            )
+        } catch (e: IOException) {
+            response.complete(
+                Response(
+                    status = ResponseStatus.FAILED,
+                    message = e.localizedMessage!!
+                )
+            )
         }
 
         return response.await()

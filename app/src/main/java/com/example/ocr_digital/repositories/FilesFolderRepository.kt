@@ -98,36 +98,39 @@ class FilesFolderRepository {
         return response.await()
     }
 
+    private fun getAssociatedTextFilePath(path: String) : String {
+        val extension = PathUtilities.getFileExtension(path)
+        val filePath = path.substringBeforeLast(".$extension")
+        return "$filePath.txt"
+    }
+
     suspend fun deleteFile(path: String) : Response {
         val response = CompletableDeferred<Response>(null)
-
-        coroutineScope {
-            launch(Dispatchers.IO){
-                val reference = storage.reference
-                reference.child(path).delete()
-                    .addOnSuccessListener {
-                        response.complete(
-                            Response(
-                                status = ResponseStatus.SUCCESSFUL,
-                                message = "File successfully deleted"
-                            )
+        val textFilePath = getAssociatedTextFilePath(path)
+        try {
+            coroutineScope {
+                launch(Dispatchers.IO){
+                    val reference = storage.reference
+                    reference.child(path).delete().await()
+                    reference.child(textFilePath).delete().await()
+                    response.complete(
+                        Response(
+                            status = ResponseStatus.SUCCESSFUL,
+                            message = "File successfully deleted"
                         )
-                    }
-                    .addOnFailureListener {
-                        it.localizedMessage?.let { it1 ->
-                            Response(
-                                status = ResponseStatus.FAILED,
-                                message = it1
-                            )
-                        }?.let { it2 ->
-                            response.complete(
-                                it2
-                            )
-                        }
-                    }
+                    )
+                }
             }
-        }
 
+            return response.await()
+        } catch (e: Exception) {
+            response.complete(
+                Response(
+                    status = ResponseStatus.FAILED,
+                    message = e.localizedMessage!!
+                )
+            )
+        }
         return response.await()
     }
 

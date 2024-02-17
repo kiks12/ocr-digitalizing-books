@@ -84,6 +84,7 @@ class TranslatorViewModel(
         translator.downloadModelIfNeeded(conditions)
             .addOnSuccessListener {
                 val texts = _state.value.text.split("\n")
+                Log.w("TRANSLATOR VIEW MODEL", texts.toString())
                 _state.value = _state.value.copy(text = "")
                 _state.value = _state.value.copy(loading = true)
                 texts.forEach { text ->
@@ -120,20 +121,15 @@ class TranslatorViewModel(
                 else -> FileType.TXT
             }
             val fileName = (PathUtilities.getLastSegment(filePath)).substringBeforeLast(".$extension") + "-${_state.value.targetDropDownSelectedText}"
-            val uri = fileSaver.saveTextToFile(
-                context = context,
-                text = _state.value.text,
-                filename = fileName,
-                type = type
-            )
-            if (uri != null) {
-                val response = filesFolderRepository.uploadFile(
-                    filePath = folderPath,
-                    fileUri = uri,
-                )
+            val uri = fileSaver.saveTextToFile(context, _state.value.text, fileName, type)
+            val uriText = fileSaver.saveTextToFile(context, _state.value.text, fileName, FileType.TXT)
+            if (uri != null && uriText != null) {
+                val response = filesFolderRepository.uploadFile(folderPath, uri)
+                val responseTwo = filesFolderRepository.uploadFile(folderPath, uriText)
 
                 _state.value = _state.value.copy(loading = false)
                 toastHelper.makeToast(response.message)
+                toastHelper.makeToast(responseTwo.message)
             }
         }
     }

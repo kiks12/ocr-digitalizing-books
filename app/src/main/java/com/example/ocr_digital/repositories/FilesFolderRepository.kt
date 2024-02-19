@@ -363,7 +363,7 @@ class FilesFolderRepository {
                         currentFileRef.delete().await()
 
                         val localTextFile = File.createTempFile("textTemp", null)
-                        currentTextFileRef.getFile(localFile).await()
+                        currentTextFileRef.getFile(localTextFile).await()
                         newTextFileRef.putFile(localTextFile.toUri()).await()
                         currentTextFileRef.delete().await()
 

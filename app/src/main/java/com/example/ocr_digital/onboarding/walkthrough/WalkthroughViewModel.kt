@@ -7,6 +7,7 @@ import com.example.ocr_digital.helpers.ActivityStarterHelper
 import com.example.ocr_digital.home.HomeActivity
 import com.example.ocr_digital.onboarding.walkthrough.create_folder.CreateFolderWalkthroughActivity
 import com.example.ocr_digital.onboarding.walkthrough.extract_text.ExtractTextWalkthroughActivity
+import com.example.ocr_digital.onboarding.walkthrough.translate_files.TranslateFilesWalkthroughActivity
 import com.example.ocr_digital.repositories.UsersRepository
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -34,6 +35,10 @@ class WalkthroughViewModel(
 
     fun startExtractTextWalkthroughActivity() {
         activityStarterHelper.startActivity(ExtractTextWalkthroughActivity::class.java)
+    }
+
+    fun startTranslateFileWalkthroughActivity() {
+        activityStarterHelper.startActivity(TranslateFilesWalkthroughActivity::class.java)
     }
 
     fun finish() {

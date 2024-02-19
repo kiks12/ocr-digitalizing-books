@@ -28,6 +28,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.example.ocr_digital.helpers.ActivityStarterHelper
 import com.example.ocr_digital.onboarding.walkthrough.create_folder.CreateFolderWalkthroughScreen
 import com.example.ocr_digital.onboarding.walkthrough.extract_text.ExtractTextWalkthroughScreen
+import com.example.ocr_digital.onboarding.walkthrough.translate_files.TranslateFilesWalkthroughScreen
 import com.example.ocr_digital.ui.theme.OcrDigitalTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -41,7 +42,9 @@ fun WalkthroughScreen(walkthroughViewModel: WalkthroughViewModel) {
 
     if (loading) {
         Scaffold { innerPadding ->
-            Box(modifier = Modifier.padding(innerPadding).fillMaxSize(), contentAlignment = Alignment.Center) {
+            Box(modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxSize(), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator()
             }
         }
@@ -54,6 +57,11 @@ fun WalkthroughScreen(walkthroughViewModel: WalkthroughViewModel) {
             }
             if (step == 1) {
                 ExtractTextWalkthroughScreen {
+                    step += 1
+                }
+            }
+            if (step == 2) {
+                TranslateFilesWalkthroughScreen {
                     walkthroughViewModel.finishAutomatic()
                 }
             }
@@ -84,6 +92,13 @@ fun WalkthroughScreen(walkthroughViewModel: WalkthroughViewModel) {
                         ListItem(
                             modifier = Modifier.clickable { walkthroughViewModel.startExtractTextWalkthroughActivity() },
                             headlineContent = { Text("Extract text from image") },
+                            trailingContent = { Icon(Icons.Default.KeyboardArrowRight, "go") }
+                        )
+                    }
+                    item {
+                        ListItem(
+                            modifier = Modifier.clickable { walkthroughViewModel.startTranslateFileWalkthroughActivity() },
+                            headlineContent = { Text("Translate file to another language") },
                             trailingContent = { Icon(Icons.Default.KeyboardArrowRight, "go") }
                         )
                     }

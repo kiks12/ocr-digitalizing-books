@@ -57,6 +57,10 @@ class ImageScannerViewModel(
     fun onFileNameChange(newStr: String) { _state.value = _state.value.copy(filename = newStr) }
 
     fun saveFile(context: Context, text: String, filename: String, type: FileType) {
+        if (filename == "") {
+            toastHelper.makeToast("Empty filename! Please enter a filename")
+            return
+        }
         val uri = fileSaver.saveTextToFile(context, text, filename, type)
         val uriText = fileSaver.saveTextToFile(context, text, filename, FileType.TXT)
         if (uri != null && uriText != null) {

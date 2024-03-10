@@ -204,14 +204,6 @@ fun ExtractTextWalkthroughScreen(finish: () -> Unit) {
                         step = 14
                     )
                 }
-                14 -> {
-                    HorizontalPagerWalkthroughPage(
-                        painter = painterResource(R.drawable.extract15),
-                        contentDescription = stringResource(R.string.extract_text_fifteen),
-                        text = stringResource(R.string.extract_text_fifteen),
-                        step = 15
-                    )
-                }
             }
         }
     }

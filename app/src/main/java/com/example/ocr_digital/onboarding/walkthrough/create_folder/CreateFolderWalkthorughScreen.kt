@@ -134,14 +134,6 @@ fun CreateFolderWalkthroughScreen(finish: () -> Unit) {
                         step = 5
                     )
                 }
-                5 -> {
-                    HorizontalPagerWalkthroughPage(
-                        painter = painterResource(R.drawable.create6),
-                        contentDescription = stringResource(R.string.create_folder_six),
-                        text = stringResource(R.string.create_folder_six),
-                        step = 6
-                    )
-                }
             }
         }
     }

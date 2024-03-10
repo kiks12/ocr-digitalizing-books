@@ -1,236 +1,100 @@
 package com.example.ocr_digital.home
 
-import android.webkit.MimeTypeMap
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.ocr_digital.components.ActionsBottomSheet
-import com.example.ocr_digital.components.File
-import com.example.ocr_digital.components.Folder
-import com.example.ocr_digital.components.dialogs.CreateFolderDialog
-import com.example.ocr_digital.components.dialogs.DeleteFileFolderDialog
-import com.example.ocr_digital.components.dialogs.RenameDialog
-import com.example.ocr_digital.folder.FolderUtilityViewModel
+import androidx.compose.ui.unit.sp
+import com.example.ocr_digital.R
 import com.example.ocr_digital.helpers.ActivityStarterHelper
-import com.example.ocr_digital.helpers.ToastHelper
-import com.example.ocr_digital.path.PathUtilities
-import eu.bambooapps.material3.pullrefresh.PullRefreshIndicator
-import eu.bambooapps.material3.pullrefresh.pullRefresh
-import eu.bambooapps.material3.pullrefresh.rememberPullRefreshState
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(homeViewModel: HomeViewModel, folderUtilityViewModel: FolderUtilityViewModel) {
-    val sheetState = rememberModalBottomSheetState()
-    val scope = rememberCoroutineScope()
+fun HomeScreen(homeViewModel: HomeViewModel) {
     val state = homeViewModel.state
-    val localContext = LocalContext.current
-    val refreshing by remember { mutableStateOf(false) }
-    val refreshState = rememberPullRefreshState(refreshing = refreshing, onRefresh = homeViewModel::refresh)
 
     Scaffold(
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = homeViewModel::showBottomSheet,
-                shape = CircleShape
-            ) {
-                Icon(Icons.Default.Add, contentDescription = "Add")
-            }
-        },
         topBar = {
-            SearchBar(
-                query = state.query,
-                onQueryChange = homeViewModel::onQueryChange,
-                onSearch = { homeViewModel.searchFile() },
-                active = false,
-                onActiveChange = {},
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 10.dp),
-                placeholder = { Text(text = "Search File") },
-                trailingIcon = {
-                   Icon(Icons.Default.Search, "Search")
+            TopAppBar(
+                title = { },
+                actions = {
+                    Text(text = "How to use?")
+                    IconButton(modifier = Modifier.padding(horizontal = 1.dp), onClick = homeViewModel::startWalkthroughActivity) {
+                        Icon(Icons.Outlined.Info, contentDescription = "")
+                    }
                 }
-            ) {
-            }
+            )
         }
     ){ innerPadding ->
-        if (state.loading) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
+        Column(modifier = Modifier
+            .padding(innerPadding)
+            .padding(horizontal = 15.dp)){
+            Text(
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Medium,
+                text = "Welcome,"
+            )
+            Text(
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Normal,
+                text = state.displayName
+            )
+            Spacer(modifier = Modifier.height(30.dp))
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 15.dp),
+                text = "You may now scan books",
+                textAlign = TextAlign.Center
+            )
+            Spacer(modifier = Modifier.height(15.dp))
+            Image(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(5))
+                    .shadow(10.dp),
+                painter = painterResource(R.drawable.overview),
+                contentDescription = "Overview"
+            )
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(top=15.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ){
+                Text(text = "Picture")
+                Icon(Icons.Default.ArrowForward, contentDescription = "Forward")
+                Text(text = "Text")
             }
-        } else {
-            if (state.folders.isEmpty() && state.files.isEmpty()) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(text = "No folder and files saved")
-                }
-            } else {
-                LazyColumn(
-                    modifier = Modifier
-                        .padding(innerPadding)
-                        .fillMaxWidth()
-                        .pullRefresh(refreshState)
-                ) {
-                    items(state.folders) {folder ->
-                        Folder(
-                            directoryName = folder.name,
-                            onDeleteClick = { homeViewModel.showDeleteFileOrFolderDialog(folder.path) },
-                            onRenameClick = { homeViewModel.showRenameFileOrFolderDialog(folder.path) },
-                            onMoveClick = {},
-                            onFolderClick = { homeViewModel.openFolder(folder.path) },
-                        )
-                    }
-                    items(state.files) {file ->
-                        File(
-                            filename = file.name,
-                            onDeleteClick = { homeViewModel.showDeleteFileOrFolderDialog(file.path, forFile = true) },
-                            onRenameClick = { homeViewModel.showRenameFileOrFolderDialog(file.path, forFile = true) },
-                            onMoveClick = {},
-                            onDownloadClick = { folderUtilityViewModel.downloadFile(localContext, file.path) },
-                            onPrintClick = { folderUtilityViewModel.printFile(localContext, file.path) },
-                            onTranslateClick = {
-                                scope.launch {
-                                    folderUtilityViewModel.translateFile(file.path, "/${homeViewModel.getUid()}")
-                                }
-                            },
-                            onClick = {
-                                val mimetype = MimeTypeMap.getSingleton().getMimeTypeFromExtension(
-                                    PathUtilities.getFileExtension(file.path)) ?: ""
-                                folderUtilityViewModel.onFileClick(localContext, file.path, mimetype)
-                            }
-                        )
-                    }
-                }
-
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
-                    PullRefreshIndicator(
-                        refreshing = refreshing,
-                        state = refreshState,
-                    )
-                }
-            }
-        }
-
-        if (state.showBottomSheet) {
-            ActionsBottomSheet(
-                sheetState = sheetState,
-                onDismissRequest = homeViewModel::hideBottomSheet,
-                scanText = { folderUtilityViewModel.scanText("/${homeViewModel.getUid()}") },
-                createFolder = homeViewModel::showCreateFolderDialog
-            )
-        }
-
-        if (state.showCreateFolderDialog) {
-            CreateFolderDialog(
-                folderName = state.folderName,
-                onFolderNameChange = homeViewModel::onFolderNameChange,
-                onDismissRequest = homeViewModel::hideCreateFolderDialog,
-                onCreateClick = {
-                    folderUtilityViewModel.createFolder(
-                        folderName = state.folderName,
-                        folderPath = "/${homeViewModel.getUid()}",
-                        successCallback = {
-                            homeViewModel.refresh()
-                            homeViewModel.hideBottomSheet()
-                            homeViewModel.hideCreateFolderDialog()
-                        },
-                    )
-                }
-            )
-        }
-
-        if (state.showDeleteFileOrFolderDialog) {
-            DeleteFileFolderDialog(
-                loading = state.dialogLoading,
-                onDismissRequest = homeViewModel::hideDeleteFileOrFolderDialog,
-                onDeleteClick = {
-                    homeViewModel.showDialogLoader()
-                    folderUtilityViewModel.deleteFileOrFolder(
-                        fileFolderPath = state.fileOrFolderPath,
-                        forFile = state.deleteForFile,
-                        successCallback = {
-                            homeViewModel.hideDialogLoader()
-                            homeViewModel.refresh()
-                            homeViewModel.hideBottomSheet()
-                            homeViewModel.hideDeleteFileOrFolderDialog()
-                        },
-                        failedCallback = {
-                            homeViewModel.hideDialogLoader()
-                        }
-                    )
-                }
-            )
-        }
-
-        if (state.showRenameFileOrFolderDialog) {
-            RenameDialog(
-                forFile = state.renameForFile,
-                loading = state.dialogLoading,
-                onDismissRequest = homeViewModel::hideRenameFileOrFolderDialog,
-                value = state.renameNewPath,
-                onValueChange = homeViewModel::onRenameNewPathChange,
-                onRenameClick = {
-                    homeViewModel.showDialogLoader()
-                    folderUtilityViewModel.renameFileOrFolder(
-                        renameCurrentPath = state.renameCurrentPath,
-                        renameNewPath = state.renameNewPath,
-                        renameForFile = state.renameForFile,
-                        successCallback = {
-                            homeViewModel.hideDialogLoader()
-                            homeViewModel.refresh()
-                            homeViewModel.hideBottomSheet()
-                            homeViewModel.hideRenameFileOrFolderDialog()
-                        },
-                        failedCallback = {
-                            homeViewModel.hideDialogLoader()
-                        }
-                    )
-                }
-            )
         }
     }
 }
 
-
 @Preview
 @Composable
 fun HomeScreenPreview() {
-    val toastHelper = ToastHelper(LocalContext.current)
-    val activityStarterHelper = ActivityStarterHelper(LocalContext.current)
-    HomeScreen(
-        homeViewModel = HomeViewModel(activityStarterHelper),
-        folderUtilityViewModel = FolderUtilityViewModel(toastHelper, activityStarterHelper)
-    )
+    val localContext = LocalContext.current
+    val activityStarterHelper = ActivityStarterHelper(localContext)
+    HomeScreen(homeViewModel = HomeViewModel(activityStarterHelper))
 }

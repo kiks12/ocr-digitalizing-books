@@ -25,11 +25,12 @@ import androidx.navigation.compose.rememberNavController
 
 enum class NavigationScreens {
     HOME,
+    SCAN,
     SETTINGS
 }
 
 @Composable
-fun NavigationScreen(homeScreen: @Composable () -> Unit, settingsScreen: @Composable () -> Unit) {
+fun NavigationScreen(homeScreen: @Composable () -> Unit, scanScreen: @Composable () -> Unit, settingsScreen: @Composable () -> Unit) {
     val navController = rememberNavController()
     var currentRoute by remember {
         mutableStateOf(NavigationScreens.HOME.name)
@@ -53,6 +54,20 @@ fun NavigationScreen(homeScreen: @Composable () -> Unit, settingsScreen: @Compos
                             }
                         },
                         label = { Text(text = "Home") }
+                    )
+                    NavigationBarItem(
+                        selected = currentRoute == NavigationScreens.SCAN.name,
+                        onClick = {
+                            navController.navigate(NavigationScreens.SCAN.name)
+                            currentRoute = NavigationScreens.SCAN.name
+                        },
+                        icon = {
+                            if (currentRoute == NavigationScreens.SCAN.name) {
+                                Icon(documentScannerFilled(), "Scan")
+                            } else {
+                                Icon(documentScannerOutlined(), "Scan")
+                            }
+                        }
                     )
                     NavigationBarItem(
                         selected = currentRoute == NavigationScreens.SETTINGS.name,
@@ -79,6 +94,7 @@ fun NavigationScreen(homeScreen: @Composable () -> Unit, settingsScreen: @Compos
                 startDestination = NavigationScreens.HOME.name
             ) {
                 composable(NavigationScreens.HOME.name) { homeScreen() }
+                composable(NavigationScreens.SCAN.name) { scanScreen() }
                 composable(NavigationScreens.SETTINGS.name) { settingsScreen() }
             }
         }

@@ -18,6 +18,8 @@ import com.example.ocr_digital.navigation.NavigationScreen
 import com.example.ocr_digital.onboarding.OnBoardingActivity
 import com.example.ocr_digital.onboarding.walkthrough.WalkthroughActivity
 import com.example.ocr_digital.repositories.UsersRepository
+import com.example.ocr_digital.scan.ScanScreen
+import com.example.ocr_digital.scan.ScanViewModel
 import com.example.ocr_digital.settings.SettingsScreen
 import com.example.ocr_digital.settings.SettingsViewModel
 import com.example.ocr_digital.startup.StartupActivity
@@ -31,7 +33,7 @@ class HomeActivity : AppCompatActivity() {
     private val usersRepository = UsersRepository()
     private val auth = Firebase.auth
 
-    private lateinit var homeViewModel: HomeViewModel
+    private lateinit var scanViewModel: ScanViewModel
 
     override fun onStart() {
         super.onStart()
@@ -51,7 +53,7 @@ class HomeActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        homeViewModel.refresh()
+        scanViewModel.refresh()
     }
 
     private fun startStartupActivity() {
@@ -79,7 +81,8 @@ class HomeActivity : AppCompatActivity() {
         val toastHelper = ToastHelper(this)
         val activityStarterHelper = ActivityStarterHelper(this)
         val settingsViewModel = SettingsViewModel(toastHelper = toastHelper, activityStarterHelper = activityStarterHelper)
-        homeViewModel = HomeViewModel(activityStarterHelper = activityStarterHelper)
+        val homeViewModel = HomeViewModel(activityStarterHelper)
+        scanViewModel = ScanViewModel(activityStarterHelper)
         val folderUtilityViewModel = FolderUtilityViewModel(toastHelper = toastHelper, activityStarterHelper = activityStarterHelper)
 
         setContent {
@@ -87,7 +90,8 @@ class HomeActivity : AppCompatActivity() {
                 Scaffold { innerPadding ->
                     Box(modifier = Modifier.padding(innerPadding)) {
                         NavigationScreen(
-                            homeScreen = { HomeScreen(homeViewModel = homeViewModel, folderUtilityViewModel = folderUtilityViewModel) },
+                            homeScreen = { HomeScreen(homeViewModel = homeViewModel) },
+                            scanScreen = { ScanScreen(scanViewModel = scanViewModel, folderUtilityViewModel = folderUtilityViewModel) },
                             settingsScreen = { SettingsScreen(settingsViewModel = settingsViewModel) }
                         )
                     }

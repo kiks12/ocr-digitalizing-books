@@ -45,7 +45,7 @@ fun LoginScreen(loginViewModel: LoginViewModel) {
                 Column {
                     Column {
                         Text(
-                            text = "OCR: Digital Books",
+                            text = "OCR: Digitalizing Books",
                             fontSize = 30.sp,
                             fontWeight = FontWeight.Bold
                         )

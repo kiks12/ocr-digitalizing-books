@@ -1,20 +1,44 @@
 package com.example.ocr_digital.settings
 
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.ocr_digital.MainActivity
 import com.example.ocr_digital.helpers.ActivityStarterHelper
 import com.example.ocr_digital.helpers.ToastHelper
+import com.example.ocr_digital.models.UserInformation
 import com.example.ocr_digital.onboarding.walkthrough.WalkthroughActivity
 import com.example.ocr_digital.passwords.change_password.ChangePasswordActivity
+import com.example.ocr_digital.repositories.UsersRepository
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.launch
 
 class SettingsViewModel(
     private val toastHelper: ToastHelper,
     private val activityStarterHelper: ActivityStarterHelper
 ) : ViewModel() {
-
+    private val usersRepository = UsersRepository()
     private val auth = Firebase.auth
+    private val _state = mutableStateOf(
+         SettingsState(
+             userInformation = UserInformation(),
+             email = "",
+         )
+    )
+    val state : SettingsState
+        get() = _state.value
+
+    init {
+        viewModelScope.launch {
+            val response = usersRepository.getUser(auth.currentUser?.uid!!)
+            val userInformation = response.data["user"] as ArrayList<UserInformation>
+            _state.value = _state.value.copy(
+                email = auth.currentUser?.email!!,
+                userInformation = userInformation[0]
+            )
+        }
+    }
 
     fun signOut() {
         auth.signOut()

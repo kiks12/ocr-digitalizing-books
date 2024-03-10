@@ -65,7 +65,7 @@ fun HorizontalPagerWalkthroughPage(painter: Painter, contentDescription: String,
 @Composable
 fun HorizontalPagerWalkthroughPagePreview() {
     val painter = painterResource(R.drawable.create1)
-    val text = stringResource(R.string.create_folder_six)
+    val text = stringResource(R.string.create_folder_one)
 
     OcrDigitalTheme {
         Scaffold { innerPadding ->

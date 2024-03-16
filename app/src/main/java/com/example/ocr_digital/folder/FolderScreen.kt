@@ -68,6 +68,8 @@ fun FolderScreen(folderViewModel: FolderViewModel, folderUtilityViewModel: Folde
                 ) {
                     Icon(FeatherIcons.FolderPlus, contentDescription = "New Folder")
                 }
+                Spacer(modifier = Modifier.height(5.dp))
+                Text("Add Folder", fontSize = 11.sp)
                 Spacer(modifier = Modifier.height(10.dp))
                 FloatingActionButton(
                     onClick = { folderUtilityViewModel.scanText(folderViewModel.getFolderPath()) },
@@ -75,6 +77,8 @@ fun FolderScreen(folderViewModel: FolderViewModel, folderUtilityViewModel: Folde
                 ) {
                     Icon(FeatherIcons.FileText, contentDescription = "Scanner")
                 }
+                Spacer(modifier = Modifier.height(5.dp))
+                Text("Scanner", fontSize = 11.sp)
             }
         },
         topBar = {
@@ -108,7 +112,7 @@ fun FolderScreen(folderViewModel: FolderViewModel, folderUtilityViewModel: Folde
                         .fillMaxWidth()
                         .pullRefresh(refreshState)
                 ) {
-                    item { Text(text = "Saved Folders", modifier = Modifier.padding(start = 15.dp, top=15.dp), fontSize = 12.sp) }
+                    item { Text(text = "Saved Files", modifier = Modifier.padding(start = 15.dp, top=15.dp), fontSize = 12.sp) }
                     items(state.folders) {folder ->
                         Folder(
                             directoryName = folder.name,
@@ -118,7 +122,6 @@ fun FolderScreen(folderViewModel: FolderViewModel, folderUtilityViewModel: Folde
                             onFolderClick = { folderViewModel.openFolder(folder.path) },
                         )
                     }
-                    item { Text(text = "Saved Files", modifier = Modifier.padding(start = 15.dp, top=15.dp), fontSize = 12.sp) }
                     items(state.files) {file ->
                         File(
                             filename = file.name,

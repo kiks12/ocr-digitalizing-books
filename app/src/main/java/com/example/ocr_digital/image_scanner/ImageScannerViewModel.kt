@@ -9,6 +9,7 @@ import com.example.ocr_digital.file_saver.FileType
 import com.example.ocr_digital.helpers.ToastHelper
 import com.example.ocr_digital.models.ResponseStatus
 import com.example.ocr_digital.repositories.FilesFolderRepository
+import com.google.firebase.storage.StorageReference
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
@@ -26,11 +27,28 @@ class ImageScannerViewModel(
             filename = "",
             filetype = FileType.DOCX,
             showResetDialog = false,
-            loading = false
+            loading = false,
+            selectedFolder = path,
+            parentFolder = path,
+            folders = listOf(),
+            showCreateFolderDialog = false,
+            folderName = ""
         )
     )
+
+    init {
+        getFolders()
+    }
+
     val state : ImageScannerState
         get() = _state.value
+
+    fun getFolders() {
+        viewModelScope.launch {
+            val response = filesFolderRepository.getFolders(path)
+            _state.value = _state.value.copy(folders = response.data["FOLDERS"] as List<StorageReference>)
+        }
+    }
 
     fun onTextChange(str: String) {
         _state.value = _state.value.copy(text = str)
@@ -44,6 +62,9 @@ class ImageScannerViewModel(
 
     fun showResetDialog() { _state.value = _state.value.copy(showResetDialog = true) }
 
+    fun showCreateFolderDialog() { _state.value = _state.value.copy(showCreateFolderDialog = true) }
+    fun hideCreateFolderDialog() { _state.value = _state.value.copy(showCreateFolderDialog = false) }
+
     private fun showLoading() { _state.value = _state.value.copy(loading = true) }
 
     private fun hideLoading() { _state.value = _state.value.copy(loading = false) }
@@ -51,6 +72,8 @@ class ImageScannerViewModel(
     fun resetText() {
         _state.value = _state.value.copy(text = "", showResetDialog = false)
     }
+
+    fun onFolderNameChange(newStr: String) { _state.value = _state.value.copy(folderName = newStr) }
 
     fun onFileTypeChange(type: FileType) { _state.value = _state.value.copy(filetype = type) }
 
@@ -61,6 +84,7 @@ class ImageScannerViewModel(
             toastHelper.makeToast("Empty filename! Please enter a filename")
             return
         }
+
         val uri = fileSaver.saveTextToFile(context, text, filename, type)
         val uriText = fileSaver.saveTextToFile(context, text, filename, FileType.TXT)
         if (uri != null && uriText != null) {
@@ -70,8 +94,8 @@ class ImageScannerViewModel(
                     hideResetDialog()
                     hideSaveDialog()
                     showLoading()
-                    val response = filesFolderRepository.uploadFile(path, uri)
-                    val responseTwo = filesFolderRepository.uploadFile(path, uriText)
+                    val response = filesFolderRepository.uploadFile(_state.value.selectedFolder, uri)
+                    val responseTwo = filesFolderRepository.uploadFile(_state.value.selectedFolder, uriText)
                     if (response.status == ResponseStatus.SUCCESSFUL && responseTwo.status == ResponseStatus.SUCCESSFUL) {
                         responseMessage = response.message
                     }
@@ -85,6 +109,11 @@ class ImageScannerViewModel(
                 }.await()
             }
         }
+    }
+
+    fun setSelectedFolder(path: String) {
+        getFolders()
+        _state.value = _state.value.copy(selectedFolder = path)
     }
 
     fun finish() {

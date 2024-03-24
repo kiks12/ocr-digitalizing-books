@@ -30,10 +30,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.ocr_digital.camera.CameraActivity
+import com.example.ocr_digital.components.dialogs.CreateFolderDialog
 import com.example.ocr_digital.components.dialogs.ResetFileDialog
 import com.example.ocr_digital.components.dialogs.SaveFileDialog
 import com.example.ocr_digital.components.plain_text.PlainTextEditor
+import com.example.ocr_digital.folder.FolderUtilityViewModel
 import com.example.ocr_digital.gallery.GalleryActivity
+import com.example.ocr_digital.helpers.ActivityStarterHelper
 import com.example.ocr_digital.helpers.ToastHelper
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.Camera
@@ -41,7 +44,7 @@ import compose.icons.feathericons.Image
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ImageScannerScreen(imageScannerViewModel: ImageScannerViewModel) {
+fun ImageScannerScreen(imageScannerViewModel: ImageScannerViewModel, folderUtilityViewModel: FolderUtilityViewModel) {
     val state = imageScannerViewModel.state
 
     val localContext = LocalContext.current
@@ -126,8 +129,30 @@ fun ImageScannerScreen(imageScannerViewModel: ImageScannerViewModel) {
                 onFileNameChange = imageScannerViewModel::onFileNameChange,
                 onFileTypeChange = imageScannerViewModel::onFileTypeChange,
                 onDismissRequest = imageScannerViewModel::hideSaveDialog,
-                onSave = { imageScannerViewModel.saveFile(localContext, state.text, state.filename, state.filetype) }
+                onSave = { imageScannerViewModel.saveFile(localContext, state.text, state.filename, state.filetype) },
+                selectedFolder = state.selectedFolder,
+                parentFolder = state.parentFolder,
+                setSelectedFolder = imageScannerViewModel::setSelectedFolder,
+                folders = state.folders,
+                showCreateFolderDialog = imageScannerViewModel::showCreateFolderDialog
             )
+        }
+        
+        if (state.showCreateFolderDialog) {
+            CreateFolderDialog(
+                folderName = state.folderName,
+                onFolderNameChange = imageScannerViewModel::onFolderNameChange,
+                onDismissRequest = imageScannerViewModel::hideCreateFolderDialog) {
+                folderUtilityViewModel.createFolder(
+                    folderName = state.folderName,
+                    folderPath = state.selectedFolder,
+                    successCallback = {
+                        imageScannerViewModel.hideCreateFolderDialog()
+                        imageScannerViewModel.getFolders()
+                    },
+                    failedCallback = {}
+                )
+            }
         }
 
         if (state.showResetDialog) {
@@ -143,5 +168,8 @@ fun ImageScannerScreen(imageScannerViewModel: ImageScannerViewModel) {
 @Preview
 @Composable
 fun BridgeScreenPreview() {
-    ImageScannerScreen(ImageScannerViewModel(path = "", toastHelper = ToastHelper(LocalContext.current)) {})
+    ImageScannerScreen(
+        ImageScannerViewModel(path = "", toastHelper = ToastHelper(LocalContext.current)) {},
+        FolderUtilityViewModel(ToastHelper(LocalContext.current), ActivityStarterHelper(LocalContext.current))
+    )
 }

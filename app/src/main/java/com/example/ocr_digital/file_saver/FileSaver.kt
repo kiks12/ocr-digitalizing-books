@@ -54,7 +54,7 @@ class FileSaver {
 
             val textPaint = TextPaint().apply {
                 color = Color.BLACK
-                textSize = 24f
+                textSize = 32f
             }
 
             val staticLayout = StaticLayout.Builder.obtain(text, 0, text.length, textPaint, shortBondWidthPixels)
@@ -92,7 +92,7 @@ class FileSaver {
 
             val textPaint = TextPaint().apply {
                 color = Color.BLACK
-                textSize = 24f
+                textSize = 32f
             }
 
             val staticLayout = StaticLayout.Builder.obtain(text, 0, text.length, textPaint, shortBondWidthPixels)

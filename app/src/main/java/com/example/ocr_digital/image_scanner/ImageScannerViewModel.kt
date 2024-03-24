@@ -112,8 +112,10 @@ class ImageScannerViewModel(
     }
 
     fun setSelectedFolder(path: String) {
-        getFolders()
-        _state.value = _state.value.copy(selectedFolder = path)
+        viewModelScope.launch {
+            val response = filesFolderRepository.getFolders(path)
+            _state.value = _state.value.copy(selectedFolder = path, folders = response.data["FOLDERS"] as List<StorageReference>)
+        }
     }
 
     fun finish() {

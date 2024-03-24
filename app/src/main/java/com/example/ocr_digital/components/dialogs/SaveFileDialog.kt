@@ -120,7 +120,7 @@ fun SaveFileDialog(
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(500.dp)
+                    .height(400.dp)
                     .padding(5.dp),
                 shape = RoundedCornerShape(16.dp),
             ){
@@ -176,7 +176,8 @@ fun SaveFileDialog(
                         }
                     }
                     Spacer(modifier = Modifier.height(15.dp))
-
+                    Text(text = "Enter Filename:")
+                    Spacer(modifier = Modifier.height(5.dp))
                     OutlinedTextField(
                         value = filename,
                         onValueChange = onFileNameChange,

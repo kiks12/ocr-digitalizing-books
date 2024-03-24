@@ -30,7 +30,6 @@ fun PlainTextEditor(
         )
 
         DisposableEffect(Unit) {
-            focusRequester.requestFocus()
             onDispose { }
         }
     }

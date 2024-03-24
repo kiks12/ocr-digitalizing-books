@@ -26,6 +26,7 @@ fun Folder(
     onDeleteClick: () -> Unit,
     onMoveClick: () -> Unit,
     onFolderClick: () -> Unit,
+    showVerticalDots: Boolean = true,
 ) {
     var menuExpanded by remember {
         mutableStateOf(false)
@@ -40,28 +41,30 @@ fun Folder(
         },
         headlineContent = { Text(text = directoryName) },
         trailingContent = {
-            Box{
-                Icon(
-                    Icons.Default.MoreVert,
-                    "More",
-                    modifier = Modifier.clickable { menuExpanded = true }
-                )
-                FileFolderMenu(
-                    expanded = menuExpanded,
-                    onDismissRequest = { menuExpanded = false },
-                    onRenameClick = {
-                        menuExpanded = false
-                        onRenameClick()
-                    },
-                    onDeleteClick = {
-                        menuExpanded = false
-                        onDeleteClick()
-                    },
-                    onMoveClick = {
-                        menuExpanded = false
-                        onMoveClick()
-                    },
-                )
+            if (showVerticalDots) {
+                Box{
+                    Icon(
+                        Icons.Default.MoreVert,
+                        "More",
+                        modifier = Modifier.clickable { menuExpanded = true }
+                    )
+                    FileFolderMenu(
+                        expanded = menuExpanded,
+                        onDismissRequest = { menuExpanded = false },
+                        onRenameClick = {
+                            menuExpanded = false
+                            onRenameClick()
+                        },
+                        onDeleteClick = {
+                            menuExpanded = false
+                            onDeleteClick()
+                        },
+                        onMoveClick = {
+                            menuExpanded = false
+                            onMoveClick()
+                        },
+                    )
+                }
             }
         }
     )

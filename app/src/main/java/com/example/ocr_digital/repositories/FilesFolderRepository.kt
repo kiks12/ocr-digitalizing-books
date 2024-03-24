@@ -190,6 +190,44 @@ class FilesFolderRepository {
         return response.await()
     }
 
+    suspend fun getFolders(directory: String) : Response {
+        val response = CompletableDeferred<Response>(null)
+
+        coroutineScope {
+            launch(Dispatchers.IO){
+                val reference = storage.reference
+                reference.child(directory).listAll()
+                    .addOnSuccessListener { results ->
+                        val prefixes = results.prefixes
+                        response.complete(
+                            Response(
+                                status = ResponseStatus.SUCCESSFUL,
+                                message = "Successfully retrieved folders of $directory",
+                                data = mapOf(
+                                    "FOLDERS" to prefixes
+                                )
+                            )
+                        )
+                    }
+                    .addOnFailureListener {
+                        it.localizedMessage?.let { it1 -> Log.w("PREFIXES", it1) }
+                        it.localizedMessage?.let { it1 ->
+                            Response(
+                                status = ResponseStatus.FAILED,
+                                message = it1
+                            )
+                        }?.let { it2 ->
+                            response.complete(
+                                it2
+                            )
+                        }
+                    }
+            }
+        }
+
+        return response.await()
+    }
+
     suspend fun getFilesAndFolders(directory: String) : Response {
         val response = CompletableDeferred<Response>(null)
 

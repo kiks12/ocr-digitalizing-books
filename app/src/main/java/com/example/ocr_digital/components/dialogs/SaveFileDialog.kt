@@ -1,6 +1,7 @@
 package com.example.ocr_digital.components.dialogs
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,6 +13,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -26,7 +29,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.example.ocr_digital.components.Folder
 import com.example.ocr_digital.file_saver.FileType
+import com.example.ocr_digital.path.PathUtilities
+import com.google.firebase.storage.StorageReference
 
 @Composable
 fun SaveFileDialog(
@@ -34,8 +40,14 @@ fun SaveFileDialog(
     onFileNameChange: (newStr: String) -> Unit,
     onDismissRequest: () -> Unit,
     onFileTypeChange: (type: FileType) -> Unit,
+    parentFolder: String,
+    selectedFolder: String,
+    setSelectedFolder : (path: String) -> Unit,
+    folders: List<StorageReference>,
     onSave: () -> Unit,
+    showCreateFolderDialog: () -> Unit,
 ) {
+    var showFolderMenu by remember { mutableStateOf(false) }
     var showFileNameCard by remember { mutableStateOf(false) }
     var filetype by remember { mutableStateOf(FileType.DOCX) }
 
@@ -108,8 +120,8 @@ fun SaveFileDialog(
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(240.dp)
-                    .padding(16.dp),
+                    .height(500.dp)
+                    .padding(5.dp),
                 shape = RoundedCornerShape(16.dp),
             ){
                 Column(
@@ -129,7 +141,42 @@ fun SaveFileDialog(
                             fontWeight = FontWeight.SemiBold
                         )
                     }
+                    Spacer(modifier = Modifier.height(25.dp))
+                    Text(text = "Select Folder:")
+                    Spacer(modifier = Modifier.height(5.dp))
+                    Box {
+                        Folder(
+                            directoryName = if (parentFolder == selectedFolder) "/" else PathUtilities.getLastSegment(selectedFolder),
+                            onRenameClick = { },
+                            onDeleteClick = { },
+                            onMoveClick = { },
+                            onFolderClick = { showFolderMenu = true },
+                            showVerticalDots = false)
+                        DropdownMenu(expanded = showFolderMenu, onDismissRequest = { showFolderMenu = false }) {
+                            if (parentFolder != selectedFolder) {
+                                DropdownMenuItem(text = { Text("Go Back") }, onClick = {
+                                    setSelectedFolder(PathUtilities.removeLastSegment(selectedFolder))
+                                    showFolderMenu = false
+                                })
+                            }
+                            folders.forEach {
+                                DropdownMenuItem(text = { Text(it.name) }, onClick = {
+                                    setSelectedFolder(it.path)
+                                    showFolderMenu = false
+                                })
+                            }
+                        }
+                    }
+                    Row (
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End
+                    ){
+                        TextButton(onClick = showCreateFolderDialog) {
+                            Text("Create Folder")
+                        }
+                    }
                     Spacer(modifier = Modifier.height(15.dp))
+
                     OutlinedTextField(
                         value = filename,
                         onValueChange = onFileNameChange,
@@ -163,6 +210,11 @@ fun SaveFileDialogPreview() {
         onFileNameChange = {},
         onFileTypeChange = {},
         onDismissRequest = {},
-        onSave = {}
+        onSave = {},
+        folders = listOf(),
+        setSelectedFolder = {},
+        parentFolder = "",
+        selectedFolder = "",
+        showCreateFolderDialog = {}
     )
 }

@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -104,6 +105,15 @@ fun LoginScreen(loginViewModel: LoginViewModel) {
                         ) {
                             Text(
                                 text = "Continue with Google",
+                                modifier = Modifier.padding(vertical = 10.dp)
+                            )
+                        }
+                        OutlinedButton(
+                            onClick = loginViewModel::startHomeActivity,
+                            modifier = Modifier.fillMaxWidth().padding(top = 10.dp)
+                        ) {
+                            Text(
+                                text = "Continue as Guest",
                                 modifier = Modifier.padding(vertical = 10.dp)
                             )
                         }

@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.ocr_digital.components.File
 import com.example.ocr_digital.components.Folder
+import com.example.ocr_digital.components.dialogs.CopyToDialog
 import com.example.ocr_digital.components.dialogs.CreateFolderDialog
 import com.example.ocr_digital.components.dialogs.DeleteFileFolderDialog
 import com.example.ocr_digital.components.dialogs.RenameDialog
@@ -48,7 +49,6 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScanScreen(scanViewModel: ScanViewModel, folderUtilityViewModel: FolderUtilityViewModel) {
-//    val sheetState = rememberModalBottomSheetState()
     val scope = rememberCoroutineScope()
     val state = scanViewModel.state
     val localContext = LocalContext.current
@@ -70,7 +70,13 @@ fun ScanScreen(scanViewModel: ScanViewModel, folderUtilityViewModel: FolderUtili
                 Text("Add Folder", fontSize = 11.sp)
                 Spacer(modifier = Modifier.height(10.dp))
                 FloatingActionButton(
-                    onClick = { folderUtilityViewModel.scanText("/${scanViewModel.getUid()}") },
+                    onClick = {
+                        if (scanViewModel.isAuthenticated()) {
+                            folderUtilityViewModel.scanText("/${scanViewModel.getUid()}")
+                        } else {
+                            scanViewModel.showUnauthenticatedLoginMessage()
+                        }
+                    },
                     shape = CircleShape
                 ) {
                     Icon(FeatherIcons.FileText, contentDescription = "Scanner")
@@ -119,6 +125,21 @@ fun ScanScreen(scanViewModel: ScanViewModel, folderUtilityViewModel: FolderUtili
                         .fillMaxWidth()
                         .pullRefresh(refreshState)
                 ) {
+                    if (scanViewModel.isAuthenticated()) {
+                        item {
+                            Folder(
+                                directoryName = "Public Library",
+                                onRenameClick = {},
+                                onDeleteClick = {},
+                                onMoveClick = {},
+                                onFolderClick = {
+                                    scanViewModel.openFolder("/${scanViewModel.getPublicAdminUID()}")
+                                },
+                                showVerticalDots = false,
+                                authenticated = scanViewModel.isAuthenticated()
+                            )
+                        }
+                    }
                     item { Text(text = "Saved Files", modifier = Modifier.padding(start = 15.dp, top=15.dp), fontSize = 12.sp) }
                     items(state.folders) {folder ->
                         Folder(
@@ -127,6 +148,7 @@ fun ScanScreen(scanViewModel: ScanViewModel, folderUtilityViewModel: FolderUtili
                             onRenameClick = { scanViewModel.showRenameFileOrFolderDialog(folder.path) },
                             onMoveClick = {},
                             onFolderClick = { scanViewModel.openFolder(folder.path) },
+                            authenticated = scanViewModel.isAuthenticated()
                         )
                     }
                     items(state.files) {file ->
@@ -134,7 +156,7 @@ fun ScanScreen(scanViewModel: ScanViewModel, folderUtilityViewModel: FolderUtili
                             filename = file.name,
                             onDeleteClick = { scanViewModel.showDeleteFileOrFolderDialog(file.path, forFile = true) },
                             onRenameClick = { scanViewModel.showRenameFileOrFolderDialog(file.path, forFile = true) },
-                            onMoveClick = {},
+                            onCopyClick = { scanViewModel.showCopyToDialog(file.path) },
                             onDownloadClick = { folderUtilityViewModel.downloadFile(localContext, file.path) },
                             onPrintClick = { folderUtilityViewModel.printFile(localContext, file.path) },
                             onTranslateClick = {
@@ -142,6 +164,7 @@ fun ScanScreen(scanViewModel: ScanViewModel, folderUtilityViewModel: FolderUtili
                                     folderUtilityViewModel.translateFile(file.path, "/${scanViewModel.getUid()}")
                                 }
                             },
+                            authenticated = scanViewModel.isAuthenticated(),
                             onClick = {
                                 val mimetype = MimeTypeMap.getSingleton().getMimeTypeFromExtension(
                                     PathUtilities.getFileExtension(file.path)) ?: ""
@@ -160,15 +183,6 @@ fun ScanScreen(scanViewModel: ScanViewModel, folderUtilityViewModel: FolderUtili
             }
         }
 
-//        if (state.showBottomSheet) {
-//            ActionsBottomSheet(
-//                sheetState = sheetState,
-//                onDismissRequest = scanViewModel::hideBottomSheet,
-//                scanText = { folderUtilityViewModel.scanText("/${scanViewModel.getUid()}") },
-//                createFolder = scanViewModel::showCreateFolderDialog
-//            )
-//        }
-
         if (state.showCreateFolderDialog) {
             CreateFolderDialog(
                 folderName = state.folderName,
@@ -180,7 +194,6 @@ fun ScanScreen(scanViewModel: ScanViewModel, folderUtilityViewModel: FolderUtili
                         folderPath = "/${scanViewModel.getUid()}",
                         successCallback = {
                             scanViewModel.refresh()
-                            scanViewModel.hideBottomSheet()
                             scanViewModel.hideCreateFolderDialog()
                         },
                     )
@@ -200,7 +213,6 @@ fun ScanScreen(scanViewModel: ScanViewModel, folderUtilityViewModel: FolderUtili
                         successCallback = {
                             scanViewModel.hideDialogLoader()
                             scanViewModel.refresh()
-                            scanViewModel.hideBottomSheet()
                             scanViewModel.hideDeleteFileOrFolderDialog()
                         },
                         failedCallback = {
@@ -227,7 +239,6 @@ fun ScanScreen(scanViewModel: ScanViewModel, folderUtilityViewModel: FolderUtili
                         successCallback = {
                             scanViewModel.hideDialogLoader()
                             scanViewModel.refresh()
-                            scanViewModel.hideBottomSheet()
                             scanViewModel.hideRenameFileOrFolderDialog()
                         },
                         failedCallback = {
@@ -235,6 +246,18 @@ fun ScanScreen(scanViewModel: ScanViewModel, folderUtilityViewModel: FolderUtili
                         }
                     )
                 }
+            )
+        }
+
+        if (state.showCopyToDialog) {
+            CopyToDialog(
+                folders = state.copyToFolders,
+                parentFolder = state.parentFolder,
+                selectedFolder = state.selectedFolder,
+                setSelectedFolder = scanViewModel::setSelectedFolder,
+                showCreateFolderDialog = scanViewModel::showCreateFolderDialog,
+                onDismissRequest = scanViewModel::hideCopyToDialog,
+                onSave = { scanViewModel.copyFileToSelectedFolder() }
             )
         }
     }

@@ -26,6 +26,7 @@ fun Folder(
     onDeleteClick: () -> Unit,
     onMoveClick: () -> Unit,
     onFolderClick: () -> Unit,
+    authenticated: Boolean,
     showVerticalDots: Boolean = true,
 ) {
     var menuExpanded by remember {
@@ -59,10 +60,11 @@ fun Folder(
                             menuExpanded = false
                             onDeleteClick()
                         },
-                        onMoveClick = {
+                        onCopyClick = {
                             menuExpanded = false
                             onMoveClick()
                         },
+                        authenticated = authenticated
                     )
                 }
             }
@@ -82,6 +84,7 @@ fun FolderPreview() {
             onMoveClick = {},
             onDeleteClick = {},
             onFolderClick = {},
+            authenticated = false
         )
         Folder(
             directoryName = "TRY",
@@ -89,6 +92,7 @@ fun FolderPreview() {
             onMoveClick = {},
             onDeleteClick = {},
             onFolderClick = {},
+            authenticated = false
         )
         Folder(
             directoryName = "TRY 2",
@@ -96,6 +100,7 @@ fun FolderPreview() {
             onMoveClick = {},
             onDeleteClick = {},
             onFolderClick = {},
+            authenticated = false
         )
     }
 }

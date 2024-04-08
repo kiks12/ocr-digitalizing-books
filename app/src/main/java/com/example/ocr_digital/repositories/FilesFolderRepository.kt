@@ -371,6 +371,66 @@ class FilesFolderRepository {
         return response.await()
     }
 
+    suspend fun copyFile(currentPath: String, newPath: String) : Response {
+        val response = CompletableDeferred<Response>(null)
+
+        try {
+            coroutineScope {
+                launch(Dispatchers.IO) {
+                    val reference = storage.reference
+                    val currentFileRef = reference.child(currentPath)
+                    val newFileRef = reference.child(newPath)
+                    val currentTextFilePath = getAssociatedTextFilePath(currentPath)
+                    val newTextFilePath = getAssociatedTextFilePath(newPath)
+                    val currentTextFileRef = reference.child(currentTextFilePath)
+                    val newTextFileRef = reference.child(newTextFilePath)
+
+                    val filenameAvailable = getFilenameAvailability(newPath)
+
+                    if (!filenameAvailable) {
+                        response.complete(
+                            Response(
+                                status = ResponseStatus.FAILED,
+                                message = "File name already in use"
+                            )
+                        )
+                    } else {
+                        val localFile = File.createTempFile("temp", null)
+                        currentFileRef.getFile(localFile).await()
+                        newFileRef.putFile(localFile.toUri()).await()
+
+                        val localTextFile = File.createTempFile("textTemp", null)
+                        currentTextFileRef.getFile(localTextFile).await()
+                        newTextFileRef.putFile(localTextFile.toUri()).await()
+
+                        response.complete(
+                            Response(
+                                status = ResponseStatus.SUCCESSFUL,
+                                message = "Successfully copied file"
+                            )
+                        )
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            response.complete(
+                Response(
+                    status = ResponseStatus.FAILED,
+                    message = e.localizedMessage!!
+                )
+            )
+        } catch (e: IOException) {
+            response.complete(
+                Response(
+                    status = ResponseStatus.FAILED,
+                    message = e.localizedMessage!!
+                )
+            )
+        }
+
+        return response.await()
+    }
+
     suspend fun renameFile(currentPath: String, newPath: String) : Response {
         val response = CompletableDeferred<Response>(null)
 

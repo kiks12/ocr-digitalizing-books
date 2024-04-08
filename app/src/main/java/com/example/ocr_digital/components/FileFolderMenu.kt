@@ -10,6 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import compose.icons.FeatherIcons
+import compose.icons.feathericons.Copy
 import compose.icons.feathericons.Download
 import compose.icons.feathericons.FileText
 import compose.icons.feathericons.Printer
@@ -20,43 +21,48 @@ fun FileFolderMenu(
     onDismissRequest: () -> Unit,
     onRenameClick: () -> Unit,
     onDeleteClick: () -> Unit,
-    onMoveClick: () -> Unit,
+    onCopyClick: () -> Unit,
     onTranslateClick: () -> Unit = {},
     onDownloadClick: () -> Unit = {},
     onPrintClick: () -> Unit = {},
+    authenticated: Boolean,
     forFile: Boolean = false,
 ) {
     DropdownMenu(
         expanded = expanded,
         onDismissRequest = onDismissRequest
     ) {
-        DropdownMenuItem(
-            text = {
-                Text(text = "Rename")
-            },
-            onClick = onRenameClick,
-            trailingIcon = { Icon(Icons.Default.Edit, "Rename") }
-        )
-        DropdownMenuItem(
-            text = {
-                Text(text = "Delete")
-            },
-            onClick = onDeleteClick,
-            trailingIcon = { Icon(Icons.Default.Delete, "Delete") }
-        )
-//        DropdownMenuItem(
-//            text = {
-//                Text(text = "Move")
-//            },
-//            onClick = onMoveClick,
-//            trailingIcon = { Icon(Icons.Default.KeyboardArrowRight, "Move") }
-//        )
-        if (forFile) {
+        if (authenticated) {
             DropdownMenuItem(
-                text = { Text(text = "Translate") },
-                onClick = onTranslateClick,
-                trailingIcon = { Icon(FeatherIcons.FileText, "Translate") }
+                text = {
+                    Text(text = "Rename")
+                },
+                onClick = onRenameClick,
+                trailingIcon = { Icon(Icons.Default.Edit, "Rename") }
             )
+            DropdownMenuItem(
+                text = {
+                    Text(text = "Delete")
+                },
+                onClick = onDeleteClick,
+                trailingIcon = { Icon(Icons.Default.Delete, "Delete") }
+            )
+            DropdownMenuItem(
+                text = {
+                    Text(text = "Copy")
+                },
+                onClick = onCopyClick,
+                trailingIcon = { Icon(FeatherIcons.Copy, "Copy") }
+            )
+        }
+        if (forFile) {
+            if (authenticated) {
+                DropdownMenuItem(
+                    text = { Text(text = "Translate") },
+                    onClick = onTranslateClick,
+                    trailingIcon = { Icon(FeatherIcons.FileText, "Translate") }
+                )
+            }
             DropdownMenuItem(
                 text = { Text(text = "Download") },
                 onClick = onDownloadClick,
@@ -79,8 +85,9 @@ fun FileFolderMenuPreview() {
         onDismissRequest = {},
         onRenameClick = {},
         onDeleteClick = {},
-        onMoveClick = {},
+        onCopyClick = {},
         forFile = true,
-        onDownloadClick = {}
+        onDownloadClick = {},
+        authenticated = false
     )
 }

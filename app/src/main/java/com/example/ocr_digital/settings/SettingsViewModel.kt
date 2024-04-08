@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.ocr_digital.MainActivity
 import com.example.ocr_digital.helpers.ActivityStarterHelper
 import com.example.ocr_digital.helpers.ToastHelper
+import com.example.ocr_digital.login.LoginActivity
 import com.example.ocr_digital.models.UserInformation
 import com.example.ocr_digital.onboarding.walkthrough.WalkthroughActivity
 import com.example.ocr_digital.passwords.change_password.ChangePasswordActivity
@@ -22,6 +23,7 @@ class SettingsViewModel(
     private val auth = Firebase.auth
     private val _state = mutableStateOf(
          SettingsState(
+             authenticated = false,
              userInformation = UserInformation(),
              email = "",
          )
@@ -30,13 +32,16 @@ class SettingsViewModel(
         get() = _state.value
 
     init {
-        viewModelScope.launch {
-            val response = usersRepository.getUser(auth.currentUser?.uid!!)
-            val userInformation = response.data["user"] as ArrayList<UserInformation>
-            _state.value = _state.value.copy(
-                email = auth.currentUser?.email!!,
-                userInformation = userInformation[0]
-            )
+        if (auth.currentUser != null) {
+            viewModelScope.launch {
+                val response = usersRepository.getUser(auth.currentUser?.uid!!)
+                val userInformation = response.data["user"] as ArrayList<UserInformation>
+                _state.value = _state.value.copy(
+                    email = auth.currentUser?.email!!,
+                    userInformation = userInformation[0],
+                    authenticated = true
+                )
+            }
         }
     }
 
@@ -44,6 +49,9 @@ class SettingsViewModel(
         auth.signOut()
         activityStarterHelper.startActivity(MainActivity::class.java)
     }
+     fun startLoginActivity() {
+         activityStarterHelper.startActivity(LoginActivity::class.java)
+     }
 
     fun openChangePasswordActivity() {
         val data = auth.currentUser?.providerData

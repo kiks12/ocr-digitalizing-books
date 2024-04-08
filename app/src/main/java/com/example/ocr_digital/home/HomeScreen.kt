@@ -68,7 +68,7 @@ fun HomeScreen(homeViewModel: HomeViewModel) {
                     .fillMaxWidth()
                     .padding(top = 6.dp),
                 fontSize = 15.sp,
-                text = "You may now scan your old books or upload your picture to extract the text",
+                text = state.message,
             )
             Spacer(modifier = Modifier.height(25.dp))
             Image(
@@ -95,5 +95,5 @@ fun HomeScreen(homeViewModel: HomeViewModel) {
 fun HomeScreenPreview() {
     val localContext = LocalContext.current
     val activityStarterHelper = ActivityStarterHelper(localContext)
-    HomeScreen(homeViewModel = HomeViewModel(activityStarterHelper))
+    HomeScreen(homeViewModel = HomeViewModel(activityStarterHelper, "", ""))
 }

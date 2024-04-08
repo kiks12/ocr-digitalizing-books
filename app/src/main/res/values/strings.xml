@@ -30,4 +30,7 @@
     <string name="translate_five">Click the "Save" button in the upper right corner and wait for the a message to pop up.</string>
     <string name="translate_six">Go back to the home screen and a new translated file will be saved. The file name will include the original file name and the target language.</string>
     <string name="translate_seven">To view the material, simply click the file</string>
+
+    <string name="home_authenticated">You may now scan your old books or upload your picture to extract the text</string>
+    <string name="home_unauthenticated">You may now view the public library of digitized books</string>
 </resources>

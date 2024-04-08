@@ -70,7 +70,7 @@ class LoginViewModel(
         continueWithGoogle()
     }
 
-    private fun startHomeActivity() {
+    fun startHomeActivity() {
         activityStarterHelper.startActivity(HomeActivity::class.java)
     }
 

@@ -24,11 +24,12 @@ fun File(
     filename: String,
     onDeleteClick: () -> Unit,
     onRenameClick: () -> Unit,
-    onMoveClick: () -> Unit,
+    onCopyClick: () -> Unit,
     onTranslateClick: () -> Unit,
     onDownloadClick: () -> Unit,
     onPrintClick: () -> Unit,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    authenticated: Boolean,
 ) {
     val extension = filename.split(".")[filename.split(".").size - 1]
     var menuExpanded by remember { mutableStateOf(false) }
@@ -94,9 +95,9 @@ fun File(
                         menuExpanded = false
                         onDeleteClick()
                     },
-                    onMoveClick = {
+                    onCopyClick = {
                         menuExpanded = false
-                        onMoveClick()
+                        onCopyClick()
                     },
                     onTranslateClick = {
                         menuExpanded = false
@@ -110,7 +111,8 @@ fun File(
                         menuExpanded = false
                         onPrintClick()
                     },
-                    forFile = true
+                    forFile = true,
+                    authenticated = authenticated
                 )
             }
         }
@@ -125,11 +127,12 @@ fun FilePreview() {
             filename = "asdfsadf.docx",
             onDeleteClick = {},
             onRenameClick = {},
-            onMoveClick = {},
+            onCopyClick = {},
             onDownloadClick = {},
             onPrintClick = {},
             onClick = {},
-            onTranslateClick = {}
+            onTranslateClick = {},
+            authenticated = false
         )
     }
 }

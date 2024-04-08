@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.ocr_digital.components.File
 import com.example.ocr_digital.components.Folder
+import com.example.ocr_digital.components.dialogs.CopyToDialog
 import com.example.ocr_digital.components.dialogs.CreateFolderDialog
 import com.example.ocr_digital.components.dialogs.DeleteFileFolderDialog
 import com.example.ocr_digital.components.dialogs.RenameDialog
@@ -52,7 +53,6 @@ import kotlinx.coroutines.launch
 fun FolderScreen(folderViewModel: FolderViewModel, folderUtilityViewModel: FolderUtilityViewModel) {
     val state = folderViewModel.state
     val scope = rememberCoroutineScope()
-//    val sheetState = rememberModalBottomSheetState()
     val localContext = LocalContext.current
     val refreshing by remember { mutableStateOf(false) }
     val refreshState = rememberPullRefreshState(refreshing = refreshing, onRefresh = folderViewModel::refresh)
@@ -120,6 +120,7 @@ fun FolderScreen(folderViewModel: FolderViewModel, folderUtilityViewModel: Folde
                             onRenameClick = { folderViewModel.showRenameFileOrFolderDialog(folder.path) },
                             onMoveClick = {},
                             onFolderClick = { folderViewModel.openFolder(folder.path) },
+                            authenticated = folderViewModel.isAuthenticated(),
                         )
                     }
                     items(state.files) {file ->
@@ -127,7 +128,7 @@ fun FolderScreen(folderViewModel: FolderViewModel, folderUtilityViewModel: Folde
                             filename = file.name,
                             onDeleteClick = { folderViewModel.showDeleteFileOrFolderDialog(file.path, forFile = true) },
                             onRenameClick = { folderViewModel.showRenameFileOrFolderDialog(file.path, forFile = true) },
-                            onMoveClick = {},
+                            onCopyClick = { folderViewModel.showCopyToDialog(file.path) },
                             onDownloadClick = { folderUtilityViewModel.downloadFile(localContext, file.path) },
                             onPrintClick = { folderUtilityViewModel.printFile(localContext, file.path) },
                             onTranslateClick = {
@@ -138,21 +139,13 @@ fun FolderScreen(folderViewModel: FolderViewModel, folderUtilityViewModel: Folde
                             onClick = {
                                 val mimetype = MimeTypeMap.getSingleton().getMimeTypeFromExtension(PathUtilities.getFileExtension(file.path)) ?: ""
                                 folderUtilityViewModel.onFileClick(localContext, file.path, mimetype)
-                            }
+                            },
+                            authenticated = folderViewModel.isAuthenticated(),
                         )
                     }
                 }
             }
         }
-
-//        if (state.showBottomSheet) {
-//            ActionsBottomSheet(
-//                sheetState = sheetState,
-//                onDismissRequest = folderViewModel::hideBottomSheet,
-//                scanText = { folderUtilityViewModel.scanText(folderViewModel.getFolderPath()) },
-//                createFolder = folderViewModel::showCreateFolderDialog
-//            )
-//        }
 
         if (state.showCreateFolderDialog) {
             CreateFolderDialog(
@@ -222,6 +215,18 @@ fun FolderScreen(folderViewModel: FolderViewModel, folderUtilityViewModel: Folde
                 }
             )
         }
+
+        if (state.showCopyToDialog) {
+            CopyToDialog(
+                folders = state.copyToFolders,
+                parentFolder = state.parentFolder,
+                selectedFolder = state.selectedFolder,
+                setSelectedFolder = folderViewModel::setSelectedFolder,
+                showCreateFolderDialog = folderViewModel::showCreateFolderDialog,
+                onDismissRequest = folderViewModel::hideCopyToDialog,
+                onSave = { folderViewModel.copyFileToSelectedFolder() }
+            )
+        }
     }
 }
 
@@ -233,6 +238,7 @@ fun FolderScreenPreview() {
     val activityStarterHelper = ActivityStarterHelper(LocalContext.current)
     val folderViewModel = FolderViewModel(
         "Try",
+        toastHelper = toastHelper,
         activityStarterHelper = activityStarterHelper
     ) {}
     val folderUtilityViewModel = FolderUtilityViewModel(toastHelper = toastHelper, activityStarterHelper = activityStarterHelper)

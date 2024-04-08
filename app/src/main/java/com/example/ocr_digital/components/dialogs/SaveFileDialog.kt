@@ -151,7 +151,9 @@ fun SaveFileDialog(
                             onDeleteClick = { },
                             onMoveClick = { },
                             onFolderClick = { showFolderMenu = true },
-                            showVerticalDots = false)
+                            authenticated = false,
+                            showVerticalDots = false
+                        )
                         DropdownMenu(expanded = showFolderMenu, onDismissRequest = { showFolderMenu = false }) {
                             if (parentFolder != selectedFolder) {
                                 DropdownMenuItem(text = { Text("Go Back") }, onClick = {

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
+import com.example.ocr_digital.R
 import com.example.ocr_digital.folder.FolderUtilityViewModel
 import com.example.ocr_digital.helpers.ActivityStarterHelper
 import com.example.ocr_digital.helpers.ToastHelper
@@ -81,8 +82,12 @@ class HomeActivity : AppCompatActivity() {
         val toastHelper = ToastHelper(this)
         val activityStarterHelper = ActivityStarterHelper(this)
         val settingsViewModel = SettingsViewModel(toastHelper = toastHelper, activityStarterHelper = activityStarterHelper)
-        val homeViewModel = HomeViewModel(activityStarterHelper)
-        scanViewModel = ScanViewModel(activityStarterHelper)
+        val homeViewModel = HomeViewModel(
+            activityStarterHelper,
+            getString(R.string.home_authenticated),
+            getString(R.string.home_unauthenticated)
+        )
+        scanViewModel = ScanViewModel(toastHelper, activityStarterHelper)
         val folderUtilityViewModel = FolderUtilityViewModel(toastHelper = toastHelper, activityStarterHelper = activityStarterHelper)
 
         setContent {

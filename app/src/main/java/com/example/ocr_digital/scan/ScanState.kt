@@ -4,12 +4,11 @@ import com.google.firebase.storage.StorageReference
 
 data class ScanState(
     val folders : List<StorageReference>,
-//    val backupFolders : List<StorageReference>,
     val files : List<StorageReference>,
-//    val backupFiles : List<StorageReference>,
     val loading : Boolean,
     val folderName : String,
-    val showBottomSheet : Boolean,
+    val filePath : String,
+    val showCopyToDialog : Boolean,
     val showCreateFolderDialog : Boolean,
     val showDeleteFileOrFolderDialog : Boolean,
     val deleteForFile : Boolean,
@@ -20,4 +19,8 @@ data class ScanState(
     val fileOrFolderPath : String,
     val dialogLoading : Boolean,
     val query : String,
+    val publicAdminUID : String,
+    val parentFolder : String,
+    val selectedFolder : String,
+    val copyToFolders : List<StorageReference>
 )

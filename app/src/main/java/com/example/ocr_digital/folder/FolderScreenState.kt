@@ -7,6 +7,8 @@ data class FolderScreenState(
     val folders : List<StorageReference>,
     val loading : Boolean,
     val files : List<StorageReference>,
+    val filePath : String,
+    val showCopyToDialog : Boolean,
     val folderName : String,
     val showBottomSheet : Boolean,
     val showCreateFolderDialog : Boolean,
@@ -17,5 +19,9 @@ data class FolderScreenState(
     val renameCurrentPath : String,
     val renameNewPath : String,
     val fileOrFolderPath : String,
-    val dialogLoading : Boolean
+    val dialogLoading : Boolean,
+    val publicAdminUID : String,
+    val parentFolder : String,
+    val selectedFolder : String,
+    val copyToFolders : List<StorageReference>
 )

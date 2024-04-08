@@ -27,6 +27,7 @@ import com.example.ocr_digital.helpers.ToastHelper
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.Info
 import compose.icons.feathericons.Lock
+import compose.icons.feathericons.LogIn
 import compose.icons.feathericons.LogOut
 
 @Composable
@@ -44,66 +45,83 @@ fun SettingsScreen(settingsViewModel: SettingsViewModel) {
                         modifier = Modifier.padding(start = 15.dp, bottom = 10.dp)
                     )
                 }
-                item {
-                    Column(modifier = Modifier.padding(15.dp)){
-                        Text(text = "Profile", fontSize = 20.sp, fontWeight = FontWeight.Medium)
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 12.dp)
-                        ){
-                            Text(text = "Email:", fontSize = 12.sp)
-                            Text(text = state.email)
-                        }
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 12.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ){
+                if (state.authenticated) {
+                    item {
+                        Column(modifier = Modifier.padding(15.dp)){
+                            Text(text = "Profile", fontSize = 20.sp, fontWeight = FontWeight.Medium)
                             Column(
-                                modifier = Modifier.fillMaxWidth(0.5f)
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 12.dp)
                             ){
-                                Text(text = "First Name:", fontSize = 12.sp)
-                                Text(text = state.userInformation.firstName)
+                                Text(text = "Email:", fontSize = 12.sp)
+                                Text(text = state.email)
                             }
-                            Column(
-                                modifier = Modifier.fillMaxWidth(1f)
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 12.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
                             ){
-                                Text(text = "Last Name:", fontSize = 12.sp)
-                                Text(text = state.userInformation.lastName)
+                                Column(
+                                    modifier = Modifier.fillMaxWidth(0.5f)
+                                ){
+                                    Text(text = "First Name:", fontSize = 12.sp)
+                                    Text(text = state.userInformation.firstName)
+                                }
+                                Column(
+                                    modifier = Modifier.fillMaxWidth(1f)
+                                ){
+                                    Text(text = "Last Name:", fontSize = 12.sp)
+                                    Text(text = state.userInformation.lastName)
+                                }
                             }
-                        }
-                        Column(modifier = Modifier.padding(top=12.dp)){
-                            Text(text = "Contact Number:", fontSize = 12.sp)
-                            Text(text = state.userInformation.contactNumber)
+                            Column(modifier = Modifier.padding(top=12.dp)){
+                                Text(text = "Contact Number:", fontSize = 12.sp)
+                                Text(text = state.userInformation.contactNumber)
+                            }
                         }
                     }
-                }
-                item { 
-                    Spacer(modifier = Modifier.height(20.dp))
-                }
-                item {
-                    ListItem(
-                        modifier = Modifier.clickable { settingsViewModel.openWalkthroughActivity() },
-                        headlineContent = { Text(text = "How to use?") },
-                        trailingContent = { Icon(FeatherIcons.Info, "How to use") }
-                    )
-                }
-                item {
-                    ListItem(
-                        modifier = Modifier.clickable { settingsViewModel.openChangePasswordActivity() },
-                        headlineContent = { Text(text = "Change Password") },
-                        trailingContent = { Icon(FeatherIcons.Lock, "Change Password") }
-                    )
-                }
-                item {
-                    ListItem(
-                        modifier = Modifier.clickable { settingsViewModel.signOut() },
-                        headlineContent = { Text(text = "Sign Out") },
-                        trailingContent = { Icon(FeatherIcons.LogOut, "Sign Out") }
-                    )
+                    item {
+                        Spacer(modifier = Modifier.height(20.dp))
+                    }
+                    item {
+                        ListItem(
+                            modifier = Modifier.clickable { settingsViewModel.openWalkthroughActivity() },
+                            headlineContent = { Text(text = "How to use?") },
+                            trailingContent = { Icon(FeatherIcons.Info, "How to use") }
+                        )
+                    }
+                    item {
+                        ListItem(
+                            modifier = Modifier.clickable { settingsViewModel.openChangePasswordActivity() },
+                            headlineContent = { Text(text = "Change Password") },
+                            trailingContent = { Icon(FeatherIcons.Lock, "Change Password") }
+                        )
+                    }
+                    item {
+                        ListItem(
+                            modifier = Modifier.clickable { settingsViewModel.signOut() },
+                            headlineContent = { Text(text = "Sign Out") },
+                            trailingContent = { Icon(FeatherIcons.LogOut, "Sign Out") }
+                        )
+                    }
+                } else {
+                    item {
+                        ListItem(
+                            modifier = Modifier.clickable { settingsViewModel.openWalkthroughActivity() },
+                            headlineContent = { Text(text = "How to use?") },
+                            trailingContent = { Icon(FeatherIcons.Info, "How to use") }
+                        )
+                    }
+                    item {
+                        ListItem(
+                            modifier = Modifier.clickable { settingsViewModel.startLoginActivity() },
+                            headlineContent = { Text(text = "Login") },
+                            trailingContent = { Icon(FeatherIcons.LogIn, "Login") }
+                        )
+                    }
                 }
             }
         }

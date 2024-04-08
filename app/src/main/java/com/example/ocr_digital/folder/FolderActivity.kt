@@ -22,7 +22,7 @@ class FolderActivity : AppCompatActivity() {
         val folderPath = intent.getStringExtra("FOLDER_PATH_EXTRA") ?: ""
         val toastHelper = ToastHelper(this)
         val activityStarterHelper = ActivityStarterHelper(this)
-        folderViewModel = FolderViewModel(folderPath = folderPath, activityStarterHelper = activityStarterHelper) {
+        folderViewModel = FolderViewModel(folderPath = folderPath, toastHelper = toastHelper, activityStarterHelper = activityStarterHelper) {
             finish()
         }
         val folderUtilityViewModel = FolderUtilityViewModel(toastHelper = toastHelper, activityStarterHelper = activityStarterHelper)

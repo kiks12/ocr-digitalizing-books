@@ -53,20 +53,21 @@ fun HomeScreen(homeViewModel: HomeViewModel) {
             .padding(innerPadding)
             .padding(horizontal = 15.dp)){
             Text(
-                fontSize = 28.sp,
+                fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
-                text = "Welcome to our app!"
+                text = "Welcome to OCR: Digitizing Old Books App"
             )
+            Spacer(modifier = Modifier.height(30.dp))
             Text(
-                fontSize = 16.sp,
+                fontSize = 15.sp,
                 fontWeight = FontWeight.Normal,
-                text = state.displayName
+                text = "Hi ${state.displayName},"
             )
-            Spacer(modifier = Modifier.height(25.dp))
             Text(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 15.dp),
+                    .padding(top = 6.dp),
+                fontSize = 15.sp,
                 text = "You may now scan your old books or upload your picture to extract the text",
             )
             Spacer(modifier = Modifier.height(25.dp))
@@ -74,7 +75,7 @@ fun HomeScreen(homeViewModel: HomeViewModel) {
                 modifier = Modifier
                     .clip(RoundedCornerShape(5))
                     .shadow(10.dp),
-                painter = painterResource(R.drawable.overview),
+                painter = painterResource(R.drawable.overview_2),
                 contentDescription = "Overview"
             )
             Row(

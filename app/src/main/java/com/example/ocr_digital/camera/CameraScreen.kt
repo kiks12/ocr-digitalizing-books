@@ -23,17 +23,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.FileProvider
-import com.canhub.cropper.CropImageContract
-import com.canhub.cropper.CropImageContractOptions
-import com.canhub.cropper.CropImageOptions
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
@@ -58,27 +53,28 @@ fun CameraScreen(cameraViewModel: CameraViewModel) {
         mutableStateOf<Uri>(Uri.EMPTY)
     }
 
-    val cropImageLauncher = rememberLauncherForActivityResult(CropImageContract()) { cropResult ->
-        if (cropResult.uriContent != null) {
-            cameraViewModel.process(context, cropResult.uriContent!!)
-        }
-    }
+//    val cropImageLauncher = rememberLauncherForActivityResult(CropImageContract()) { cropResult ->
+//        if (cropResult.uriContent != null) {
+//            cameraViewModel.process(context, cropResult.uriContent!!)
+//        }
+//    }
 
     val cameraLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) {
             capturedImageUri = uri
-            cropImageLauncher.launch(
-                input = CropImageContractOptions(
-                    uri = uri,
-                    cropImageOptions = CropImageOptions(
-                        toolbarColor = Color.Black.toArgb(),
-                        activityTitle = "Crop Image",
-                        cropMenuCropButtonTitle = "Crop",
-                        toolbarBackButtonColor = Color.White.toArgb()
-                    )
-                ),
-                options = null
-            )
+            cameraViewModel.process(context, uri)
+//            cropImageLauncher.launch(
+//                input = CropImageContractOptions(
+//                    uri = uri,
+//                    cropImageOptions = CropImageOptions(
+//                        toolbarColor = Color.Black.toArgb(),
+//                        activityTitle = "Crop Image",
+//                        cropMenuCropButtonTitle = "Crop",
+//                        toolbarBackButtonColor = Color.White.toArgb()
+//                    )
+//                ),
+//                options = null
+//            )
         }
     
     LaunchedEffect(cameraPermissionState) {

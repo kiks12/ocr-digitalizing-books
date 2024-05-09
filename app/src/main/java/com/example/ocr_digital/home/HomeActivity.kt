@@ -10,8 +10,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
 import com.example.ocr_digital.R
+import com.example.ocr_digital.api.UsersAPI
 import com.example.ocr_digital.folder.FolderUtilityViewModel
 import com.example.ocr_digital.helpers.ActivityStarterHelper
+import com.example.ocr_digital.helpers.RetrofitHelper
 import com.example.ocr_digital.helpers.ToastHelper
 import com.example.ocr_digital.models.ResponseStatus
 import com.example.ocr_digital.models.UserInformation
@@ -91,7 +93,8 @@ class HomeActivity : AppCompatActivity() {
         )
         scanViewModel = ScanViewModel(toastHelper, activityStarterHelper)
         val folderUtilityViewModel = FolderUtilityViewModel(toastHelper = toastHelper, activityStarterHelper = activityStarterHelper)
-        val usersViewModel = UsersViewModel()
+        val usersApi = RetrofitHelper.getInstance().create(UsersAPI::class.java)
+        val usersViewModel = UsersViewModel(usersApi, toastHelper)
 
         setContent {
             OcrDigitalTheme {

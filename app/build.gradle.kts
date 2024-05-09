@@ -127,4 +127,11 @@ dependencies {
 
     implementation("com.google.mlkit:language-id:17.0.4")
     implementation("com.google.mlkit:translate:17.0.2")
+
+    // retrofit
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    // GSON
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+
+
 }

@@ -1,9 +1,20 @@
 package com.example.ocr_digital.users
 
-import com.example.ocr_digital.models.UserInformation
-
 data class UsersState(
-    val users: List<UserInformation>,
-    val usersBackup: List<UserInformation>,
+    val loading: Boolean,
+    val users: List<UserResult>,
+    val usersBackup: List<UserResult>,
     val query: String,
+    val firstName: String,
+    val lastName: String,
+    val uid: String,
+    val contactNumber: String,
+    val showEditUserDialog: Boolean,
+    val editUserDialogLoading: Boolean,
+    val showEnableConfirmationDialog: Boolean,
+    val enableConfirmationLoading: Boolean,
+    val showDisableConfirmationDialog: Boolean,
+    val disableConfirmationLoading: Boolean,
+    val showDeleteConfirmationDialog: Boolean,
+    val deleteConfirmationLoading: Boolean,
 )

@@ -22,15 +22,19 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import compose.icons.FeatherIcons
+import compose.icons.feathericons.FileText
+import compose.icons.feathericons.Users
 
 enum class NavigationScreens {
     HOME,
     SCAN,
+    USERS,
     SETTINGS
 }
 
 @Composable
-fun NavigationScreen(homeScreen: @Composable () -> Unit, scanScreen: @Composable () -> Unit, settingsScreen: @Composable () -> Unit) {
+fun NavigationScreen(email: String, homeScreen: @Composable () -> Unit, scanScreen: @Composable () -> Unit, usersScreen: @Composable () -> Unit, settingsScreen: @Composable () -> Unit) {
     val navController = rememberNavController()
     var currentRoute by remember {
         mutableStateOf(NavigationScreens.HOME.name)
@@ -63,12 +67,30 @@ fun NavigationScreen(homeScreen: @Composable () -> Unit, scanScreen: @Composable
                         },
                         icon = {
                             if (currentRoute == NavigationScreens.SCAN.name) {
-                                Icon(documentScannerFilled(), "Scan")
+                                Icon(FeatherIcons.FileText, "Scan")
                             } else {
-                                Icon(documentScannerOutlined(), "Scan")
+                                Icon(FeatherIcons.FileText, "Scan")
                             }
-                        }
+                        },
+                        label = { Text("Scan") }
                     )
+                    if (email == "public_admin@gmail.com") {
+                        NavigationBarItem(
+                            selected = currentRoute == NavigationScreens.USERS.name,
+                            onClick = {
+                                navController.navigate(NavigationScreens.USERS.name)
+                                currentRoute = NavigationScreens.USERS.name
+                            },
+                            icon = {
+                                if (currentRoute == NavigationScreens.USERS.name) {
+                                    Icon(FeatherIcons.Users, "Users")
+                                } else {
+                                    Icon(FeatherIcons.Users, "Users")
+                                }
+                            },
+                            label = { Text(text = "Users") }
+                        )
+                    }
                     NavigationBarItem(
                         selected = currentRoute == NavigationScreens.SETTINGS.name,
                         onClick = {
@@ -95,6 +117,7 @@ fun NavigationScreen(homeScreen: @Composable () -> Unit, scanScreen: @Composable
             ) {
                 composable(NavigationScreens.HOME.name) { homeScreen() }
                 composable(NavigationScreens.SCAN.name) { scanScreen() }
+                composable(NavigationScreens.USERS.name) { usersScreen() }
                 composable(NavigationScreens.SETTINGS.name) { settingsScreen() }
             }
         }

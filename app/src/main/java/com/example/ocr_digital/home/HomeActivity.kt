@@ -25,6 +25,8 @@ import com.example.ocr_digital.settings.SettingsScreen
 import com.example.ocr_digital.settings.SettingsViewModel
 import com.example.ocr_digital.startup.StartupActivity
 import com.example.ocr_digital.ui.theme.OcrDigitalTheme
+import com.example.ocr_digital.users.UsersScreen
+import com.example.ocr_digital.users.UsersViewModel
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
@@ -89,14 +91,17 @@ class HomeActivity : AppCompatActivity() {
         )
         scanViewModel = ScanViewModel(toastHelper, activityStarterHelper)
         val folderUtilityViewModel = FolderUtilityViewModel(toastHelper = toastHelper, activityStarterHelper = activityStarterHelper)
+        val usersViewModel = UsersViewModel()
 
         setContent {
             OcrDigitalTheme {
                 Scaffold { innerPadding ->
                     Box(modifier = Modifier.padding(innerPadding)) {
                         NavigationScreen(
+                            email = auth.currentUser?.email?: "",
                             homeScreen = { HomeScreen(homeViewModel = homeViewModel) },
                             scanScreen = { ScanScreen(scanViewModel = scanViewModel, folderUtilityViewModel = folderUtilityViewModel) },
+                            usersScreen = { UsersScreen(usersViewModel = usersViewModel) },
                             settingsScreen = { SettingsScreen(settingsViewModel = settingsViewModel) }
                         )
                     }

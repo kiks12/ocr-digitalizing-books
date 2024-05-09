@@ -16,10 +16,10 @@ fun documentScannerFilled(): ImageVector {
     return remember {
         ImageVector.Builder(
             name = "document_scanner",
-            defaultWidth = 40.0.dp,
-            defaultHeight = 40.0.dp,
-            viewportWidth = 40.0f,
-            viewportHeight = 40.0f
+            defaultWidth = 20.0.dp,
+            defaultHeight = 20.0.dp,
+            viewportWidth = 20.0f,
+            viewportHeight = 20.0f
         ).apply {
             path(
                 fill = SolidColor(Color.Black),

@@ -109,6 +109,36 @@ class UsersRepository {
         return response.await()
     }
 
+    suspend fun getUsers() : Response {
+        val response = CompletableDeferred<Response>(null)
+
+        coroutineScope {
+            launch(Dispatchers.IO){
+                val ref = db.collection("profiles").get()
+                ref.addOnSuccessListener { snapshot ->
+                    response.complete(
+                        Response(
+                            status = ResponseStatus.SUCCESSFUL,
+                            message = "Successfully retrieved users",
+                            data = mapOf(
+                                "users" to snapshot.toObjects(UserInformation::class.java)
+                            )
+                        )
+                    )
+                }.addOnFailureListener {
+                    response.complete(
+                        Response(
+                            status = ResponseStatus.FAILED,
+                            message = it.message.toString()
+                        )
+                    )
+                }
+            }
+        }
+
+        return response.await()
+    }
+
     suspend fun getUid(authUid: String) : String? {
         val response = CompletableDeferred<String?>(null)
 

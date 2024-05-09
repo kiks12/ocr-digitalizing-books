@@ -22,5 +22,5 @@ data class ScanState(
     val publicAdminUID : String,
     val parentFolder : String,
     val selectedFolder : String,
-    val copyToFolders : List<StorageReference>
+    val copyToFolders : List<StorageReference>,
 )

@@ -29,7 +29,7 @@ class LoginActivity : AppCompatActivity() {
 
     private val resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         try {
-            if (result.resultCode == Activity.RESULT_OK) {
+            if (result.resultCode == Activity.RESULT_OK || result.resultCode == Activity.RESULT_FIRST_USER) {
                 val signedInAccount = GoogleSignIn.getSignedInAccountFromIntent(result.data)
                 val credentials = GoogleAuthProvider.getCredential(signedInAccount.result.idToken, null)
                 auth.signInWithCredential(credentials)
@@ -46,6 +46,7 @@ class LoginActivity : AppCompatActivity() {
                 toastHelper.makeToast("There's something wrong please try again")
             }
         } catch (e : ApiException) {
+            toastHelper.makeToast("There's something wrong please try again")
             e.localizedMessage?.let { Log.w("SIGN IN ERROR", it) }
         }
     }

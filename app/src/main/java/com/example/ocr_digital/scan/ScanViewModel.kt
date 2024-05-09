@@ -43,7 +43,7 @@ class ScanViewModel(
             publicAdminUID = "",
             parentFolder = "",
             selectedFolder = "",
-            copyToFolders = listOf()
+            copyToFolders = listOf(),
         )
     )
 
@@ -53,7 +53,10 @@ class ScanViewModel(
     init {
         viewModelScope.launch {
             if (auth.currentUser != null) {
-                _state.value = _state.value.copy(parentFolder = getPath(), selectedFolder = getPath())
+                _state.value = _state.value.copy(
+                    parentFolder = getPath(),
+                    selectedFolder = getPath(),
+                )
                 getFolders()
             }
             getPublicAdmin()

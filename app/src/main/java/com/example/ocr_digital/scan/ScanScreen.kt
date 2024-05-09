@@ -112,6 +112,25 @@ fun ScanScreen(scanViewModel: ScanViewModel, folderUtilityViewModel: FolderUtili
             }
         } else {
             if (state.folders.isEmpty() && state.files.isEmpty()) {
+                LazyColumn (
+                    modifier = Modifier.padding(innerPadding).fillMaxWidth().pullRefresh(refreshState)
+                ){
+                    if (scanViewModel.isAuthenticated()) {
+                        item {
+                            Folder(
+                                directoryName = "Public Library",
+                                onRenameClick = {},
+                                onDeleteClick = {},
+                                onMoveClick = {},
+                                onFolderClick = {
+                                    scanViewModel.openFolder("/${scanViewModel.getPublicAdminUID()}")
+                                },
+                                showVerticalDots = false,
+                                authenticated = scanViewModel.isAuthenticated()
+                            )
+                        }
+                    }
+                }
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center

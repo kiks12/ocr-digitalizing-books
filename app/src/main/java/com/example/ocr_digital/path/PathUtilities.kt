@@ -33,6 +33,20 @@ class PathUtilities {
             }
         }
 
+        fun getFirstSegment(input: String): String {
+            val firstSlashIndex = input.indexOf("/")
+            val secondSlashIndex = input.indexOf("/", startIndex = firstSlashIndex + 1)
+
+            return if (firstSlashIndex != -1 && secondSlashIndex != -1) {
+                input.substring(firstSlashIndex + 1, secondSlashIndex)
+            } else if (firstSlashIndex != -1 && secondSlashIndex == -1) {
+                input.substring(firstSlashIndex + 1)
+            } else {
+                ""
+            }
+        }
+
+
         fun getFileExtension(filePath: String): String {
             val file = File(filePath)
             val fileName = file.name

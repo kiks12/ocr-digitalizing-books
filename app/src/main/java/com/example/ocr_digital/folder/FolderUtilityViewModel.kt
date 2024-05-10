@@ -11,6 +11,7 @@ import com.example.ocr_digital.models.ResponseStatus
 import com.example.ocr_digital.path.PathUtilities
 import com.example.ocr_digital.repositories.FilesFolderRepository
 import com.example.ocr_digital.translator.TranslatorActivity
+import com.google.firebase.storage.StorageReference
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -20,6 +21,12 @@ class FolderUtilityViewModel(
 ) : ViewModel() {
 
     private val filesFolderRepository = FilesFolderRepository()
+
+    fun searchFile(query: String, onSearchFiles: (files: List<StorageReference>) -> Unit) {
+        viewModelScope.launch {
+            filesFolderRepository.searchFiles(query, onSearchFiles)
+        }
+    }
 
     fun createFolder(folderName: String, folderPath: String, successCallback: (str: String) -> Unit, failedCallback: (str: String) -> Unit = {}) {
         if (folderName.isEmpty()) {
@@ -41,16 +48,17 @@ class FolderUtilityViewModel(
 
     fun getFileDetails(path: String, onFileMetadataChange: (metadata: FileMetadata) -> Unit, callback: () -> Unit) {
         viewModelScope.launch {
-            val result = filesFolderRepository.getFileMetadata(path.replace("/", "___"))
+            val result = filesFolderRepository.getFileMetadata(path)
             val metadata = result.data["metadata"] as FileMetadata
-            onFileMetadataChange(metadata)
+            val metadataTwo = metadata.copy(path = path)
+            onFileMetadataChange(metadataTwo)
             callback()
         }
     }
 
     fun updateFileDetails(metadata: FileMetadata, callback: () -> Unit) {
         viewModelScope.launch {
-            val result = filesFolderRepository.updateFileMetadata(metadata)
+            val result = filesFolderRepository.uploadFileMetadata(metadata)
             toastHelper.makeToast(result.message)
             callback()
         }
@@ -60,7 +68,7 @@ class FolderUtilityViewModel(
         viewModelScope.launch {
             if (forFile) {
                 val response = filesFolderRepository.deleteFile(fileFolderPath.substring(1))
-                val responseTwo = filesFolderRepository.deleteFileMetadata(fileFolderPath.replace("/", "___"))
+                val responseTwo = filesFolderRepository.deleteFileMetadata(fileFolderPath)
                 if (response.status == ResponseStatus.SUCCESSFUL && responseTwo.status == ResponseStatus.SUCCESSFUL) {
                     toastHelper.makeToast(response.message)
                     successCallback(response.message)
@@ -158,7 +166,7 @@ class FolderUtilityViewModel(
     fun printFile(context: Context, path: String) {
         val extension = PathUtilities.getFileExtension(path)
         if (extension.contains("png") || extension.contains("jpg") || extension.contains("docx")) {
-            toastHelper.makeToast("File type cannot be printed, download the file and use third pary app")
+            toastHelper.makeToast("File type cannot be printed, download the file and use third party app")
             return
         }
         viewModelScope.launch {

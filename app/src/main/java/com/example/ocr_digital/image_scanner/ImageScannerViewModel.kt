@@ -106,7 +106,7 @@ class ImageScannerViewModel(
                     showLoading()
                     val response = filesFolderRepository.uploadFile(_state.value.selectedFolder, uri)
                     val responseTwo = filesFolderRepository.uploadFile(_state.value.selectedFolder, uriText)
-                    val path = "${_state.value.selectedFolder}/${uri.lastPathSegment}".replace("/", "___")
+                    val path = "${_state.value.selectedFolder}/${uri.lastPathSegment}"
                     val responseThree = filesFolderRepository.uploadFileMetadata(
                         FileMetadata(
                             title = _state.value.bookTitle,

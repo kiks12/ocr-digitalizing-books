@@ -1,5 +1,6 @@
 package com.example.ocr_digital.repositories
 
+import android.util.Log
 import com.example.ocr_digital.models.Response
 import com.example.ocr_digital.models.ResponseStatus
 import com.example.ocr_digital.models.UserInformation
@@ -146,7 +147,9 @@ class UsersRepository {
             launch(Dispatchers.IO) {
                 val ref = db.collection("profiles").whereEqualTo("profileId", authUid).limit(1).get()
                 ref.addOnSuccessListener {
-                        response.complete(it.documents[0].id)
+                        Log.w("USERS REPO", it.isEmpty.toString())
+                        if (it.size() == 0 || it.isEmpty || it == null) response.complete(null)
+                        else response.complete(it.documents[0].id)
                     }
                     .addOnFailureListener {
                         response.complete(null)

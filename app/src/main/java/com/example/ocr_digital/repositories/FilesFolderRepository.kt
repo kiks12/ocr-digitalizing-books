@@ -49,6 +49,7 @@ class FilesFolderRepository {
     private val db = Firebase.firestore
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + Dispatchers.IO)
+    private val usersRepository = UsersRepository()
 
     suspend fun createFolder(directory: String) : Response{
         val response = CompletableDeferred<Response>(null)
@@ -109,11 +110,19 @@ class FilesFolderRepository {
 
     suspend fun deleteFileMetadata(path: String) : Response {
         val response = CompletableDeferred<Response>(null)
+        val profilePath = PathUtilities.getFirstSegment(path)
+        val document = path.replace("/", "___")
 
         try {
             coroutineScope {
                 launch(Dispatchers.IO){
-                    db.collection("books").document(path).delete().await()
+                    val uid = usersRepository.getUid(profilePath)
+                    db.collection("profiles")
+                        .document(uid!!)
+                        .collection("books")
+                        .document(document)
+                        .delete()
+                        .await()
                     response.complete(
                         Response(
                             status = ResponseStatus.SUCCESSFUL,
@@ -526,9 +535,16 @@ class FilesFolderRepository {
 
     suspend fun getFileMetadata(path: String) : Response {
         val response = CompletableDeferred<Response>(null)
+        val profilePath = PathUtilities.getFirstSegment(path)
+        val document = path.replace("/", "___")
 
         coroutineScope {
-            db.collection("books").document(path).get()
+            val uid = usersRepository.getUid(profilePath) ?: profilePath
+            db.collection("profiles")
+                .document(uid)
+                .collection("books")
+                .document(document)
+                .get()
                 .addOnSuccessListener { snapshot ->
                     if (snapshot.data == null) {
                         response.complete(
@@ -570,79 +586,87 @@ class FilesFolderRepository {
 
     suspend fun uploadFileMetadata(metadata: FileMetadata) : Response {
         val response = CompletableDeferred<Response>(null)
+        val profilePath = PathUtilities.getFirstSegment(metadata.path)
+        Log.w("FILES FOLDER", metadata.path)
+        Log.w("FILES FOLDER", profilePath)
+        val document = metadata.path.replace("/", "___")
 
         coroutineScope {
-            db.collection("books").document(metadata.path).set(
-                mapOf(
-                    "title" to metadata.title,
-                    "author" to metadata.author,
-                    "publishedYear" to metadata.publishedYear,
-                    "genre" to metadata.genre,
-                    "path" to metadata.path,
-                    "createdAt" to metadata.createdAt
-                )
-            ).addOnSuccessListener {
-                response.complete(
-                    Response(
-                        status = ResponseStatus.SUCCESSFUL,
-                        message = "File Metadata uploaded"
+            val uid = usersRepository.getUid(profilePath) ?: profilePath
+            db.collection("profiles")
+                .document(uid)
+                .collection("books")
+                .document(document)
+                .set(
+                    mapOf(
+                        "title" to metadata.title,
+                        "author" to metadata.author,
+                        "publishedYear" to metadata.publishedYear,
+                        "genre" to metadata.genre,
+                        "path" to metadata.path,
+                        "createdAt" to metadata.createdAt
                     )
-                )
-            }.addOnFailureListener {
-                it.localizedMessage?.let { it1 ->
-                    Response(
-                        status = ResponseStatus.FAILED,
-                        message = it1
-                    )
-                }?.let { it2 ->
+                ).addOnSuccessListener {
                     response.complete(
-                        it2
+                        Response(
+                            status = ResponseStatus.SUCCESSFUL,
+                            message = "File Metadata uploaded"
+                        )
                     )
+                }.addOnFailureListener {
+                    it.localizedMessage?.let { it1 ->
+                        Response(
+                            status = ResponseStatus.FAILED,
+                            message = it1
+                        )
+                    }?.let { it2 ->
+                        response.complete(
+                            it2
+                        )
+                    }
                 }
-            }
-
         }
 
         return response.await()
     }
 
-    suspend fun updateFileMetadata(metadata: FileMetadata) : Response {
-        val response = CompletableDeferred<Response>(null)
-
-        coroutineScope {
-            db.collection("books").document(metadata.path).set(
-                mapOf(
-                    "title" to metadata.title,
-                    "author" to metadata.author,
-                    "publishedYear" to metadata.publishedYear,
-                    "genre" to metadata.genre,
-                    "path" to metadata.path,
-                    "createdAt" to metadata.createdAt
-                )
-            ).addOnSuccessListener {
-                response.complete(
-                    Response(
-                        status = ResponseStatus.SUCCESSFUL,
-                        message = "Successfully updated file metadata"
-                    )
-                )
-            }.addOnFailureListener {
-                it.localizedMessage?.let { it1 ->
-                    Response(
-                        status = ResponseStatus.FAILED,
-                        message = it1
-                    )
-                }?.let { it2 ->
-                    response.complete(
-                        it2
-                    )
-                }
-            }
-
-        }
-
-        return response.await()
-    }
+//    suspend fun updateFileMetadata(metadata: FileMetadata) : Response {
+//        val response = CompletableDeferred<Response>(null)
+//
+//        coroutineScope {
+//            db.collection("books").document(metadata.path).set(
+//                mapOf(
+//                    "title" to metadata.title,
+//                    "author" to metadata.author,
+//                    "publishedYear" to metadata.publishedYear,
+//                    "genre" to metadata.genre,
+//                    "path" to metadata.path,
+//                    "createdAt" to metadata.createdAt
+//                )
+//            ).addOnSuccessListener {
+//                response.complete(
+//                    Response(
+//                        status = ResponseStatus.SUCCESSFUL,
+//                        message = "Successfully updated file metadata"
+//                    )
+//                )
+//            }.addOnFailureListener {
+//                it.localizedMessage?.let { it1 ->
+//                    Response(
+//                        status = ResponseStatus.FAILED,
+//                        message = it1
+//                    )
+//                }?.let { it2 ->
+//                    response.complete(
+//                        it2
+//                    )
+//                }
+//            }
+//
+//        }
+//
+//        return response.await()
+//    }
 
     suspend fun uploadFile(filePath: String, fileUri: Uri) : Response {
         val response = CompletableDeferred<Response>(null)
@@ -820,6 +844,32 @@ class FilesFolderRepository {
                 .addOnFailureListener {
                     Toast.makeText(context, it.localizedMessage, Toast.LENGTH_SHORT).show()
                 }
+        }
+    }
+
+    suspend fun searchFiles(query: String, onSearchFiles: (files: List<StorageReference>) -> Unit){
+        val files = ArrayList<StorageReference>()
+
+        coroutineScope {
+            launch {
+                db.collection("books").get()
+                    .addOnSuccessListener { results ->
+                        Log.w("FILES FOLDER", results.size().toString())
+                        for (snap in results) {
+                            val ref = storage.reference
+                            if (snap.data["path"] != null) {
+                                val path = (snap.data["path"] as String).replace("___", "/")
+                                val file = ref.child(path)
+                                Log.w("FILES FOLDER", file.name)
+                                files.add(file)
+                            }
+                        }
+                        onSearchFiles(files)
+                    }
+                    .addOnFailureListener {
+                        onSearchFiles(files)
+                    }
+            }
         }
     }
 

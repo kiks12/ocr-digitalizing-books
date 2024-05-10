@@ -13,12 +13,14 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -26,6 +28,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -45,6 +48,7 @@ import com.example.ocr_digital.path.PathUtilities
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.FileText
 import compose.icons.feathericons.FolderPlus
+import eu.bambooapps.material3.pullrefresh.PullRefreshIndicator
 import eu.bambooapps.material3.pullrefresh.pullRefresh
 import eu.bambooapps.material3.pullrefresh.rememberPullRefreshState
 import kotlinx.coroutines.launch
@@ -57,6 +61,7 @@ fun FolderScreen(folderViewModel: FolderViewModel, folderUtilityViewModel: Folde
     val localContext = LocalContext.current
     val refreshing by remember { mutableStateOf(false) }
     val refreshState = rememberPullRefreshState(refreshing = refreshing, onRefresh = folderViewModel::refresh)
+    var query by remember { mutableStateOf("") }
 
     Scaffold(
         floatingActionButton = {
@@ -89,7 +94,7 @@ fun FolderScreen(folderViewModel: FolderViewModel, folderUtilityViewModel: Folde
                     IconButton(onClick = folderViewModel::finish) {
                         Icon(Icons.Default.ArrowBack, "Go Back")
                     }
-                }
+                },
             )
         }
     ){ innerPadding ->
@@ -113,6 +118,23 @@ fun FolderScreen(folderViewModel: FolderViewModel, folderUtilityViewModel: Folde
                         .fillMaxWidth()
                         .pullRefresh(refreshState)
                 ) {
+                    item {
+                        SearchBar(
+                            query = query,
+                            onQueryChange = { query = it },
+                            onSearch = { folderUtilityViewModel.searchFile(query, folderViewModel::onFilesSearch) },
+                            active = false,
+                            onActiveChange = {},
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 10.dp),
+                            placeholder = { Text(text = "Search File") },
+                            trailingIcon = {
+                                Icon(Icons.Default.Search, "Search")
+                            }
+                        ) {
+                        }
+                    }
                     item { Text(text = "Saved Files", modifier = Modifier.padding(start = 15.dp, top=15.dp), fontSize = 12.sp) }
                     items(state.folders) {folder ->
                         Folder(
@@ -145,6 +167,13 @@ fun FolderScreen(folderViewModel: FolderViewModel, folderUtilityViewModel: Folde
                             authenticated = folderViewModel.isAuthenticated(),
                         )
                     }
+                }
+
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
+                    PullRefreshIndicator(
+                        refreshing = refreshing,
+                        state = refreshState,
+                    )
                 }
             }
         }

@@ -15,6 +15,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -73,11 +74,11 @@ fun SaveFileDialog(
     )
 
     Dialog(onDismissRequest = onDismissRequest) {
-        if (showFileNameCard) {
+        if (!showFileNameCard) {
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(380.dp)
+                    .height(350.dp)
                     .padding(16.dp),
                 shape = RoundedCornerShape(16.dp),
             ){
@@ -89,12 +90,12 @@ fun SaveFileDialog(
                 ){
                     Text(text = "Save as")
                     Spacer(modifier = Modifier.height(15.dp))
-                    TextButton(
-                        onClick = { showFileNameCardAndFileType(FileType.DOCX) },
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(text = "Save as DOCX")
-                    }
+//                    TextButton(
+//                        onClick = { showFileNameCardAndFileType(FileType.DOCX) },
+//                        modifier = Modifier.fillMaxWidth()
+//                    ) {
+//                        Text(text = "Save as DOCX")
+//                    }
                     TextButton(
                         onClick = { showFileNameCardAndFileType(FileType.PDF) },
                         modifier = Modifier.fillMaxWidth()
@@ -114,7 +115,7 @@ fun SaveFileDialog(
                         Text(text = "Save as JPEG")
                     }
                     Spacer(modifier = Modifier.height(15.dp))
-                    TextButton(
+                    FilledTonalButton(
                         onClick = onDismissRequest,
                         modifier = Modifier.fillMaxWidth()
                     ) {
@@ -124,7 +125,7 @@ fun SaveFileDialog(
             }
         }
 
-        if (!showFileNameCard) {
+        if (showFileNameCard) {
             Card(
                 modifier = Modifier
                     .fillMaxWidth()

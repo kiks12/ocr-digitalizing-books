@@ -90,7 +90,7 @@ fun ScanScreen(scanViewModel: ScanViewModel, folderUtilityViewModel: FolderUtili
             SearchBar(
                 query = state.query,
                 onQueryChange = scanViewModel::onQueryChange,
-                onSearch = { scanViewModel.searchFile() },
+                onSearch = { folderUtilityViewModel.searchFile("/${scanViewModel.getUid()}", state.query, scanViewModel::onSearchFiles) },
                 active = false,
                 onActiveChange = {},
                 modifier = Modifier

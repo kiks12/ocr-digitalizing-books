@@ -1,6 +1,7 @@
 package com.example.ocr_digital.folder
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.ocr_digital.file_saver.FileMetadata
@@ -22,9 +23,9 @@ class FolderUtilityViewModel(
 
     private val filesFolderRepository = FilesFolderRepository()
 
-    fun searchFile(query: String, onSearchFiles: (files: List<StorageReference>) -> Unit) {
+    fun searchFile(path: String, query: String, onSearchFiles: (files: List<StorageReference>) -> Unit) {
         viewModelScope.launch {
-            filesFolderRepository.searchFiles(query, onSearchFiles)
+            filesFolderRepository.searchFiles(path, query, onSearchFiles)
         }
     }
 

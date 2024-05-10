@@ -262,5 +262,6 @@ class ScanViewModel(
 
     fun showFileMetadataDialog() { _state.value = _state.value.copy(showInfoDialog = true) }
     fun hideFileMetadataDialog() { _state.value = _state.value.copy(showInfoDialog = false) }
+    fun onSearchFiles(files: List<StorageReference>) { _state.value = _state.value.copy(files=files) }
 
 }

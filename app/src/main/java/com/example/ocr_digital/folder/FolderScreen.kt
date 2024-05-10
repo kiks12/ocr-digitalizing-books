@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -95,6 +96,11 @@ fun FolderScreen(folderViewModel: FolderViewModel, folderUtilityViewModel: Folde
                         Icon(Icons.Default.ArrowBack, "Go Back")
                     }
                 },
+                actions = {
+                    IconButton(onClick = folderViewModel::refresh) {
+                        Icon(Icons.Default.Refresh, "Refresh")
+                    }
+                }
             )
         }
     ){ innerPadding ->
@@ -122,7 +128,7 @@ fun FolderScreen(folderViewModel: FolderViewModel, folderUtilityViewModel: Folde
                         SearchBar(
                             query = query,
                             onQueryChange = { query = it },
-                            onSearch = { folderUtilityViewModel.searchFile(query, folderViewModel::onFilesSearch) },
+                            onSearch = { folderUtilityViewModel.searchFile(folderViewModel.getFolderPath(), query, folderViewModel::onFilesSearch) },
                             active = false,
                             onActiveChange = {},
                             modifier = Modifier

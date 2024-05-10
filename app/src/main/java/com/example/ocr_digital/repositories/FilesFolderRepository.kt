@@ -587,8 +587,6 @@ class FilesFolderRepository {
     suspend fun uploadFileMetadata(metadata: FileMetadata) : Response {
         val response = CompletableDeferred<Response>(null)
         val profilePath = PathUtilities.getFirstSegment(metadata.path)
-        Log.w("FILES FOLDER", metadata.path)
-        Log.w("FILES FOLDER", profilePath)
         val document = metadata.path.replace("/", "___")
 
         coroutineScope {
@@ -847,21 +845,33 @@ class FilesFolderRepository {
         }
     }
 
-    suspend fun searchFiles(query: String, onSearchFiles: (files: List<StorageReference>) -> Unit){
+    suspend fun searchFiles(path: String, query: String, onSearchFiles: (files: List<StorageReference>) -> Unit){
         val files = ArrayList<StorageReference>()
+        val profilePath = PathUtilities.getFirstSegment(path)
 
         coroutineScope {
             launch {
-                db.collection("books").get()
+                val uid = usersRepository.getUid(profilePath) ?: profilePath
+                db.collection("profiles")
+                    .document(uid)
+                    .collection("books")
+                    .get()
                     .addOnSuccessListener { results ->
-                        Log.w("FILES FOLDER", results.size().toString())
                         for (snap in results) {
                             val ref = storage.reference
-                            if (snap.data["path"] != null) {
-                                val path = (snap.data["path"] as String).replace("___", "/")
-                                val file = ref.child(path)
-                                Log.w("FILES FOLDER", file.name)
-                                files.add(file)
+                            val data = snap.data
+                            if (data["path"] != null) {
+                                val snapPath = (snap.data["path"] as String).replace("___", "/")
+                                val author = data["author"] as String
+                                val genre = data["genre"] as String
+                                val publishedYear = data["publishedYear"] as String
+                                val title = data["title"] as String
+
+                                if (author.lowercase().contains(query.lowercase()) || genre.lowercase().contains(query.lowercase())
+                                    || publishedYear.lowercase().contains(query.lowercase()) || title.lowercase().contains(query.lowercase())){
+                                    val file = ref.child(snapPath)
+                                    files.add(file)
+                                }
                             }
                         }
                         onSearchFiles(files)

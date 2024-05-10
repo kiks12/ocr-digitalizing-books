@@ -3,6 +3,7 @@ package com.example.ocr_digital.scan
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.ocr_digital.file_saver.FileMetadata
 import com.example.ocr_digital.folder.FolderActivity
 import com.example.ocr_digital.helpers.ActivityStarterHelper
 import com.example.ocr_digital.helpers.ToastHelper
@@ -10,6 +11,7 @@ import com.example.ocr_digital.models.UserInformation
 import com.example.ocr_digital.path.PathUtilities
 import com.example.ocr_digital.repositories.FilesFolderRepository
 import com.example.ocr_digital.repositories.UsersRepository
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.StorageReference
@@ -44,6 +46,15 @@ class ScanViewModel(
             parentFolder = "",
             selectedFolder = "",
             copyToFolders = listOf(),
+            showInfoDialog = false,
+            metadata = FileMetadata(
+                title = "",
+                author = "",
+                genre = "",
+                publishedYear = "",
+                path = "",
+                createdAt = Timestamp.now()
+            )
         )
     )
 
@@ -244,5 +255,12 @@ class ScanViewModel(
             toastHelper.makeToast(response.message)
         }
     }
+
+    fun onFileMetadataChange(metadata: FileMetadata) {
+        _state.value = _state.value.copy(metadata = metadata)
+    }
+
+    fun showFileMetadataDialog() { _state.value = _state.value.copy(showInfoDialog = true) }
+    fun hideFileMetadataDialog() { _state.value = _state.value.copy(showInfoDialog = false) }
 
 }

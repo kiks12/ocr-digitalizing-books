@@ -4,11 +4,13 @@ import android.content.Context
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.ocr_digital.file_saver.FileMetadata
 import com.example.ocr_digital.file_saver.FileSaver
 import com.example.ocr_digital.file_saver.FileType
 import com.example.ocr_digital.helpers.ToastHelper
 import com.example.ocr_digital.models.ResponseStatus
 import com.example.ocr_digital.repositories.FilesFolderRepository
+import com.google.firebase.Timestamp
 import com.google.firebase.storage.StorageReference
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -32,7 +34,11 @@ class ImageScannerViewModel(
             parentFolder = path,
             folders = listOf(),
             showCreateFolderDialog = false,
-            folderName = ""
+            folderName = "",
+            bookTitle = "",
+            author = "",
+            publishYear = "",
+            genre = ""
         )
     )
 
@@ -78,6 +84,10 @@ class ImageScannerViewModel(
     fun onFileTypeChange(type: FileType) { _state.value = _state.value.copy(filetype = type) }
 
     fun onFileNameChange(newStr: String) { _state.value = _state.value.copy(filename = newStr) }
+    fun onBookTitleChange(newStr: String) { _state.value = _state.value.copy(bookTitle = newStr) }
+    fun onAuthorChange(newStr: String) { _state.value = _state.value.copy(author = newStr) }
+    fun onPublishYearChange(newStr: String) { _state.value = _state.value.copy(publishYear = newStr) }
+    fun onGenreChange(newStr: String) { _state.value = _state.value.copy(genre = newStr) }
 
     fun saveFile(context: Context, text: String, filename: String, type: FileType) {
         if (filename == "") {
@@ -96,11 +106,23 @@ class ImageScannerViewModel(
                     showLoading()
                     val response = filesFolderRepository.uploadFile(_state.value.selectedFolder, uri)
                     val responseTwo = filesFolderRepository.uploadFile(_state.value.selectedFolder, uriText)
-                    if (response.status == ResponseStatus.SUCCESSFUL && responseTwo.status == ResponseStatus.SUCCESSFUL) {
+                    val path = "${_state.value.selectedFolder}/${uri.lastPathSegment}".replace("/", "___")
+                    val responseThree = filesFolderRepository.uploadFileMetadata(
+                        FileMetadata(
+                            title = _state.value.bookTitle,
+                            author = _state.value.author,
+                            genre = _state.value.genre,
+                            publishedYear = _state.value.publishYear,
+                            createdAt = Timestamp.now(),
+                            path = path
+                        )
+                    )
+                    if (response.status == ResponseStatus.SUCCESSFUL && responseTwo.status == ResponseStatus.SUCCESSFUL && responseThree.status == ResponseStatus.SUCCESSFUL) {
                         responseMessage = response.message
                     }
                     if (response.status == ResponseStatus.FAILED) responseMessage = response.message
                     if (responseTwo.status == ResponseStatus.FAILED) responseMessage = responseTwo.message
+                    if (responseThree.status == ResponseStatus.FAILED) responseMessage = responseThree.message
                     hideSaveDialog()
                 }.await()
                 async {

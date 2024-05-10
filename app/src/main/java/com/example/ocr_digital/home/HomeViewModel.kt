@@ -4,9 +4,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.ocr_digital.helpers.ActivityStarterHelper
+import com.example.ocr_digital.models.ResponseStatus
 import com.example.ocr_digital.models.UserInformation
 import com.example.ocr_digital.onboarding.walkthrough.WalkthroughActivity
 import com.example.ocr_digital.repositories.UsersRepository
+import com.example.ocr_digital.startup.StartupActivity
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
@@ -32,12 +34,17 @@ class HomeViewModel(
         if (auth.currentUser != null) {
             viewModelScope.launch {
                 val response = usersRepository.getUser(auth.currentUser?.uid!!)
-                val user = (response.data["user"] as List<UserInformation>)[0]
-                _state.value = _state.value.copy(
-                    displayName = "${user.firstName} ${user.lastName}",
-                    authenticated = true,
-                    message = authenticatedMessage
-                )
+                val data = response.data["user"] as List<*>
+                if (response.status == ResponseStatus.SUCCESSFUL && data.isNotEmpty()) {
+                    val user = data[0] as UserInformation
+                    _state.value = _state.value.copy(
+                        displayName = "${user.firstName} ${user.lastName}",
+                        authenticated = true,
+                        message = authenticatedMessage
+                    )
+                } else {
+                    startStartupActivity()
+                }
             }
         } else {
             _state.value = _state.value.copy(
@@ -49,5 +56,9 @@ class HomeViewModel(
 
     fun startWalkthroughActivity() {
         activityStarterHelper.startActivity(WalkthroughActivity::class.java)
+    }
+
+    private fun startStartupActivity() {
+        activityStarterHelper.startActivity(StartupActivity::class.java)
     }
 }

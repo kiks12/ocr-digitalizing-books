@@ -1,5 +1,6 @@
 package com.example.ocr_digital.folder
 
+import com.example.ocr_digital.file_saver.FileMetadata
 import com.google.firebase.storage.StorageReference
 
 data class FolderScreenState(
@@ -23,5 +24,7 @@ data class FolderScreenState(
     val publicAdminUID : String,
     val parentFolder : String,
     val selectedFolder : String,
-    val copyToFolders : List<StorageReference>
+    val copyToFolders : List<StorageReference>,
+    val showInfoDialog : Boolean,
+    val metadata: FileMetadata,
 )

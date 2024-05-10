@@ -2,6 +2,7 @@ package com.example.ocr_digital.home
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Box
@@ -48,10 +49,14 @@ class HomeActivity : AppCompatActivity() {
             val response = usersRepository.getUser(currentUser.uid)
             if (response.status == ResponseStatus.SUCCESSFUL) {
                 val userData = response.data["user"] as List<*>
-                if (userData.isEmpty()) startStartupActivity()
-                val user = userData[0] as UserInformation
-                if (user.onboarding) return@launch startOnBoardingActivity()
-                if (user.walkthrough) return@launch startWalkthroughActivity()
+                Log.w("HOME ACTIVITY", userData.toString())
+                if (userData.isEmpty()) {
+                    startStartupActivity()
+                } else {
+                    val user = userData[0] as UserInformation
+                    if (user.onboarding) return@launch startOnBoardingActivity()
+                    if (user.walkthrough) return@launch startWalkthroughActivity()
+                }
             }
         }
     }

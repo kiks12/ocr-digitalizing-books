@@ -5,11 +5,13 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.ocr_digital.file_saver.FileMetadata
 import com.example.ocr_digital.file_saver.FileSaver
 import com.example.ocr_digital.file_saver.FileType
 import com.example.ocr_digital.helpers.ToastHelper
 import com.example.ocr_digital.path.PathUtilities
 import com.example.ocr_digital.repositories.FilesFolderRepository
+import com.google.firebase.Timestamp
 import com.google.mlkit.common.model.DownloadConditions
 import com.google.mlkit.nl.languageid.LanguageIdentification
 import com.google.mlkit.nl.translate.TranslateLanguage
@@ -123,13 +125,27 @@ class TranslatorViewModel(
             val fileName = (PathUtilities.getLastSegment(filePath)).substringBeforeLast(".$extension") + "-${_state.value.targetDropDownSelectedText}"
             val uri = fileSaver.saveTextToFile(context, _state.value.text, fileName, type)
             val uriText = fileSaver.saveTextToFile(context, _state.value.text, fileName, FileType.TXT)
+            val result = filesFolderRepository.getFileMetadata(filePath.replace("/", "___"))
+            val data = result.data["metadata"] as FileMetadata
             if (uri != null && uriText != null) {
                 val response = filesFolderRepository.uploadFile(folderPath, uri)
                 val responseTwo = filesFolderRepository.uploadFile(folderPath, uriText)
+                val path = "${folderPath}/${uri.lastPathSegment}".replace("/", "___")
+                val responseThree = filesFolderRepository.uploadFileMetadata(
+                    FileMetadata(
+                        title = data.title,
+                        author = data.author,
+                        genre = data.genre,
+                        publishedYear = data.publishedYear,
+                        createdAt = Timestamp.now(),
+                        path = path
+                    )
+                )
 
                 _state.value = _state.value.copy(loading = false)
                 toastHelper.makeToast(response.message)
                 toastHelper.makeToast(responseTwo.message)
+                toastHelper.makeToast(responseThree.message)
             }
         }
     }

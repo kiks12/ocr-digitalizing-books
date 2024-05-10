@@ -3,10 +3,12 @@ package com.example.ocr_digital.folder
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.ocr_digital.file_saver.FileMetadata
 import com.example.ocr_digital.helpers.ActivityStarterHelper
 import com.example.ocr_digital.helpers.ToastHelper
 import com.example.ocr_digital.path.PathUtilities
 import com.example.ocr_digital.repositories.FilesFolderRepository
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.StorageReference
@@ -18,7 +20,6 @@ class FolderViewModel(
     private val activityStarterHelper: ActivityStarterHelper,
     private val finishCallback: () -> Unit,
 ): ViewModel() {
-//    private val usersRepository = UsersRepository()
     private val filesFolderRepository = FilesFolderRepository()
     private val auth = Firebase.auth
 
@@ -44,7 +45,16 @@ class FolderViewModel(
             selectedFolder = "",
             copyToFolders = listOf(),
             filePath = "",
-            showCopyToDialog = false
+            showCopyToDialog = false,
+            showInfoDialog = false,
+            metadata = FileMetadata(
+                author = "",
+                title = "",
+                genre = "",
+                path = "",
+                createdAt = Timestamp.now(),
+                publishedYear = ""
+            )
         )
     )
 
@@ -72,32 +82,6 @@ class FolderViewModel(
     fun refresh() {
         getFolderFiles()
     }
-
-//    private fun getPublicAdmin() {
-//        viewModelScope.launch {
-//            val publicAdminResponse = usersRepository.getPublicAdminUser()
-//            val publicAdminAccount = (publicAdminResponse.data["user"] as List<UserInformation>)[0]
-//            val publicAdminUID = usersRepository.getUid(publicAdminAccount.profileId)
-//            _state.value = _state.value.copy(publicAdminUID = publicAdminUID!!)
-//        }
-//    }
-//
-//    private fun getPublicLibrary() {
-//        viewModelScope.launch {
-//            showLoading()
-//            val publicAdminResponse = usersRepository.getPublicAdminUser()
-//            val publicAdminAccount = (publicAdminResponse.data["user"] as List<UserInformation>)[0]
-//            val publicAdminUID = usersRepository.getUid(publicAdminAccount.profileId)
-//            val response = filesFolderRepository.getFilesAndFolders(publicAdminUID!!)
-//            val files = response.data["FILES"] as List<StorageReference>
-//            val folders = response.data["FOLDERS"] as List<StorageReference>
-//            _state.value = _state.value.copy(
-//                files = files,
-//                folders = folders,
-//            )
-//            hideLoading()
-//        }
-//    }
 
     fun showCopyToDialog(filePath: String) {
         _state.value = _state.value.copy(showCopyToDialog = true, filePath = filePath)
@@ -203,10 +187,6 @@ class FolderViewModel(
         return auth.currentUser != null
     }
 
-//    fun showUnauthenticatedLoginMessage() {
-//        toastHelper.makeToast("Please login to enable feature")
-//    }
-
     fun setSelectedFolder(path: String) {
         viewModelScope.launch {
             if (path == "Public Library") {
@@ -225,5 +205,12 @@ class FolderViewModel(
             toastHelper.makeToast(response.message)
         }
     }
+
+    fun onFileMetadataChange(metadata: FileMetadata) {
+        _state.value = _state.value.copy(metadata = metadata)
+    }
+
+    fun showFileMetadataDialog() { _state.value = _state.value.copy(showInfoDialog = true) }
+    fun hideFileMetadataDialog() { _state.value = _state.value.copy(showInfoDialog = false) }
 
 }

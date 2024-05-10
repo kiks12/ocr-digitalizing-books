@@ -1,5 +1,6 @@
 package com.example.ocr_digital.scan
 
+import com.example.ocr_digital.file_saver.FileMetadata
 import com.google.firebase.storage.StorageReference
 
 data class ScanState(
@@ -23,4 +24,6 @@ data class ScanState(
     val parentFolder : String,
     val selectedFolder : String,
     val copyToFolders : List<StorageReference>,
+    val showInfoDialog : Boolean,
+    val metadata : FileMetadata
 )

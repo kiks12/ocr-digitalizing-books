@@ -15,4 +15,8 @@ data class ImageScannerState (
     val folders : List<StorageReference>,
     val showCreateFolderDialog : Boolean,
     val folderName : String,
+    val bookTitle: String,
+    val author: String,
+    val publishYear: String,
+    val genre: String
 )

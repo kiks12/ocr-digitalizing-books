@@ -13,6 +13,7 @@ import compose.icons.FeatherIcons
 import compose.icons.feathericons.Copy
 import compose.icons.feathericons.Download
 import compose.icons.feathericons.FileText
+import compose.icons.feathericons.Info
 import compose.icons.feathericons.Printer
 
 @Composable
@@ -25,6 +26,7 @@ fun FileFolderMenu(
     onTranslateClick: () -> Unit = {},
     onDownloadClick: () -> Unit = {},
     onPrintClick: () -> Unit = {},
+    onDetailsClick: () -> Unit = {},
     authenticated: Boolean,
     forFile: Boolean = false,
 ) {
@@ -72,6 +74,11 @@ fun FileFolderMenu(
                 text = { Text("Print") },
                 onClick = onPrintClick,
                 trailingIcon = { Icon(FeatherIcons.Printer, "Print") }
+            )
+            DropdownMenuItem(
+                text = { Text("Details") },
+                onClick = onDetailsClick ,
+                trailingIcon = { Icon(FeatherIcons.Info, "Info") }
             )
         }
     }

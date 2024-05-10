@@ -3,6 +3,7 @@ package com.example.ocr_digital.folder
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.ocr_digital.file_saver.FileMetadata
 import com.example.ocr_digital.image_scanner.ImageScannerActivity
 import com.example.ocr_digital.helpers.ActivityStarterHelper
 import com.example.ocr_digital.helpers.ToastHelper
@@ -38,11 +39,29 @@ class FolderUtilityViewModel(
         }
     }
 
+    fun getFileDetails(path: String, onFileMetadataChange: (metadata: FileMetadata) -> Unit, callback: () -> Unit) {
+        viewModelScope.launch {
+            val result = filesFolderRepository.getFileMetadata(path.replace("/", "___"))
+            val metadata = result.data["metadata"] as FileMetadata
+            onFileMetadataChange(metadata)
+            callback()
+        }
+    }
+
+    fun updateFileDetails(metadata: FileMetadata, callback: () -> Unit) {
+        viewModelScope.launch {
+            val result = filesFolderRepository.updateFileMetadata(metadata)
+            toastHelper.makeToast(result.message)
+            callback()
+        }
+    }
+
     fun deleteFileOrFolder(fileFolderPath: String, forFile: Boolean, successCallback: (newStr: String) -> Unit, failedCallback: (str: String) -> Unit = {}) {
         viewModelScope.launch {
             if (forFile) {
                 val response = filesFolderRepository.deleteFile(fileFolderPath.substring(1))
-                if (response.status == ResponseStatus.SUCCESSFUL) {
+                val responseTwo = filesFolderRepository.deleteFileMetadata(fileFolderPath.replace("/", "___"))
+                if (response.status == ResponseStatus.SUCCESSFUL && responseTwo.status == ResponseStatus.SUCCESSFUL) {
                     toastHelper.makeToast(response.message)
                     successCallback(response.message)
                     return@launch

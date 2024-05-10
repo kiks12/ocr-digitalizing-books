@@ -28,6 +28,7 @@ fun File(
     onTranslateClick: () -> Unit,
     onDownloadClick: () -> Unit,
     onPrintClick: () -> Unit,
+    onDetailsClick: () -> Unit,
     onClick: () -> Unit,
     authenticated: Boolean,
 ) {
@@ -111,6 +112,10 @@ fun File(
                         menuExpanded = false
                         onPrintClick()
                     },
+                    onDetailsClick = {
+                        menuExpanded = false
+                        onDetailsClick()
+                    },
                     forFile = true,
                     authenticated = authenticated
                 )
@@ -132,6 +137,7 @@ fun FilePreview() {
             onPrintClick = {},
             onClick = {},
             onTranslateClick = {},
+            onDetailsClick = {},
             authenticated = false
         )
     }

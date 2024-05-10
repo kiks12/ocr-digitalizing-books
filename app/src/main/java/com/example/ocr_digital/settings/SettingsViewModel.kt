@@ -7,6 +7,7 @@ import com.example.ocr_digital.MainActivity
 import com.example.ocr_digital.helpers.ActivityStarterHelper
 import com.example.ocr_digital.helpers.ToastHelper
 import com.example.ocr_digital.login.LoginActivity
+import com.example.ocr_digital.models.ResponseStatus
 import com.example.ocr_digital.models.UserInformation
 import com.example.ocr_digital.onboarding.walkthrough.WalkthroughActivity
 import com.example.ocr_digital.passwords.change_password.ChangePasswordActivity
@@ -35,12 +36,14 @@ class SettingsViewModel(
         if (auth.currentUser != null) {
             viewModelScope.launch {
                 val response = usersRepository.getUser(auth.currentUser?.uid!!)
-                val userInformation = response.data["user"] as ArrayList<UserInformation>
-                _state.value = _state.value.copy(
-                    email = auth.currentUser?.email!!,
-                    userInformation = userInformation[0],
-                    authenticated = true
-                )
+                val data = response.data["user"] as List<*>
+                if (response.status == ResponseStatus.SUCCESSFUL && data.isNotEmpty()) {
+                    _state.value = _state.value.copy(
+                        email = auth.currentUser?.email!!,
+                        userInformation = data[0] as UserInformation,
+                        authenticated = true
+                    )
+                }
             }
         }
     }

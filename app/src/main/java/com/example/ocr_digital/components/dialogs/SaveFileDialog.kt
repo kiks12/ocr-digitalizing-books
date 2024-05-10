@@ -38,6 +38,14 @@ import com.google.firebase.storage.StorageReference
 fun SaveFileDialog(
     filename: String,
     onFileNameChange: (newStr: String) -> Unit,
+    bookTitle: String,
+    onBookTitleChange: (newStr: String) -> Unit,
+    author: String,
+    onAuthorChange: (newStr: String) -> Unit,
+    publishYear: String,
+    onPublishYear: (newStr: String) -> Unit,
+    genre: String,
+    onGenreChange: (newStr: String) -> Unit,
     onDismissRequest: () -> Unit,
     onFileTypeChange: (type: FileType) -> Unit,
     parentFolder: String,
@@ -65,7 +73,7 @@ fun SaveFileDialog(
     )
 
     Dialog(onDismissRequest = onDismissRequest) {
-        if (!showFileNameCard) {
+        if (showFileNameCard) {
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -116,11 +124,11 @@ fun SaveFileDialog(
             }
         }
 
-        if (showFileNameCard) {
+        if (!showFileNameCard) {
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(400.dp)
+                    .height(650.dp)
                     .padding(5.dp),
                 shape = RoundedCornerShape(16.dp),
             ){
@@ -178,12 +186,32 @@ fun SaveFileDialog(
                         }
                     }
                     Spacer(modifier = Modifier.height(15.dp))
-                    Text(text = "Enter Filename:")
+                    Text(text = "Enter Book Information:")
                     Spacer(modifier = Modifier.height(5.dp))
                     OutlinedTextField(
                         value = filename,
                         onValueChange = onFileNameChange,
                         label = { Text("Filename") }
+                    )
+                    OutlinedTextField(
+                        value = bookTitle,
+                        onValueChange = onBookTitleChange,
+                        label = { Text("Book Title") }
+                    )
+                    OutlinedTextField(
+                        value = genre,
+                        onValueChange = onGenreChange,
+                        label = { Text("Genre") }
+                    )
+                    OutlinedTextField(
+                        value = author,
+                        onValueChange = onAuthorChange,
+                        label = { Text("Author") }
+                    )
+                    OutlinedTextField(
+                        value = publishYear,
+                        onValueChange = onPublishYear,
+                        label = { Text("Publish Year") }
                     )
                     Spacer(modifier = Modifier.height(25.dp))
                     Row(
@@ -211,6 +239,12 @@ fun SaveFileDialogPreview() {
     SaveFileDialog(
         filename = "",
         onFileNameChange = {},
+        bookTitle = "",
+        onBookTitleChange = {},
+        author = "",
+        onAuthorChange = {},
+        publishYear = "",
+        onPublishYear = {},
         onFileTypeChange = {},
         onDismissRequest = {},
         onSave = {},
@@ -218,6 +252,8 @@ fun SaveFileDialogPreview() {
         setSelectedFolder = {},
         parentFolder = "",
         selectedFolder = "",
-        showCreateFolderDialog = {}
+        showCreateFolderDialog = {},
+        genre = "",
+        onGenreChange = {}
     )
 }

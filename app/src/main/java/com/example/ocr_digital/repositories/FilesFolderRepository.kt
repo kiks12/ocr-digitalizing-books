@@ -18,12 +18,15 @@ import android.util.Log
 import android.widget.Toast
 import androidx.core.content.FileProvider
 import androidx.core.net.toUri
+import com.example.ocr_digital.file_saver.FileMetadata
 import com.example.ocr_digital.models.Response
 import com.example.ocr_digital.models.ResponseStatus
 import com.example.ocr_digital.models.SearchFilesFoldersResult
 import com.example.ocr_digital.path.PathUtilities
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
+import com.google.firebase.Timestamp
+import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
@@ -43,6 +46,7 @@ import java.util.concurrent.TimeUnit
 
 class FilesFolderRepository {
     private val storage = Firebase.storage("gs://ocr-digital-book.appspot.com")
+    private val db = Firebase.firestore
     private val job = SupervisorJob()
     private val scope = CoroutineScope(job + Dispatchers.IO)
 
@@ -101,6 +105,33 @@ class FilesFolderRepository {
         val extension = PathUtilities.getFileExtension(path)
         val filePath = path.substringBeforeLast(".$extension")
         return "$filePath.txt"
+    }
+
+    suspend fun deleteFileMetadata(path: String) : Response {
+        val response = CompletableDeferred<Response>(null)
+
+        try {
+            coroutineScope {
+                launch(Dispatchers.IO){
+                    db.collection("books").document(path).delete().await()
+                    response.complete(
+                        Response(
+                            status = ResponseStatus.SUCCESSFUL,
+                            message = "File successfully deleted"
+                        )
+                    )
+                }
+            }
+            return response.await()
+        } catch (e: Exception) {
+            response.complete(
+                Response(
+                    status = ResponseStatus.FAILED,
+                    message = e.localizedMessage!!
+                )
+            )
+        }
+        return response.await()
     }
 
     suspend fun deleteFile(path: String) : Response {
@@ -493,6 +524,126 @@ class FilesFolderRepository {
         return response.await()
     }
 
+    suspend fun getFileMetadata(path: String) : Response {
+        val response = CompletableDeferred<Response>(null)
+
+        coroutineScope {
+            db.collection("books").document(path).get()
+                .addOnSuccessListener { snapshot ->
+                    if (snapshot.data == null) {
+                        response.complete(
+                            Response(
+                                status = ResponseStatus.SUCCESSFUL,
+                                message = "Successfully fetched file metadata",
+                                data = mapOf(
+                                    "metadata" to FileMetadata("","","","","", Timestamp.now()) as Any
+                                )
+                            )
+                        )
+                    } else {
+                        response.complete(
+                            Response(
+                                status = ResponseStatus.SUCCESSFUL,
+                                message = "Successfully fetched file metadata",
+                                data = mapOf(
+                                    "metadata" to snapshot.toObject(FileMetadata::class.java) as Any
+                                )
+                            )
+                        )
+                    }
+                }.addOnFailureListener {
+                    it.localizedMessage?.let { it1 ->
+                        Response(
+                            status = ResponseStatus.FAILED,
+                            message = it1,
+                        )
+                    }?.let { it2 ->
+                        response.complete(
+                            it2
+                        )
+                    }
+                }
+        }
+
+        return response.await()
+    }
+
+    suspend fun uploadFileMetadata(metadata: FileMetadata) : Response {
+        val response = CompletableDeferred<Response>(null)
+
+        coroutineScope {
+            db.collection("books").document(metadata.path).set(
+                mapOf(
+                    "title" to metadata.title,
+                    "author" to metadata.author,
+                    "publishedYear" to metadata.publishedYear,
+                    "genre" to metadata.genre,
+                    "path" to metadata.path,
+                    "createdAt" to metadata.createdAt
+                )
+            ).addOnSuccessListener {
+                response.complete(
+                    Response(
+                        status = ResponseStatus.SUCCESSFUL,
+                        message = "File Metadata uploaded"
+                    )
+                )
+            }.addOnFailureListener {
+                it.localizedMessage?.let { it1 ->
+                    Response(
+                        status = ResponseStatus.FAILED,
+                        message = it1
+                    )
+                }?.let { it2 ->
+                    response.complete(
+                        it2
+                    )
+                }
+            }
+
+        }
+
+        return response.await()
+    }
+
+    suspend fun updateFileMetadata(metadata: FileMetadata) : Response {
+        val response = CompletableDeferred<Response>(null)
+
+        coroutineScope {
+            db.collection("books").document(metadata.path).set(
+                mapOf(
+                    "title" to metadata.title,
+                    "author" to metadata.author,
+                    "publishedYear" to metadata.publishedYear,
+                    "genre" to metadata.genre,
+                    "path" to metadata.path,
+                    "createdAt" to metadata.createdAt
+                )
+            ).addOnSuccessListener {
+                response.complete(
+                    Response(
+                        status = ResponseStatus.SUCCESSFUL,
+                        message = "Successfully updated file metadata"
+                    )
+                )
+            }.addOnFailureListener {
+                it.localizedMessage?.let { it1 ->
+                    Response(
+                        status = ResponseStatus.FAILED,
+                        message = it1
+                    )
+                }?.let { it2 ->
+                    response.complete(
+                        it2
+                    )
+                }
+            }
+
+        }
+
+        return response.await()
+    }
+
     suspend fun uploadFile(filePath: String, fileUri: Uri) : Response {
         val response = CompletableDeferred<Response>(null)
 
@@ -649,7 +800,6 @@ class FilesFolderRepository {
                                         inputStream.copyTo(outputStream)
                                     }
                                 }
-
                                 callback?.onWriteFinished(arrayOf(PageRange.ALL_PAGES))
                             }
                         }

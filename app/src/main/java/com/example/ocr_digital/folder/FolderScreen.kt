@@ -37,6 +37,7 @@ import com.example.ocr_digital.components.Folder
 import com.example.ocr_digital.components.dialogs.CopyToDialog
 import com.example.ocr_digital.components.dialogs.CreateFolderDialog
 import com.example.ocr_digital.components.dialogs.DeleteFileFolderDialog
+import com.example.ocr_digital.components.dialogs.FileMetadataDialog
 import com.example.ocr_digital.components.dialogs.RenameDialog
 import com.example.ocr_digital.helpers.ActivityStarterHelper
 import com.example.ocr_digital.helpers.ToastHelper
@@ -131,6 +132,7 @@ fun FolderScreen(folderViewModel: FolderViewModel, folderUtilityViewModel: Folde
                             onCopyClick = { folderViewModel.showCopyToDialog(file.path) },
                             onDownloadClick = { folderUtilityViewModel.downloadFile(localContext, file.path) },
                             onPrintClick = { folderUtilityViewModel.printFile(localContext, file.path) },
+                            onDetailsClick = { folderUtilityViewModel.getFileDetails(file.path, folderViewModel::onFileMetadataChange, folderViewModel::showFileMetadataDialog) },
                             onTranslateClick = {
                                 scope.launch {
                                     folderUtilityViewModel.translateFile(file.path, folderViewModel.getFolderPath())
@@ -145,6 +147,14 @@ fun FolderScreen(folderViewModel: FolderViewModel, folderUtilityViewModel: Folde
                     }
                 }
             }
+        }
+
+        if (state.showInfoDialog) {
+            FileMetadataDialog(
+                metadata = state.metadata,
+                onDismissRequest = folderViewModel::hideFileMetadataDialog,
+                update = { folderUtilityViewModel.updateFileDetails(it, folderViewModel::hideFileMetadataDialog) }
+            )
         }
 
         if (state.showCreateFolderDialog) {

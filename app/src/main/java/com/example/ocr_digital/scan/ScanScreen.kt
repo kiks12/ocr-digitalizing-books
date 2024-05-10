@@ -35,6 +35,7 @@ import com.example.ocr_digital.components.Folder
 import com.example.ocr_digital.components.dialogs.CopyToDialog
 import com.example.ocr_digital.components.dialogs.CreateFolderDialog
 import com.example.ocr_digital.components.dialogs.DeleteFileFolderDialog
+import com.example.ocr_digital.components.dialogs.FileMetadataDialog
 import com.example.ocr_digital.components.dialogs.RenameDialog
 import com.example.ocr_digital.folder.FolderUtilityViewModel
 import com.example.ocr_digital.path.PathUtilities
@@ -113,7 +114,10 @@ fun ScanScreen(scanViewModel: ScanViewModel, folderUtilityViewModel: FolderUtili
         } else {
             if (state.folders.isEmpty() && state.files.isEmpty()) {
                 LazyColumn (
-                    modifier = Modifier.padding(innerPadding).fillMaxWidth().pullRefresh(refreshState)
+                    modifier = Modifier
+                        .padding(innerPadding)
+                        .fillMaxWidth()
+                        .pullRefresh(refreshState)
                 ){
                     if (scanViewModel.isAuthenticated()) {
                         item {
@@ -178,6 +182,7 @@ fun ScanScreen(scanViewModel: ScanViewModel, folderUtilityViewModel: FolderUtili
                             onCopyClick = { scanViewModel.showCopyToDialog(file.path) },
                             onDownloadClick = { folderUtilityViewModel.downloadFile(localContext, file.path) },
                             onPrintClick = { folderUtilityViewModel.printFile(localContext, file.path) },
+                            onDetailsClick = { folderUtilityViewModel.getFileDetails(file.path, scanViewModel::onFileMetadataChange, scanViewModel::showFileMetadataDialog) },
                             onTranslateClick = {
                                 scope.launch {
                                     folderUtilityViewModel.translateFile(file.path, "/${scanViewModel.getUid()}")
@@ -217,6 +222,14 @@ fun ScanScreen(scanViewModel: ScanViewModel, folderUtilityViewModel: FolderUtili
                         },
                     )
                 }
+            )
+        }
+
+        if (state.showInfoDialog) {
+            FileMetadataDialog(
+                metadata = state.metadata,
+                onDismissRequest = scanViewModel::hideFileMetadataDialog,
+                update = { folderUtilityViewModel.updateFileDetails(it, scanViewModel::hideFileMetadataDialog) }
             )
         }
 

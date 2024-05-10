@@ -134,7 +134,15 @@ fun ImageScannerScreen(imageScannerViewModel: ImageScannerViewModel, folderUtili
                 parentFolder = state.parentFolder,
                 setSelectedFolder = imageScannerViewModel::setSelectedFolder,
                 folders = state.folders,
-                showCreateFolderDialog = imageScannerViewModel::showCreateFolderDialog
+                showCreateFolderDialog = imageScannerViewModel::showCreateFolderDialog,
+                bookTitle = state.bookTitle,
+                onBookTitleChange = imageScannerViewModel::onBookTitleChange,
+                author = state.author,
+                onAuthorChange = imageScannerViewModel::onAuthorChange,
+                publishYear = state.publishYear,
+                onPublishYear = imageScannerViewModel::onPublishYearChange,
+                genre = state.genre,
+                onGenreChange = imageScannerViewModel::onGenreChange
             )
         }
         

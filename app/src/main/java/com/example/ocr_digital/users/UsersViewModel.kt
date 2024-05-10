@@ -7,6 +7,7 @@ import com.example.ocr_digital.api.UsersAPI
 import com.example.ocr_digital.helpers.ToastHelper
 import com.example.ocr_digital.models.UserInformation
 import com.example.ocr_digital.repositories.UsersRepository
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
@@ -42,6 +43,10 @@ class UsersViewModel(private val usersAPI: UsersAPI, private val toastHelper: To
         refresh()
     }
 
+    private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
+        toastHelper.makeToast(throwable.message!!)
+    }
+
     fun refresh() {
         viewModelScope.launch {
             async { _state.value = _state.value.copy(loading = true) }.await()
@@ -73,7 +78,7 @@ class UsersViewModel(private val usersAPI: UsersAPI, private val toastHelper: To
     fun onEnableConfirmationDialogDismiss() { _state.value = _state.value.copy(showEnableConfirmationDialog = false) }
 
     fun onEditClick(uid: String) {
-        viewModelScope.launch {
+        viewModelScope.launch(exceptionHandler) {
             val response = usersRepository.getUser(uid)
             val userInformation = response.data["user"] as List<UserInformation>
             _state.value = _state.value.copy(
@@ -97,7 +102,7 @@ class UsersViewModel(private val usersAPI: UsersAPI, private val toastHelper: To
     }
 
     fun updateUserProfile() {
-        viewModelScope.launch {
+        viewModelScope.launch(exceptionHandler) {
             async { _state.value = _state.value.copy(editUserDialogLoading = true) }.await()
             async {
                 val response = usersAPI.editUserProfile(mapOf(
@@ -114,7 +119,7 @@ class UsersViewModel(private val usersAPI: UsersAPI, private val toastHelper: To
     }
 
     fun deleteUser() {
-        viewModelScope.launch {
+        viewModelScope.launch(exceptionHandler) {
             async { _state.value = _state.value.copy(deleteConfirmationLoading = true) }.await()
             async {
                 val response = usersAPI.deleteUser(_state.value.uid)
@@ -127,7 +132,7 @@ class UsersViewModel(private val usersAPI: UsersAPI, private val toastHelper: To
     }
 
     fun disableUser() {
-        viewModelScope.launch {
+        viewModelScope.launch(exceptionHandler) {
             async { _state.value = _state.value.copy(disableConfirmationLoading = true) }.await()
             async {
                 val response = usersAPI.disableUserAccount(mapOf(
@@ -142,7 +147,7 @@ class UsersViewModel(private val usersAPI: UsersAPI, private val toastHelper: To
     }
 
     fun enableUser() {
-        viewModelScope.launch {
+        viewModelScope.launch(exceptionHandler) {
             async { _state.value = _state.value.copy(enableConfirmationLoading = true) }.await()
             async {
                 val response = usersAPI.enableUserAccount(mapOf(

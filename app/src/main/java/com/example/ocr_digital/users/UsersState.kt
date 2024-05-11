@@ -5,6 +5,7 @@ data class UsersState(
     val users: List<UserResult>,
     val usersBackup: List<UserResult>,
     val query: String,
+    val admin: Boolean,
     val firstName: String,
     val lastName: String,
     val uid: String,

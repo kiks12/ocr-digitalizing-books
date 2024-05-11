@@ -1,6 +1,7 @@
 package com.example.ocr_digital.home
 
 import android.content.Intent
+import android.net.ConnectivityManager
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
@@ -39,6 +40,11 @@ class HomeActivity : AppCompatActivity() {
     private val auth = Firebase.auth
 
     private lateinit var scanViewModel: ScanViewModel
+
+    private fun isNetworkAvailable(): Boolean {
+        val connectivityManager = applicationContext.getSystemService(CONNECTIVITY_SERVICE) as? ConnectivityManager
+        return connectivityManager?.activeNetworkInfo?.isConnected == true
+    }
 
     override fun onStart() {
         super.onStart()
@@ -84,11 +90,11 @@ class HomeActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        lifecycleScope.launch {
-            super.onCreate(savedInstanceState)
+        super.onCreate(savedInstanceState)
+        val toastHelper = ToastHelper(this@HomeActivity)
+        val activityStarterHelper = ActivityStarterHelper(this@HomeActivity)
 
-            val toastHelper = ToastHelper(this@HomeActivity)
-            val activityStarterHelper = ActivityStarterHelper(this@HomeActivity)
+        lifecycleScope.launch {
             val settingsViewModel = SettingsViewModel(toastHelper = toastHelper, activityStarterHelper = activityStarterHelper)
             val homeViewModel = HomeViewModel(
                 activityStarterHelper,
@@ -97,7 +103,8 @@ class HomeActivity : AppCompatActivity() {
             )
             scanViewModel = ScanViewModel(toastHelper, activityStarterHelper)
             val folderUtilityViewModel = FolderUtilityViewModel(toastHelper = toastHelper, activityStarterHelper = activityStarterHelper)
-            val usersApi = RetrofitHelper.getInstance()?.create(UsersAPI::class.java)
+
+            val usersApi = RetrofitHelper.getInstance(::isNetworkAvailable)?.create(UsersAPI::class.java)
             val usersViewModel = UsersViewModel(usersApi!!, toastHelper)
 
             val usersResponse = usersRepository.getUser(auth.currentUser?.uid ?: "")

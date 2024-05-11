@@ -33,6 +33,7 @@ class UsersViewModel(private val usersAPI: UsersAPI, private val toastHelper: To
             disableConfirmationLoading = false,
             showDeleteConfirmationDialog = false,
             deleteConfirmationLoading = false,
+            admin = false
         )
     )
 
@@ -69,6 +70,7 @@ class UsersViewModel(private val usersAPI: UsersAPI, private val toastHelper: To
         )
     }
 
+    fun onAdminChange(newVal: Boolean) { _state.value = _state.value.copy(admin = newVal) }
     fun onFirstNameChange(newString: String) { _state.value = _state.value.copy(firstName = newString)}
     fun onLastNameChange(newString: String) { _state.value = _state.value.copy(lastName = newString)}
     fun onContactNumberChange(newString: String) { _state.value = _state.value.copy(contactNumber = newString)}
@@ -85,6 +87,7 @@ class UsersViewModel(private val usersAPI: UsersAPI, private val toastHelper: To
                 firstName = userInformation[0].firstName,
                 lastName = userInformation[0].lastName,
                 contactNumber = userInformation[0].contactNumber,
+                admin = userInformation[0].admin,
                 uid = uid,
                 showEditUserDialog = true
             )
@@ -110,11 +113,15 @@ class UsersViewModel(private val usersAPI: UsersAPI, private val toastHelper: To
                     "firstName" to _state.value.firstName,
                     "lastName" to _state.value.lastName,
                     "contactNumber" to _state.value.contactNumber,
+                    "admin" to _state.value.admin.toString()
                 ))
                 async { _state.value = _state.value.copy(editUserDialogLoading = false) }.await()
                 toastHelper.makeToast(response.body()?.message!!)
             }.await()
-            onEditUserDialogDismiss()
+            async {
+                onEditUserDialogDismiss()
+                refresh()
+            }.await()
         }
     }
 

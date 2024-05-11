@@ -92,10 +92,10 @@ fun UsersScreen(usersViewModel: UsersViewModel) {
                             containerColor = if (item.disabled) MaterialTheme.colorScheme.secondaryContainer else Color.Transparent
                         ),
                         leadingContent = { Text(text = "${index+1}") },
-                        headlineContent = { Text(text = item.email, fontSize = 14.sp, fontWeight = FontWeight.SemiBold) },
+                        headlineContent = { Text(text = "${item.firstName} ${item.lastName} ${if (item.admin) "- ADMIN" else ""}", fontSize = 14.sp, fontWeight = FontWeight.SemiBold) },
                         supportingContent = {
                             Column {
-                                Text(text = item.uid, fontSize = 9.sp, color = MaterialTheme.colorScheme.onSecondaryContainer)
+                                Text(text = item.email, fontSize = 9.sp, color = MaterialTheme.colorScheme.onSecondaryContainer)
                                 Text(text = if (item.disabled) "Disabled" else "Enabled", fontSize = 9.sp, color = MaterialTheme.colorScheme.onSecondaryContainer)
                             }
                         },
@@ -136,6 +136,8 @@ fun UsersScreen(usersViewModel: UsersViewModel) {
                     onLastNameChange = usersViewModel::onLastNameChange,
                     contactNumber = state.contactNumber,
                     onContactNumberChange = usersViewModel::onContactNumberChange,
+                    admin = state.admin,
+                    onAdminChange = usersViewModel::onAdminChange,
                     onDismissRequest = usersViewModel::onEditUserDialogDismiss,
                     update = usersViewModel::updateUserProfile
                 )

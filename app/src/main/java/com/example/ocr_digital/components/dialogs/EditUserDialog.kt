@@ -1,5 +1,7 @@
 package com.example.ocr_digital.components.dialogs
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,7 +15,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -34,6 +38,8 @@ fun EditUserDialog(
     onLastNameChange: (str: String) -> Unit,
     contactNumber: String,
     onContactNumberChange: (str: String) -> Unit,
+    admin: Boolean,
+    onAdminChange: (newVal: Boolean) -> Unit,
     onDismissRequest: () -> Unit,
     update: () -> Unit,
 ) {
@@ -41,7 +47,7 @@ fun EditUserDialog(
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(460.dp)
+                .height(520.dp)
                 .padding(16.dp),
             shape = RoundedCornerShape(16.dp),
         ) {
@@ -79,6 +85,18 @@ fun EditUserDialog(
                         label = { Text("Contact Number") },
                         modifier = Modifier.fillMaxWidth()
                     )
+                    Spacer(modifier = Modifier.height(15.dp))
+                    Box(modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.tertiaryContainer)) {
+                        Row (
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth().clickable {
+                                onAdminChange(!admin)
+                            }
+                        ){
+                            Checkbox(checked = admin, onCheckedChange = onAdminChange)
+                            Text(text = "Set as Admin")
+                        }
+                    }
                     Spacer(modifier = Modifier.height(55.dp))
                     Row(
                         horizontalArrangement = Arrangement.End,

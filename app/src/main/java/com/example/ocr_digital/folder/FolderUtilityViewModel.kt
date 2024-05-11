@@ -24,6 +24,7 @@ class FolderUtilityViewModel(
     private val filesFolderRepository = FilesFolderRepository()
 
     fun searchFile(path: String, query: String, onSearchFiles: (files: List<StorageReference>) -> Unit) {
+        Log.w("FOLDER UTILITY", path)
         viewModelScope.launch {
             filesFolderRepository.searchFiles(path, query, onSearchFiles)
         }

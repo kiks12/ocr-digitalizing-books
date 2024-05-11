@@ -208,14 +208,14 @@ class ScanViewModel(
         _state.value = _state.value.copy(query = newString)
     }
 
-    fun searchFile() {
-        viewModelScope.launch {
-            showLoading()
-            val result = filesFolderRepository.searchFilesFolders(query = _state.value.query, directory = auth.currentUser?.uid!!)
-            _state.value = _state.value.copy(files = result.files, folders = result.folders)
-            hideLoading()
-        }
-    }
+//    fun searchFile() {
+//        viewModelScope.launch {
+//            showLoading()
+//            val result = filesFolderRepository.searchFilesFolders(query = _state.value.query, directory = auth.currentUser?.uid!!)
+//            _state.value = _state.value.copy(files = result.files, folders = result.folders)
+//            hideLoading()
+//        }
+//    }
 
     fun getUid() : String {
         return auth.currentUser?.uid!!

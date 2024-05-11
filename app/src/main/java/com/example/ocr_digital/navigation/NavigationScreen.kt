@@ -34,7 +34,13 @@ enum class NavigationScreens {
 }
 
 @Composable
-fun NavigationScreen(email: String, homeScreen: @Composable () -> Unit, scanScreen: @Composable () -> Unit, usersScreen: @Composable () -> Unit, settingsScreen: @Composable () -> Unit) {
+fun NavigationScreen(
+    homeScreen: @Composable () -> Unit,
+    scanScreen: @Composable () -> Unit,
+    usersScreen: @Composable () -> Unit,
+    settingsScreen: @Composable () -> Unit,
+    isAdmin: Boolean = false,
+) {
     val navController = rememberNavController()
     var currentRoute by remember {
         mutableStateOf(NavigationScreens.HOME.name)
@@ -74,7 +80,7 @@ fun NavigationScreen(email: String, homeScreen: @Composable () -> Unit, scanScre
                         },
                         label = { Text("Scan") }
                     )
-                    if (email == "public_admin@gmail.com") {
+                    if (isAdmin) {
                         NavigationBarItem(
                             selected = currentRoute == NavigationScreens.USERS.name,
                             onClick = {

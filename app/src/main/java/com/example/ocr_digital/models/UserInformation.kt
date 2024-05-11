@@ -8,7 +8,8 @@ data class UserInformation(
     val lastName: String,
     val contactNumber: String,
     val onboarding: Boolean,
-    val walkthrough: Boolean
+    val walkthrough: Boolean,
+    val admin: Boolean = false
 ) {
-    constructor() : this("", "", "", "", false, false)
+    constructor() : this("", "", "", "", false, false, false)
 }

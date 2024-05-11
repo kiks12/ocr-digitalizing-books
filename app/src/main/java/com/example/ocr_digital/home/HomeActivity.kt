@@ -2,7 +2,6 @@ package com.example.ocr_digital.home
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Box
@@ -49,7 +48,6 @@ class HomeActivity : AppCompatActivity() {
             val response = usersRepository.getUser(currentUser.uid)
             if (response.status == ResponseStatus.SUCCESSFUL) {
                 val userData = response.data["user"] as List<*>
-                Log.w("HOME ACTIVITY", userData.toString())
                 if (userData.isEmpty()) {
                     startStartupActivity()
                 } else {
@@ -86,32 +84,37 @@ class HomeActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+        lifecycleScope.launch {
+            super.onCreate(savedInstanceState)
 
-        val toastHelper = ToastHelper(this)
-        val activityStarterHelper = ActivityStarterHelper(this)
-        val settingsViewModel = SettingsViewModel(toastHelper = toastHelper, activityStarterHelper = activityStarterHelper)
-        val homeViewModel = HomeViewModel(
-            activityStarterHelper,
-            getString(R.string.home_authenticated),
-            getString(R.string.home_unauthenticated)
-        )
-        scanViewModel = ScanViewModel(toastHelper, activityStarterHelper)
-        val folderUtilityViewModel = FolderUtilityViewModel(toastHelper = toastHelper, activityStarterHelper = activityStarterHelper)
-        val usersApi = RetrofitHelper.getInstance().create(UsersAPI::class.java)
-        val usersViewModel = UsersViewModel(usersApi, toastHelper)
+            val toastHelper = ToastHelper(this@HomeActivity)
+            val activityStarterHelper = ActivityStarterHelper(this@HomeActivity)
+            val settingsViewModel = SettingsViewModel(toastHelper = toastHelper, activityStarterHelper = activityStarterHelper)
+            val homeViewModel = HomeViewModel(
+                activityStarterHelper,
+                getString(R.string.home_authenticated),
+                getString(R.string.home_unauthenticated)
+            )
+            scanViewModel = ScanViewModel(toastHelper, activityStarterHelper)
+            val folderUtilityViewModel = FolderUtilityViewModel(toastHelper = toastHelper, activityStarterHelper = activityStarterHelper)
+            val usersApi = RetrofitHelper.getInstance()?.create(UsersAPI::class.java)
+            val usersViewModel = UsersViewModel(usersApi!!, toastHelper)
 
-        setContent {
-            OcrDigitalTheme {
-                Scaffold { innerPadding ->
-                    Box(modifier = Modifier.padding(innerPadding)) {
-                        NavigationScreen(
-                            email = auth.currentUser?.email?: "",
-                            homeScreen = { HomeScreen(homeViewModel = homeViewModel) },
-                            scanScreen = { ScanScreen(scanViewModel = scanViewModel, folderUtilityViewModel = folderUtilityViewModel) },
-                            usersScreen = { UsersScreen(usersViewModel = usersViewModel) },
-                            settingsScreen = { SettingsScreen(settingsViewModel = settingsViewModel) }
-                        )
+            val usersResponse = usersRepository.getUser(auth.currentUser?.uid ?: "")
+            val user = (usersResponse.data["user"] as List<*>)[0] as UserInformation
+
+            setContent {
+                OcrDigitalTheme {
+                    Scaffold { innerPadding ->
+                        Box(modifier = Modifier.padding(innerPadding)) {
+                            NavigationScreen(
+                                homeScreen = { HomeScreen(homeViewModel = homeViewModel) },
+                                scanScreen = { ScanScreen(scanViewModel = scanViewModel, folderUtilityViewModel = folderUtilityViewModel) },
+                                usersScreen = { UsersScreen(usersViewModel = usersViewModel) },
+                                settingsScreen = { SettingsScreen(settingsViewModel = settingsViewModel) },
+                                isAdmin = user.admin
+                            )
+                        }
                     }
                 }
             }

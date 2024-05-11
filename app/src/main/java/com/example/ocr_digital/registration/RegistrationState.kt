@@ -7,4 +7,5 @@ data class RegistrationState(
     val firstName: String,
     val lastName: String,
     val contactNumber: String,
+    val admin: Boolean,
 )

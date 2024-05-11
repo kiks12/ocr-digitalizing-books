@@ -4,14 +4,20 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.ocr_digital.api.UsersAPI
+import com.example.ocr_digital.helpers.ActivityStarterHelper
 import com.example.ocr_digital.helpers.ToastHelper
 import com.example.ocr_digital.models.UserInformation
+import com.example.ocr_digital.registration.RegistrationActivity
 import com.example.ocr_digital.repositories.UsersRepository
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
-class UsersViewModel(private val usersAPI: UsersAPI, private val toastHelper: ToastHelper): ViewModel() {
+class UsersViewModel(
+    private val usersAPI: UsersAPI,
+    private val toastHelper: ToastHelper,
+    private val activityStarterHelper: ActivityStarterHelper
+): ViewModel() {
 
     private val usersRepository = UsersRepository()
 
@@ -136,6 +142,12 @@ class UsersViewModel(private val usersAPI: UsersAPI, private val toastHelper: To
             onDeleteConfirmationDialogDismiss()
             refresh()
         }
+    }
+
+    fun addUser() {
+        activityStarterHelper.startActivity(RegistrationActivity::class.java, stringExtras = mapOf(
+            "forAdmin" to "true"
+        ))
     }
 
     fun disableUser() {

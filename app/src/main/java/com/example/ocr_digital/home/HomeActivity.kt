@@ -105,7 +105,7 @@ class HomeActivity : AppCompatActivity() {
             val folderUtilityViewModel = FolderUtilityViewModel(toastHelper = toastHelper, activityStarterHelper = activityStarterHelper)
 
             val usersApi = RetrofitHelper.getInstance(::isNetworkAvailable)?.create(UsersAPI::class.java)
-            val usersViewModel = UsersViewModel(usersApi!!, toastHelper)
+            val usersViewModel = UsersViewModel(usersApi!!, toastHelper, activityStarterHelper)
 
             val usersResponse = usersRepository.getUser(auth.currentUser?.uid ?: "")
             val user = (usersResponse.data["user"] as List<*>)[0] as UserInformation

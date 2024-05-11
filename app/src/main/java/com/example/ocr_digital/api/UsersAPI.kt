@@ -24,6 +24,10 @@ interface UsersAPI {
     suspend fun getUsers() : Response<GetUsersResponse>
 
     @Headers("Content-Type: application/json")
+    @POST("/users/create")
+    suspend fun createUser(@Body body: Map<String, String>) : Response<UserResponse>
+
+    @Headers("Content-Type: application/json")
     @POST("/edit")
     suspend fun editUserProfile(@Body body: Map<String, String>) : Response<UserResponse>
 

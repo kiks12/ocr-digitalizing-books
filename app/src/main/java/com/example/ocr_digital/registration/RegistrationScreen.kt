@@ -1,5 +1,7 @@
 package com.example.ocr_digital.registration
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -92,6 +95,20 @@ fun RegistrationScreen(registrationViewModel: RegistrationViewModel) {
                             label = { Text(text = "Contact Number")},
                             modifier = Modifier.fillMaxWidth()
                         )
+                        if (registrationViewModel.forAdmin) {
+                            Spacer(modifier = Modifier.height(10.dp))
+                            Box(modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.tertiaryContainer)) {
+                                Row (
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier.fillMaxWidth().clickable {
+                                        registrationViewModel.onAdminChange(!state.admin)
+                                    }
+                                ){
+                                    Checkbox(checked = state.admin, onCheckedChange = registrationViewModel::onAdminChange)
+                                    Text(text = "Set as Admin")
+                                }
+                            }
+                        }
                         Spacer(modifier = Modifier.height(30.dp))
                         Button(
                             onClick = registrationViewModel::register,
@@ -108,15 +125,27 @@ fun RegistrationScreen(registrationViewModel: RegistrationViewModel) {
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.fillMaxWidth()
                 ){
-                    Text(text = "Already have an Account?")
-                    TextButton(
-                        onClick = registrationViewModel::startLoginActivity,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(
-                            text = "Login here",
-                            modifier = Modifier.padding(vertical = 10.dp)
-                        )
+                    if (registrationViewModel.forAdmin) {
+                        TextButton(
+                            onClick = registrationViewModel::finishActivity,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                text = "Cancel",
+                                modifier = Modifier.padding(vertical = 10.dp)
+                            )
+                        }
+                    } else {
+                        Text(text = "Already have an Account?")
+                        TextButton(
+                            onClick = registrationViewModel::startLoginActivity,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                text = "Login here",
+                                modifier = Modifier.padding(vertical = 10.dp)
+                            )
+                        }
                     }
                 }
             }
@@ -125,15 +154,17 @@ fun RegistrationScreen(registrationViewModel: RegistrationViewModel) {
 }
 
 
-@Preview
-@Composable
-private fun LoginScreenPreview() {
-    val activityStarterHelper = ActivityStarterHelper(LocalContext.current)
-    val toastHelper = ToastHelper(LocalContext.current)
-    RegistrationScreen(
-        registrationViewModel = RegistrationViewModel(
-            activityStarterHelper = activityStarterHelper,
-            toastHelper = toastHelper
-        )
-    )
-}
+//@Preview
+//@Composable
+//private fun LoginScreenPreview() {
+//    val activityStarterHelper = ActivityStarterHelper(LocalContext.current)
+//    val toastHelper = ToastHelper(LocalContext.current)
+//    RegistrationScreen(
+//        registrationViewModel = RegistrationViewModel(
+//            activityStarterHelper = activityStarterHelper,
+//            toastHelper = toastHelper
+//        ) {
+//
+//        }
+//    )
+//}

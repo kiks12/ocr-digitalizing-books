@@ -4,6 +4,7 @@ import com.example.ocr_digital.file_saver.FileMetadata
 import com.google.firebase.storage.StorageReference
 
 data class ScanState(
+    val admin: Boolean,
     val folders : List<StorageReference>,
     val files : List<StorageReference>,
     val loading : Boolean,

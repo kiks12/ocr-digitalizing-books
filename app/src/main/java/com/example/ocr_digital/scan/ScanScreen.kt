@@ -176,6 +176,8 @@ fun ScanScreen(scanViewModel: ScanViewModel, folderUtilityViewModel: FolderUtili
                     }
                     items(state.files) {file ->
                         File(
+                            path = file.path,
+                            admin = scanViewModel.isAdmin(),
                             filename = file.name,
                             onDeleteClick = { scanViewModel.showDeleteFileOrFolderDialog(file.path, forFile = true) },
                             onRenameClick = { scanViewModel.showRenameFileOrFolderDialog(file.path, forFile = true) },

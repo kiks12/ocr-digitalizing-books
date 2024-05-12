@@ -20,9 +20,15 @@ class FolderActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         val folderPath = intent.getStringExtra("FOLDER_PATH_EXTRA") ?: ""
+        val admin = intent.getStringExtra("IS_ADMIN") != "false"
         val toastHelper = ToastHelper(this)
         val activityStarterHelper = ActivityStarterHelper(this)
-        folderViewModel = FolderViewModel(folderPath = folderPath, toastHelper = toastHelper, activityStarterHelper = activityStarterHelper) {
+        folderViewModel = FolderViewModel(
+            admin = admin,
+            folderPath = folderPath,
+            toastHelper = toastHelper,
+            activityStarterHelper = activityStarterHelper
+        ) {
             finish()
         }
         val folderUtilityViewModel = FolderUtilityViewModel(toastHelper = toastHelper, activityStarterHelper = activityStarterHelper)

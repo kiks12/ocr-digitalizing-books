@@ -15,6 +15,7 @@ import com.google.firebase.storage.StorageReference
 import kotlinx.coroutines.launch
 
 class FolderViewModel(
+    private val admin: Boolean,
     private val folderPath: String,
     private val toastHelper: ToastHelper,
     private val activityStarterHelper: ActivityStarterHelper,
@@ -216,5 +217,7 @@ class FolderViewModel(
     fun onFilesSearch(newList: List<StorageReference>) {
         _state.value = _state.value.copy(files = newList)
     }
+
+    fun isAdmin() : Boolean { return admin }
 
 }

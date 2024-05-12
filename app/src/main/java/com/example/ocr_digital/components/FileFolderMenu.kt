@@ -28,6 +28,8 @@ fun FileFolderMenu(
     onPrintClick: () -> Unit = {},
     onDetailsClick: () -> Unit = {},
     authenticated: Boolean,
+    path: String = "",
+    admin: Boolean = true,
     forFile: Boolean = false,
 ) {
     DropdownMenu(
@@ -42,13 +44,24 @@ fun FileFolderMenu(
                 onClick = onRenameClick,
                 trailingIcon = { Icon(Icons.Default.Edit, "Rename") }
             )
-            DropdownMenuItem(
-                text = {
-                    Text(text = "Delete")
-                },
-                onClick = onDeleteClick,
-                trailingIcon = { Icon(Icons.Default.Delete, "Delete") }
-            )
+            if (admin) {
+                DropdownMenuItem(
+                    text = {
+                        Text(text = "Delete")
+                    },
+                    onClick = onDeleteClick,
+                    trailingIcon = { Icon(Icons.Default.Delete, "Delete") }
+                )
+            } else if (path.contains("XvltUpvBv8J6lhL8kNCB").not()) {
+                DropdownMenuItem(
+                    text = {
+                        Text(text = "Delete")
+                    },
+                    onClick = onDeleteClick,
+                    trailingIcon = { Icon(Icons.Default.Delete, "Delete") }
+                )
+            }
+
             DropdownMenuItem(
                 text = {
                     Text(text = "Copy")
@@ -95,6 +108,7 @@ fun FileFolderMenuPreview() {
         onCopyClick = {},
         forFile = true,
         onDownloadClick = {},
-        authenticated = false
+        authenticated = false,
+        admin = false
     )
 }

@@ -154,6 +154,8 @@ fun FolderScreen(folderViewModel: FolderViewModel, folderUtilityViewModel: Folde
                     }
                     items(state.files) {file ->
                         File(
+                            path = file.path,
+                            admin = folderViewModel.isAdmin(),
                             filename = file.name,
                             onDeleteClick = { folderViewModel.showDeleteFileOrFolderDialog(file.path, forFile = true) },
                             onRenameClick = { folderViewModel.showRenameFileOrFolderDialog(file.path, forFile = true) },
@@ -282,6 +284,7 @@ fun FolderScreenPreview() {
     val toastHelper = ToastHelper(LocalContext.current)
     val activityStarterHelper = ActivityStarterHelper(LocalContext.current)
     val folderViewModel = FolderViewModel(
+        true,
         "Try",
         toastHelper = toastHelper,
         activityStarterHelper = activityStarterHelper

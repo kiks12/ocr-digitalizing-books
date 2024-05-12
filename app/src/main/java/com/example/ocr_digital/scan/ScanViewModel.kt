@@ -26,6 +26,7 @@ class ScanViewModel(
     private val auth = Firebase.auth
     private val _state = mutableStateOf(
         ScanState(
+            admin = false,
             folders = listOf(),
             files = listOf(),
             loading = true,
@@ -199,7 +200,8 @@ class ScanViewModel(
         activityStarterHelper.startActivity(
             FolderActivity::class.java,
             stringExtras = mapOf(
-                "FOLDER_PATH_EXTRA" to folderPath
+                "FOLDER_PATH_EXTRA" to folderPath,
+                "IS_ADMIN" to _state.value.admin.toString()
             )
         )
     }
@@ -207,15 +209,6 @@ class ScanViewModel(
     fun onQueryChange(newString: String) {
         _state.value = _state.value.copy(query = newString)
     }
-
-//    fun searchFile() {
-//        viewModelScope.launch {
-//            showLoading()
-//            val result = filesFolderRepository.searchFilesFolders(query = _state.value.query, directory = auth.currentUser?.uid!!)
-//            _state.value = _state.value.copy(files = result.files, folders = result.folders)
-//            hideLoading()
-//        }
-//    }
 
     fun getUid() : String {
         return auth.currentUser?.uid!!
@@ -263,5 +256,9 @@ class ScanViewModel(
     fun showFileMetadataDialog() { _state.value = _state.value.copy(showInfoDialog = true) }
     fun hideFileMetadataDialog() { _state.value = _state.value.copy(showInfoDialog = false) }
     fun onSearchFiles(files: List<StorageReference>) { _state.value = _state.value.copy(files=files) }
+
+    fun setAdmin(value: Boolean) { _state.value = _state.value.copy(admin = value) }
+
+    fun isAdmin() : Boolean { return _state.value.admin }
 
 }

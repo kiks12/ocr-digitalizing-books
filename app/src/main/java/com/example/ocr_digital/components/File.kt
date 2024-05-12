@@ -21,6 +21,8 @@ import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 fun File(
+    path: String,
+    admin: Boolean,
     filename: String,
     onDeleteClick: () -> Unit,
     onRenameClick: () -> Unit,
@@ -117,7 +119,9 @@ fun File(
                         onDetailsClick()
                     },
                     forFile = true,
-                    authenticated = authenticated
+                    path = path,
+                    authenticated = authenticated,
+                    admin = admin
                 )
             }
         }
@@ -129,6 +133,7 @@ fun File(
 fun FilePreview() {
     Column {
         File(
+            path = "",
             filename = "asdfsadf.docx",
             onDeleteClick = {},
             onRenameClick = {},
@@ -138,7 +143,8 @@ fun FilePreview() {
             onClick = {},
             onTranslateClick = {},
             onDetailsClick = {},
-            authenticated = false
+            authenticated = false,
+            admin = false
         )
     }
 }

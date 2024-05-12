@@ -93,15 +93,16 @@ class HomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         val toastHelper = ToastHelper(this@HomeActivity)
         val activityStarterHelper = ActivityStarterHelper(this@HomeActivity)
+        scanViewModel = ScanViewModel(toastHelper, activityStarterHelper)
 
         lifecycleScope.launch {
             val settingsViewModel = SettingsViewModel(toastHelper = toastHelper, activityStarterHelper = activityStarterHelper)
+
             val homeViewModel = HomeViewModel(
                 activityStarterHelper,
                 getString(R.string.home_authenticated),
                 getString(R.string.home_unauthenticated)
             )
-            scanViewModel = ScanViewModel(toastHelper, activityStarterHelper)
             val folderUtilityViewModel = FolderUtilityViewModel(toastHelper = toastHelper, activityStarterHelper = activityStarterHelper)
 
             val usersApi = RetrofitHelper.getInstance(::isNetworkAvailable)?.create(UsersAPI::class.java)
@@ -109,6 +110,7 @@ class HomeActivity : AppCompatActivity() {
 
             val usersResponse = usersRepository.getUser(auth.currentUser?.uid ?: "")
             val user = (usersResponse.data["user"] as List<*>)[0] as UserInformation
+            scanViewModel.setAdmin(user.admin)
 
             setContent {
                 OcrDigitalTheme {

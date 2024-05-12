@@ -1,6 +1,5 @@
 package com.example.ocr_digital.login
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -29,23 +28,28 @@ class LoginActivity : AppCompatActivity() {
 
     private val resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         try {
-            if (result.resultCode == Activity.RESULT_OK || result.resultCode == Activity.RESULT_FIRST_USER) {
-                val signedInAccount = GoogleSignIn.getSignedInAccountFromIntent(result.data)
-                val credentials = GoogleAuthProvider.getCredential(signedInAccount.result.idToken, null)
-                auth.signInWithCredential(credentials)
-                    .addOnSuccessListener {
-                        val intent = Intent(this, HomeActivity::class.java)
-                        startActivity(intent)
-                        finish()
-                        return@addOnSuccessListener
-                    }
-                    .addOnFailureListener {
-                        it.localizedMessage?.let { it1 -> toastHelper.makeToast(it1) }
-                    }
-            } else {
-                toastHelper.makeToast("There's something wrong please try again")
+            val signedInAccount = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+            when (signedInAccount.isSuccessful) {
+                true -> {
+                    val credentials = GoogleAuthProvider.getCredential(signedInAccount.result.idToken, null)
+                    auth.signInWithCredential(credentials)
+                        .addOnSuccessListener {
+                            val intent = Intent(this, HomeActivity::class.java)
+                            startActivity(intent)
+                            finish()
+                            return@addOnSuccessListener
+                        }
+                        .addOnFailureListener {
+                            it.localizedMessage?.let { it1 -> toastHelper.makeToast(it1) }
+                        }
+                } else -> {
+                    Log.w("LOGIN ACTIVITY", result.resultCode.toString())
+                    toastHelper.makeToast("There's something wrong please try again")
+                }
             }
         } catch (e : ApiException) {
+            Log.w("LOGIN ACTIVITY", result.resultCode.toString())
+            Log.w("LOGIN ACTIVITY", result.data.toString())
             toastHelper.makeToast("There's something wrong please try again")
             e.localizedMessage?.let { Log.w("SIGN IN ERROR", it) }
         }
@@ -74,6 +78,9 @@ class LoginActivity : AppCompatActivity() {
             toastHelper = toastHelper,
             continueWithGoogle = ::continueWithGoogle
         )
+
+        val googleSignInClient = GoogleSignIn.getClient(applicationContext, googleSignInOptions)
+        googleSignInClient.signOut()
 
         setContent {
             OcrDigitalTheme {

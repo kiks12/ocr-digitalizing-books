@@ -865,9 +865,11 @@ class FilesFolderRepository {
                                 val genre = data["genre"] as String
                                 val publishedYear = data["publishedYear"] as String
                                 val title = data["title"] as String
+                                val filename = PathUtilities.getLastSegment(snapPath)
 
                                 if ((author.lowercase().contains(query.lowercase()) || genre.lowercase().contains(query.lowercase())
-                                    || publishedYear.lowercase().contains(query.lowercase()) || title.lowercase().contains(query.lowercase())) &&
+                                    || publishedYear.lowercase().contains(query.lowercase()) || title.lowercase().contains(query.lowercase()) ||
+                                        filename.lowercase().contains(query.lowercase())) &&
                                     snapPath.contains(profilePath)){
                                     val file = ref.child(snapPath)
                                     files.add(file)

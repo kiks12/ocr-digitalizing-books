@@ -103,7 +103,7 @@ fun UsersScreen(usersViewModel: UsersViewModel) {
                         headlineContent = { Text(text = "${item.firstName} ${item.lastName} ${if (item.admin) "- ADMIN" else ""}", fontSize = 14.sp, fontWeight = FontWeight.SemiBold) },
                         supportingContent = {
                             Column {
-                                Text(text = item.email, fontSize = 9.sp, color = MaterialTheme.colorScheme.onSecondaryContainer)
+                                Text(text = item.email ?: "", fontSize = 9.sp, color = MaterialTheme.colorScheme.onSecondaryContainer)
                                 Text(text = if (item.disabled) "Disabled" else "Enabled", fontSize = 9.sp, color = MaterialTheme.colorScheme.onSecondaryContainer)
                             }
                         },

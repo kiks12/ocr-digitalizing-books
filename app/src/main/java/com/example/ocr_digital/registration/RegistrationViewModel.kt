@@ -104,7 +104,7 @@ class RegistrationViewModel(
                                     contactNumber = _state.value.contactNumber,
                                     admin = _state.value.admin,
                                     onboarding = true,
-                                    walkthrough = true
+                                    walkthrough = true,
                                 )
                             )
                             toastHelper.makeToast(response.message)

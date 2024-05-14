@@ -39,7 +39,7 @@ class SettingsViewModel(
                 val data = response.data["user"] as List<*>
                 if (response.status == ResponseStatus.SUCCESSFUL && data.isNotEmpty()) {
                     _state.value = _state.value.copy(
-                        email = auth.currentUser?.email!!,
+                        email = auth.currentUser?.email ?: "",
                         userInformation = data[0] as UserInformation,
                         authenticated = true
                     )

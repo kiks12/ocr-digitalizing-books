@@ -6,8 +6,11 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
 import com.example.ocr_digital.R
@@ -38,6 +41,7 @@ class HomeActivity : AppCompatActivity() {
 
     private val usersRepository = UsersRepository()
     private val auth = Firebase.auth
+    private val loading = mutableStateOf(true)
 
     private lateinit var scanViewModel: ScanViewModel
 
@@ -109,20 +113,35 @@ class HomeActivity : AppCompatActivity() {
             val usersViewModel = UsersViewModel(usersApi!!, toastHelper, activityStarterHelper)
 
             val usersResponse = usersRepository.getUser(auth.currentUser?.uid ?: "")
-            val user = (usersResponse.data["user"] as List<*>)[0] as UserInformation
-            scanViewModel.setAdmin(user.admin)
+            val user : UserInformation?
+            if ((usersResponse.data["user"] as List<*>).isNotEmpty()) {
+                user = (usersResponse.data["user"] as List<*>)[0] as UserInformation
+                scanViewModel.setAdmin(user.admin)
+            } else {
+                user = null
+                scanViewModel.setAdmin(false)
+            }
+            loading.value = false
 
             setContent {
                 OcrDigitalTheme {
                     Scaffold { innerPadding ->
-                        Box(modifier = Modifier.padding(innerPadding)) {
-                            NavigationScreen(
-                                homeScreen = { HomeScreen(homeViewModel = homeViewModel) },
-                                scanScreen = { ScanScreen(scanViewModel = scanViewModel, folderUtilityViewModel = folderUtilityViewModel) },
-                                usersScreen = { UsersScreen(usersViewModel = usersViewModel) },
-                                settingsScreen = { SettingsScreen(settingsViewModel = settingsViewModel) },
-                                isAdmin = user.admin
-                            )
+                        if (loading.value) {
+                            Box(modifier = Modifier
+                                .padding(innerPadding)
+                                .fillMaxSize()) {
+                                CircularProgressIndicator()
+                            }
+                        } else {
+                            Box(modifier = Modifier.padding(innerPadding)) {
+                                NavigationScreen(
+                                    homeScreen = { HomeScreen(homeViewModel = homeViewModel) },
+                                    scanScreen = { ScanScreen(scanViewModel = scanViewModel, folderUtilityViewModel = folderUtilityViewModel) },
+                                    usersScreen = { UsersScreen(usersViewModel = usersViewModel) },
+                                    settingsScreen = { SettingsScreen(settingsViewModel = settingsViewModel) },
+                                    isAdmin = user?.admin ?: false
+                                )
+                            }
                         }
                     }
                 }
